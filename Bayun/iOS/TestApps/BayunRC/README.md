@@ -1,4 +1,4 @@
-## Istructions for use
+## Instructions for use
 ~~~~~
 1. Check out latest code for the test application.
 
