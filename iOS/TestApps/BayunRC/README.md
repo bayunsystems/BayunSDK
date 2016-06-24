@@ -17,7 +17,7 @@
 5. Install the cocoa pods dependency manager, if you don't have it already, by executing the following command in a terminal window:
 'sudo gem install cocoapods'
 
-6. Go to the path BayunSDK/iOS/TestApps/BayunRC/ i.e the RC Demo iOS app path and run the command 
+6. Go to the path BayunSDK/iOS/TestApps/BayunRC i.e the RC Demo iOS app path and run the command 
     'pod install’
 
 7. Run the project. It should build successfully.
