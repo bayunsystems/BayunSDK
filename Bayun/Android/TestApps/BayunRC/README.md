@@ -1,0 +1,1 @@
+This folder contains android specific code for Bayun project.

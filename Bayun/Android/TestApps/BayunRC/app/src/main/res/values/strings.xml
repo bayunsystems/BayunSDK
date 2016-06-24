@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BayunRC</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    / list view file activity values
+    <string name="more_options">More</string>
+
+    // create new file activity values
+    <string name="sender_name">Sender Name</string>
+
+    <string name="please_wait">Please wait...</string>
+    <string name="incomplete_fields_error_message">Please complete all fields below.</string>
+    <string name="incompatible_type_error_message">Please enter numeric values.</string>
+    <string name="string_extension">Extension</string>
+    <string name="login">Login</string>
+    <string name="phoneNumber">Phone Number (digits only)</string>
+    <string name="passWord">Password</string>
+    <string name="messages">Messages</string>
+    <string name="extension">Select Extension</string>
+    <string name="list_view_message_list_empty">No messages found</string>
+
+    <string name="send">Send</string>
+    <string name="message_placeholder_text">Your Message...</string>
+
+
+</resources>

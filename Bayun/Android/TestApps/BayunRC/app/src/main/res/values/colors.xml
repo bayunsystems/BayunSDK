@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="background">#006790</color>
+    <color name="background_contrast">#FFF</color>
+    <color name="light_black">#383838</color>
+    <color name="dark_grey">#999999</color>
+    <color name="light_gray_color">#a8a8a8</color>
+
+
+
+
+    <color name="yellow_button_background_color">#fff000</color>
+
+    <color name="disabled">#ddd</color>
+
+
+    <color name="line_background">#C3C3C3</color>
+    <color name="border">#FFFFFF</color>
+</resources>

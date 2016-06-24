@@ -1,0 +1,36 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    // TODO: update the latest version.
+    defaultConfig {
+        applicationId "com.bayun"
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.2"
+        //manifestPlaceholders = [HOCKEYAPP_APP_ID: "42680e0fcc9243df9720ff145c6f8474", HOCKEYAPP_APP_SECRET: "53fd74ba530573575619bbed99dfd7c0"]
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    //TODO: new version available 23.4.0
+    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.amazonaws:aws-android-sdk-core:2.1.8'
+    compile 'com.amazonaws:aws-android-sdk-s3:2.1.8'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'com.squareup.okhttp:okhttp:2.2.0'
+    compile 'com.android.support:recyclerview-v7:22.0.0'
+    compile 'com.github.siyamed:android-shape-imageview:0.9.1'
+    compile 'net.hockeyapp.android:HockeySDK:3.7.2'
+
+
+}

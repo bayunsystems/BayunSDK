@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/man_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="1dp"
+    android:paddingTop="2dp">
+
+
+
+
+
+        <RelativeLayout
+            android:id="@+id/chat_text_View_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="65dp"
+            android:background="@drawable/rounded_cube_in"
+            android:paddingBottom="6dp"
+            android:paddingLeft="13dp"
+            android:paddingRight="13dp"
+            android:paddingTop="6dp">
+
+
+            <TextView
+                android:id="@+id/chat_layout_conversation_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:autoLink="all"
+
+                android:textColor="@android:color/primary_text_light"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/chat_layout_text_view_date_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/chat_layout_conversation_text"
+                android:textColor="@color/light_gray_color"
+                android:textSize="13sp" />
+        </RelativeLayout>
+
+
+
+
+
+
+</RelativeLayout>
