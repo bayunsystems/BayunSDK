@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1E1926101D1D3232009F07EC /* RCCryptManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E19260F1D1D3232009F07EC /* RCCryptManager.m */; };
+		1E9496691D1D72A700273A2A /* Bayun.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E9496681D1D72A700273A2A /* Bayun.framework */; };
+		1E94966A1D1D72A700273A2A /* Bayun.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1E9496681D1D72A700273A2A /* Bayun.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1EA9C88B1D1BDFF600BCFCB9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA9C88A1D1BDFF600BCFCB9 /* main.m */; };
 		1EA9C88E1D1BDFF600BCFCB9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA9C88D1D1BDFF600BCFCB9 /* AppDelegate.m */; };
 		1EA9C8941D1BDFF600BCFCB9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EA9C8921D1BDFF600BCFCB9 /* Main.storyboard */; };
@@ -138,6 +140,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				1E94966A1D1D72A700273A2A /* Bayun.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -147,6 +150,7 @@
 /* Begin PBXFileReference section */
 		1E19260E1D1D3232009F07EC /* RCCryptManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCCryptManager.h; sourceTree = "<group>"; };
 		1E19260F1D1D3232009F07EC /* RCCryptManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCCryptManager.m; sourceTree = "<group>"; };
+		1E9496681D1D72A700273A2A /* Bayun.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bayun.framework; sourceTree = "<group>"; };
 		1EA9C8861D1BDFF600BCFCB9 /* BayunRC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BayunRC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EA9C88A1D1BDFF600BCFCB9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1EA9C88C1D1BDFF600BCFCB9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -355,6 +359,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E9496691D1D72A700273A2A /* Bayun.framework in Frameworks */,
 				64EDC532449E73F794A3E6B1 /* libPods-BayunRC.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -379,6 +384,7 @@
 		1EA9C87D1D1BDFF600BCFCB9 = {
 			isa = PBXGroup;
 			children = (
+				1E9496681D1D72A700273A2A /* Bayun.framework */,
 				1EA9C8881D1BDFF600BCFCB9 /* BayunRC */,
 				1EA9C8A51D1BDFF600BCFCB9 /* BayunRCTests */,
 				1EA9C8B01D1BDFF600BCFCB9 /* BayunRCUITests */,
