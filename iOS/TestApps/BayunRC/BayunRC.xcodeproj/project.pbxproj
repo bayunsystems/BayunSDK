@@ -111,7 +111,6 @@
 		1EADA2931D1BE05A00B669B4 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2311D1BE05A00B669B4 /* User.m */; };
 		1EADA29B1D1BE24300B669B4 /* BayunRC.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2991D1BE24300B669B4 /* BayunRC.xcdatamodeld */; };
 		1EADA2A11D1BE99500B669B4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2A01D1BE99500B669B4 /* Images.xcassets */; };
-		64EDC532449E73F794A3E6B1 /* libPods-BayunRC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C3616846EE2C84FADA826A /* libPods-BayunRC.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -346,8 +345,6 @@
 		1EADA29A1D1BE24300B669B4 /* Bayun.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bayun.xcdatamodel; sourceTree = "<group>"; };
 		1EADA2A01D1BE99500B669B4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		32C3616846EE2C84FADA826A /* libPods-BayunRC.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BayunRC.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		53F731AA3ADF6560C43A50D7 /* Pods-BayunRC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayunRC.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BayunRC/Pods-BayunRC.debug.xcconfig"; sourceTree = "<group>"; };
-		AF1E4D5CA9C6AA61EAEAA0F8 /* Pods-BayunRC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayunRC.release.xcconfig"; path = "Pods/Target Support Files/Pods-BayunRC/Pods-BayunRC.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -355,7 +352,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				64EDC532449E73F794A3E6B1 /* libPods-BayunRC.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,7 +379,6 @@
 				1EA9C8A51D1BDFF600BCFCB9 /* BayunRCTests */,
 				1EA9C8B01D1BDFF600BCFCB9 /* BayunRCUITests */,
 				1EA9C8871D1BDFF600BCFCB9 /* Products */,
-				68D318476A3E5D3E3CE173C7 /* Pods */,
 				8F7DF9789F1B0B8E88B7240C /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -794,15 +789,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		68D318476A3E5D3E3CE173C7 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				53F731AA3ADF6560C43A50D7 /* Pods-BayunRC.debug.xcconfig */,
-				AF1E4D5CA9C6AA61EAEAA0F8 /* Pods-BayunRC.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		8F7DF9789F1B0B8E88B7240C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -818,12 +804,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1EA9C8B61D1BDFF600BCFCB9 /* Build configuration list for PBXNativeTarget "BayunRC" */;
 			buildPhases = (
-				F7E0B1C8E6D2A3E14113C212 /* [CP] Check Pods Manifest.lock */,
 				1EA9C8821D1BDFF600BCFCB9 /* Sources */,
 				1EA9C8831D1BDFF600BCFCB9 /* Frameworks */,
 				1EA9C8841D1BDFF600BCFCB9 /* Resources */,
-				82F2E07D26C6614F305F69BF /* [CP] Embed Pods Frameworks */,
-				3EA95C14777E827D7F72499C /* [CP] Copy Pods Resources */,
 				1E1926041D1C050F009F07EC /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -986,54 +969,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		3EA95C14777E827D7F72499C /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BayunRC/Pods-BayunRC-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		82F2E07D26C6614F305F69BF /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BayunRC/Pods-BayunRC-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F7E0B1C8E6D2A3E14113C212 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1EA9C8821D1BDFF600BCFCB9 /* Sources */ = {
@@ -1272,7 +1207,6 @@
 		};
 		1EA9C8B71D1BDFF600BCFCB9 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 53F731AA3ADF6560C43A50D7 /* Pods-BayunRC.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -1293,7 +1227,6 @@
 		};
 		1EA9C8B81D1BDFF600BCFCB9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AF1E4D5CA9C6AA61EAEAA0F8 /* Pods-BayunRC.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
