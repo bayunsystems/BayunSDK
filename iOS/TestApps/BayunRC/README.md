@@ -8,7 +8,7 @@
    by executing the following command in a terminal window:
   'sudo gem install cocoapods'
 
-4. Make sure your current Xcode project is closed. Go to the path BayunSDK/iOS/TestApps/BayunRC i.e 
+4. Make sure current Xcode project is closed. Go to the path BayunSDK/iOS/TestApps/BayunRC i.e 
    the RC Demo iOS app path and run the command 
   'pod install'
 
