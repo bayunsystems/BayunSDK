@@ -109,8 +109,7 @@
                                               @"employee" : extension,
                                               @"password" : password,
                                               @"appName" : [RCUtilities appName],
-                                              @"appId" : [RCUtilities appId],
-                                              @"passcode" : [NSNull null]};
+                                              @"appId" : [RCUtilities appId]};
                 
                 [[BayunCore sharedInstance] authenticateWithCredentials:credentials passcode:nil success:^{
                     [[NSUserDefaults standardUserDefaults]setBool:YES forKey:kIsUserLoggedIn];

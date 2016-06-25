@@ -14,11 +14,15 @@
  @brief Types of Employee Status
  */
 typedef NS_ENUM( NSInteger, BayunEmployeeStatus) {
+    /**Employee status unknown.*/
     BayunEmployeeStatusUnknown = 0,
+    /**Active employee with Admin rights. Can perform all operations.*/
     BayunEmployeeStatusAdmin,
+    /**Registered employee but inactive, need to get approved by Admin. Cannot perform any operation.*/
     BayunEmployeeStatusRegistered,
+    /**Active employee*/
     BayunEmployeeStatusApproved,
-    BayunEmployeeStatusPromoted,
+    /**Inactive employee (inactivated by Admin)*/
     BayunEmployeeStatusCancelled,
 };
 
@@ -31,10 +35,15 @@ typedef NS_ENUM( NSInteger, BayunEmployeeStatus) {
 @interface BayunCore : NSObject
 
 /**
- Status of employee e.g. Admin, Registered, Approved, Promoted, Cancelled or Unknown.
+ Status of employee e.g. BayunEmployeeStatusAdmin, BayunEmployeeStatusRegistered, BayunEmployeeStatusApproved, 
+ BayunEmployeeStatusCancelled or BayunEmployeeStatusUnknown.
  */
 @property (nonatomic) BayunEmployeeStatus employeeStatus;
 
+/**
+ Returns BOOL value for employee active state.
+ */
+- (BOOL)isEmployeeActive;
 
 /**
  Returns singleton service client.
