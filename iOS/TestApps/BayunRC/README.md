@@ -27,6 +27,6 @@
 
 8. Build and Run the project. You will need an active RingCentral account to login.
 
-8. Enter your main RingCentral phone-number in the Phone Number field 
+9. Enter your main RingCentral phone-number in the Phone Number field 
    and extension in the extension field.
 ~~~~~
