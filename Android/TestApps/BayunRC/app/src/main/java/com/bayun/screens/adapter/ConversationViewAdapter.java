@@ -12,10 +12,6 @@ import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.screens.ConversationViewActivity;
 import com.bayun.util.Constants;
-import com.bayun.util.Utility;
-import com.bayun_module.constants.BayunError;
-import com.bayun_module.util.BayunException;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,6 +21,7 @@ public class ConversationViewAdapter extends RecyclerView.Adapter<ConversationVi
 
     private static Context context;
     private String extensionNumber = "";
+
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -62,25 +59,8 @@ public class ConversationViewAdapter extends RecyclerView.Adapter<ConversationVi
     public void onBindViewHolder(ViewHolder holder, int position) {
         String messageSubject = ConversationViewActivity.messageInfoArrayList.get(position).getSubject();
         String lastModifiedTime = convertDate(ConversationViewActivity.messageInfoArrayList.get(position).getCreationTime());
-
-        if (BayunApplication.bayunCore.employeeStatus() != BayunApplication.bayunCore.BayunEmployeeStatusRegistered &&
-                BayunApplication.bayunCore.employeeStatus() != BayunApplication.bayunCore.BayunEmployeeStatusCancelled) {
-            try {
-                String messageValue = BayunApplication.bayunCore.decryptText(messageSubject);
-                holder.messageSubject.setText(messageValue);
-            } catch (BayunException exception) {
-                holder.messageSubject.setText(messageSubject);
-                if (exception.getMessage().equalsIgnoreCase(BayunError.ERROR_ACCESS_DENIED))
-                    Utility.displayToast(Constants.ACCESS_DENIED_ERROR, Toast.LENGTH_SHORT);
-                else if (exception.getMessage().equalsIgnoreCase(BayunError.ERROR_USER_NOT_ACTIVE)) {
-                    Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_SHORT);
-                } else {
-                    Utility.displayToast(Constants.ERROR_SOME_THING_WENT_WRONG, Toast.LENGTH_SHORT);
-                }
-            }
-        } else {
-            holder.messageSubject.setText(messageSubject);
-        }
+        String decryptedText = BayunApplication.rcCryptManager.decryptText(messageSubject);
+        holder.messageSubject.setText(decryptedText);
         holder.messageCreationTime.setText(lastModifiedTime);
     }
 

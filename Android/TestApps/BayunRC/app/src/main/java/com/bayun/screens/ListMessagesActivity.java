@@ -38,7 +38,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
     private TextView emptyView;
     private ActivityDBOperations activityDBOperations;
     private Handler.Callback callback;
-    public static ArrayList<ConversationInfo> conversationInfos;
+    public static ArrayList<ConversationInfo> conversationInfoArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,8 +126,8 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
      */
     private void getMessageList() {
         String lastModifiedDate = "0";
-        conversationInfos = activityDBOperations.getAllConversations();
-        if (null != conversationInfos && conversationInfos.size() > 0) {
+        conversationInfoArrayList = activityDBOperations.getAllConversations();
+        if (null != conversationInfoArrayList && conversationInfoArrayList.size() > 0) {
             setListView();
         } else {
             getMessage(lastModifiedDate);
@@ -141,8 +141,8 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
     private void setListView() {
         recyclerView.setVisibility(View.VISIBLE);
         emptyView.setVisibility(View.GONE);
-        conversationInfos = activityDBOperations.getAllConversations();
-        Collections.sort(conversationInfos);
+        conversationInfoArrayList = activityDBOperations.getAllConversations();
+        Collections.sort(conversationInfoArrayList);
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -156,11 +156,11 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
     /**
      * Gets Message using last modified date.
      *
-     * @param lastModifiedDate
+     * @param lastMessageDate
      */
-    private void getMessage(String lastModifiedDate) {
+    private void getMessage(String lastMessageDate) {
         if (Utility.isNetworkAvailable()) {
-            RingCentralAPIManager.getInstance(BayunApplication.appContext).getMessageList(lastModifiedDate, callback);
+            RingCentralAPIManager.getInstance(BayunApplication.appContext).getMessageList(lastMessageDate, callback);
         } else {
             Utility.messageAlertForCertainDuration(ListMessagesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
         }
@@ -175,7 +175,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
         String lastModifiedDate = "0";
         ArrayList<MessageInfo> messageInfos = activityDBOperations.getAllMessages();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s");
-        if (null != conversationInfos && conversationInfos.size() > 0) {
+        if (null != conversationInfoArrayList && conversationInfoArrayList.size() > 0) {
             Date date = new Date();
             date.setTime(0);
             for (MessageInfo messageInfo : messageInfos) {

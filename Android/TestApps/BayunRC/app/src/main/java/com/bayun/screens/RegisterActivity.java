@@ -63,8 +63,6 @@ public class RegisterActivity extends AbstractActivity {
                     finish();
                 } else if (response.equalsIgnoreCase(BayunError.ERROR_USER_NOT_ACTIVE)) {
                     Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_SHORT);
-                } else {
-                    Utility.displayToast(Constants.ERROR_SOME_THING_WENT_WRONG, Toast.LENGTH_SHORT);
                 }
                 return false;
             }

@@ -120,14 +120,14 @@ public class RingCentralAPIManager {
             @Override
             public void success(ExtensionListInfo extensionListInfo, Response response) {
                 Long extension = BayunApplication.tinyDB.getLong(Constants.SHARED_PREFERENCES_EXTENSION, Constants.EMPTY_DATA);
-                ArrayList<ExtensionInfo> extensionInfos = extensionListInfo.getRecords();
-                for (int i = 0; i < extensionInfos.size(); i++) {
-                    if (String.valueOf(extension).equalsIgnoreCase(extensionInfos.get(i).getExtensionNumber())) {
-                        extensionInfos.remove(i);
+                ArrayList<ExtensionInfo> extensionInfoArrayList = extensionListInfo.getRecords();
+                for (int i = 0; i < extensionInfoArrayList.size(); i++) {
+                    if (String.valueOf(extension).equalsIgnoreCase(extensionInfoArrayList.get(i).getExtensionNumber())) {
+                        extensionInfoArrayList.remove(i);
                         break;
                     }
                 }
-                ListExtensionActivity.extensionInfos = extensionInfos;
+                ListExtensionActivity.extensionInfoArrayList = extensionInfoArrayList;
                 message.what = Constants.CALLBACK_SUCCESS;
                 callback.handleMessage(message);
             }

@@ -1,1 +1,1 @@
-include ':app', ':bayun_module', ':bayun_module-release', ':Bayun'
+include ':app', ':Bayun'

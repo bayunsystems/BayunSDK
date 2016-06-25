@@ -10,13 +10,7 @@ public class Constants {
     public static final retrofit.RestAdapter.LogLevel RETROFIT_LOG_LEVEL = RestAdapter.LogLevel.FULL;
 
     public static final String APP_NAME = "Bayun";
-
-    public static final String BASE_URL = "https://platform.devtest.ringcentral.com";
-    public static final String ACCESS_DENIED_ERROR = "Access Denied";
-    public static final String ERROR_KEY_NOT_EXIST = "This user is not registered with Bayun";
-    public static final String CLIENT_KEY = "MMMK95ZgQKadJHDp0nyRRw";
-    public static final String CLIENT_SECRET = "CWF1B5wCRESXLT7a6NiyPgc-7ooBRXRW6UU3h8kJSTAw";
-
+    public static final String BASE_URL="https://platform.ringcentral.com";
     public static final String FILE_EMPTY = "No text to be saved";
     public static final String CREATION_TIME = "creation_time";
     public static final String EMPTY_STRING = "";
@@ -55,12 +49,9 @@ public class Constants {
     public static final String ERROR_COULD_NOT_CONNECT_TO_SERVER = "Could not connect to the server. Please try again.";
     public static final String ERROR_UNEXPECTED_HAPPENED = "Something unexpected happened on server.Please try again later.";
     public static final String ERROR_USER_INACTIVE = "Please contact your Admin to activate your account.";
-    public static final String ERROR_SOME_THING_WENT_WRONG ="Something went wrong. Please try again";
     public static final String AUTH_RESPONSE = "BayunAuthResponse";
     public static final String PASSCODE_REQUIRED = "BayunPasscodeRequired";
     public static final String AUTH_SUCCESS = "BayunAuthStatusSuccess";
-    public static final String BAYUN_INVALID_CREDENTIALS = "BayunErrorInvalidCredentials";
-    public static final String USER_INACTIVE = "BayunErrorMsgUserInActive";
 
     public static final String DATABASE_NAME = "ringcenteral.db";
     public static final int DATABASE_VERSION = 1;

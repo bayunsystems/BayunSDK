@@ -27,7 +27,7 @@ public class ListExtensionActivity extends AbstractActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter messagesAdapter;
     private TextView emptyView;
-    public static ArrayList<ExtensionInfo> extensionInfos;
+    public static ArrayList<ExtensionInfo> extensionInfoArrayList;
     private Handler.Callback callback;
 
     @Override

@@ -8,16 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.screens.ConversationViewActivity;
 import com.bayun.screens.ListMessagesActivity;
 import com.bayun.util.Constants;
-import com.bayun.util.Utility;
-import com.bayun_module.constants.BayunError;
-import com.bayun_module.util.BayunException;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -46,8 +42,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         // list item on click event
         public void onClick(final View view) {
             Intent intent = new Intent(context, ConversationViewActivity.class);
-            BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER, ListMessagesActivity.conversationInfos.get(getPosition()).getExtensionNumber());
-            intent.putExtra(Constants.MESSAGE_NAME, ListMessagesActivity.conversationInfos.get(getPosition()).getName());
+            BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER, ListMessagesActivity.conversationInfoArrayList.get(getPosition()).getExtensionNumber());
+            intent.putExtra(Constants.MESSAGE_NAME, ListMessagesActivity.conversationInfoArrayList.get(getPosition()).getName());
             context.startActivity(intent);
 
         }
@@ -72,34 +68,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String messageSenderOrReceiver;
-        if (ListMessagesActivity.conversationInfos.get(position).getDirection().equalsIgnoreCase(Constants.INBOUND)) {
+        if (ListMessagesActivity.conversationInfoArrayList.get(position).getDirection().equalsIgnoreCase(Constants.INBOUND)) {
             holder.messageIcon.setImageResource(R.drawable.ico_received);
         } else {
             holder.messageIcon.setImageResource(R.drawable.ico_sent);
         }
-        messageSenderOrReceiver = ListMessagesActivity.conversationInfos.get(position).getName();
+        messageSenderOrReceiver = ListMessagesActivity.conversationInfoArrayList.get(position).getName();
         messageSenderOrReceiver = messageSenderOrReceiver.toUpperCase();
-        String messageSubject = ListMessagesActivity.conversationInfos.get(position).getSubject();
-        String lastModifiedTime = getLastModifiedTime(ListMessagesActivity.conversationInfos.get(position).getCreationTime());
-
-        if (BayunApplication.bayunCore.employeeStatus() != BayunApplication.bayunCore.BayunEmployeeStatusRegistered &&
-                BayunApplication.bayunCore.employeeStatus() != BayunApplication.bayunCore.BayunEmployeeStatusCancelled) {
-            try {
-                String messageValue = BayunApplication.bayunCore.decryptText(messageSubject);
-                holder.messageSubject.setText(messageValue);
-            } catch (BayunException exception) {
-                holder.messageSubject.setText(messageSubject);
-                if (exception.getMessage().equalsIgnoreCase(BayunError.ERROR_ACCESS_DENIED))
-                    Utility.displayToast(Constants.ACCESS_DENIED_ERROR, Toast.LENGTH_SHORT);
-                else if (exception.getMessage().equalsIgnoreCase(BayunError.ERROR_USER_NOT_ACTIVE)) {
-                    Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_SHORT);
-                } else {
-                    Utility.displayToast(Constants.ERROR_SOME_THING_WENT_WRONG, Toast.LENGTH_SHORT);
-                }
-            }
-        } else {
-            holder.messageSubject.setText(messageSubject);
-        }
+        String messageSubject = ListMessagesActivity.conversationInfoArrayList.get(position).getSubject();
+        String lastModifiedTime = getLastModifiedTime(ListMessagesActivity.conversationInfoArrayList.get(position).getCreationTime());
+        String decryptedText = BayunApplication.rcCryptManager.decryptText(messageSubject);
+        holder.messageSubject.setText(decryptedText);
         holder.messageCreationTime.setText(lastModifiedTime);
         holder.messageSenderOrReceiver.setText(messageSenderOrReceiver);
     }
@@ -107,8 +86,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        if (null != ListMessagesActivity.conversationInfos)
-            return ListMessagesActivity.conversationInfos.size();
+        if (null != ListMessagesActivity.conversationInfoArrayList)
+            return ListMessagesActivity.conversationInfoArrayList.size();
         else
             return 0;
     }

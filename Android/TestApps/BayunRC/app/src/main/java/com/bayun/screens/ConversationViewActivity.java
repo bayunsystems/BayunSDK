@@ -24,9 +24,8 @@ import com.bayun.http.model.CallerInfo;
 import com.bayun.http.model.Extension;
 import com.bayun.screens.adapter.ConversationViewAdapter;
 import com.bayun.util.Constants;
+import com.bayun.util.RCCryptManager;
 import com.bayun.util.Utility;
-import com.bayun_module.constants.BayunError;
-import com.bayun_module.util.BayunException;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -130,7 +129,7 @@ public class ConversationViewActivity extends AbstractActivity {
     /**
      * Gets conversation list using conversation id
      *
-     * @param id
+     * @param id conversation id
      */
     private void getConversationList(String id) {
         messageInfoArrayList = activityDBOperations.getAllMessagesById(id);
@@ -142,11 +141,11 @@ public class ConversationViewActivity extends AbstractActivity {
     /**
      * Gets message list using last modified date.
      *
-     * @param lastModifiedDate
+     * @param lastMessageDate last message date.
      */
-    private void getMessage(String lastModifiedDate) {
+    private void getMessage(String lastMessageDate) {
         if (Utility.isNetworkAvailable()) {
-            RingCentralAPIManager.getInstance(BayunApplication.appContext).getMessageList(lastModifiedDate, callback);
+            RingCentralAPIManager.getInstance(BayunApplication.appContext).getMessageList(lastMessageDate, callback);
         } else {
             Utility.messageAlertForCertainDuration(ConversationViewActivity.this, Constants.ERROR_INTERNET_OFFLINE);
         }
@@ -155,7 +154,7 @@ public class ConversationViewActivity extends AbstractActivity {
     /**
      * Handles User Back Button Click.
      *
-     * @param view
+     * @param view back button view.
      */
     public void backButtonImageClick(View view) {
         timer.cancel();
@@ -166,28 +165,22 @@ public class ConversationViewActivity extends AbstractActivity {
     /**
      * Handles User Send Button Click.
      *
-     * @param v
+     * @param view
      */
-    public void sendClick(View v) {
+    public void sendClick(View view) {
         String message = messageEditText.getText().toString();
         if (message.equalsIgnoreCase(Constants.EMPTY_STRING)) {
             Utility.displayToast(Constants.FILE_EMPTY, Toast.LENGTH_SHORT);
         } else {
-            try {
-                String encryptedMessage = BayunApplication.bayunCore.encryptText(message);
-                message(encryptedMessage);
+            String encryptedText = BayunApplication.rcCryptManager.encryptText(message);
+            if (encryptedText.isEmpty()) {
+                Utility.displayToast("Message could not be sent.", Toast.LENGTH_SHORT);
+            } else {
+                message(encryptedText);
                 sendNewMessage();
-            } catch (BayunException exception) {
-                messageEditText.setText("");
-                if (exception.getMessage().equalsIgnoreCase(BayunError.ERROR_ACCESS_DENIED))
-                    Utility.displayToast(Constants.ACCESS_DENIED_ERROR, Toast.LENGTH_SHORT);
-                else if (exception.getMessage().equalsIgnoreCase(BayunError.ERROR_USER_NOT_ACTIVE)) {
-                    Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_SHORT);
-                } else {
-                    Utility.displayToast(Constants.ERROR_SOME_THING_WENT_WRONG, Toast.LENGTH_SHORT);
-                }
             }
-            Utility.hideKeyboard(v);
+
+            Utility.hideKeyboard(view);
         }
     }
 
@@ -204,7 +197,7 @@ public class ConversationViewActivity extends AbstractActivity {
     /**
      * Creates a new message.
      *
-     * @param message
+     * @param message new message
      */
     private void message(String message) {
         Long ownExtensionNumber = BayunApplication.tinyDB.getLong(Constants.SHARED_PREFERENCES_EXTENSION, Constants.EMPTY_DATA);
@@ -239,7 +232,7 @@ public class ConversationViewActivity extends AbstractActivity {
     /**
      * Gets last modified time of conversation.
      *
-     * @return
+     * @return last message time.
      */
     private String getLastModifiedTime() {
         String lastModifiedDate = "0";

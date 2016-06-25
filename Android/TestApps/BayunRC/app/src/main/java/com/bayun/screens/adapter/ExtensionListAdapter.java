@@ -37,9 +37,9 @@ public class ExtensionListAdapter extends RecyclerView.Adapter<ExtensionListAdap
         public void onClick(final View view) {
 
             Intent intent = new Intent(context, ConversationViewActivity.class);
-            Contact contact = ListExtensionActivity.extensionInfos.get(getPosition()).getContact();
+            Contact contact = ListExtensionActivity.extensionInfoArrayList.get(getPosition()).getContact();
             intent.putExtra(Constants.MESSAGE_NAME, contact.getFirstName() + " " + contact.getLastName());
-            BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER, ListExtensionActivity.extensionInfos.get(getPosition()).getExtensionNumber());
+            BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER, ListExtensionActivity.extensionInfoArrayList.get(getPosition()).getExtensionNumber());
             context.startActivity(intent);
         }
 
@@ -62,16 +62,16 @@ public class ExtensionListAdapter extends RecyclerView.Adapter<ExtensionListAdap
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.extension_number.setText(ListExtensionActivity.extensionInfos.get(position).getExtensionNumber());
-        Contact contact = ListExtensionActivity.extensionInfos.get(position).getContact();
+        holder.extension_number.setText(ListExtensionActivity.extensionInfoArrayList.get(position).getExtensionNumber());
+        Contact contact = ListExtensionActivity.extensionInfoArrayList.get(position).getContact();
         holder.extension_name.setText(contact.getFirstName() + " " + contact.getLastName());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        if (null != ListExtensionActivity.extensionInfos)
-            return ListExtensionActivity.extensionInfos.size();
+        if (null != ListExtensionActivity.extensionInfoArrayList)
+            return ListExtensionActivity.extensionInfoArrayList.size();
         else
             return 0;
     }

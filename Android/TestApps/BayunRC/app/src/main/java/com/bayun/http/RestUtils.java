@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.util.Base64;
 import android.util.Log;
 
+import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.util.Constants;
 import com.squareup.okhttp.OkHttpClient;
@@ -20,7 +21,6 @@ class RestUtils {
         @Override
         public void intercept(RequestFacade request) {
 
-            String header = Constants.CLIENT_KEY + ":" + Constants.CLIENT_SECRET;
             String authHeader = "";
             // Required by Ringcentral Apis in Auth Header.
             authHeader = "Basic ".concat("NDA0QjI3QUU1MmU1ZGExM2I1ZTBDQTJGNTczNjZGNUM5OEZEMjZFMWEzNjQ5NWJlODk1RTYwNTE5MjQxYzQ5YjoyMUNGNDlBODUwNTYyNEMyODc4OGQ5MGY2Mzg5QzVENTA4ZTIyQjQ3OGZhZjY2MEVDMTYwY2Q1YUYzNjY4NTgz");
