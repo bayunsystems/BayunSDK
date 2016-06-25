@@ -1,6 +1,7 @@
 ## Instructions for use
 ~~~~~
-1. Check out the latest code for BayunRC sample application along-with BayunSDK.
+1. Check out the latest code for BayunRC sample application, along-with Bayun SDK,
+   by cloning the top-level BayunSDK repository.
 
 2. Install the cocoa pods dependency manager, if you don't have it already, 
    by executing the following command in a terminal window:
