@@ -40,10 +40,6 @@ typedef NS_ENUM( NSInteger, BayunEmployeeStatus) {
  */
 @property (nonatomic) BayunEmployeeStatus employeeStatus;
 
-/**
- Returns BOOL value for employee active state.
- */
-- (BOOL)isEmployeeActive;
 
 /**
  Returns singleton service client.
@@ -56,6 +52,7 @@ typedef NS_ENUM( NSInteger, BayunEmployeeStatus) {
  @return Default service client.
  */
 + (instancetype)sharedInstance;
+
 
 /*!
  Authenticate user with Key Management Server.
@@ -84,6 +81,11 @@ typedef NS_ENUM( NSInteger, BayunEmployeeStatus) {
 - (void)validatePasscode:(NSString*)passcode
                  success:(void (^)(void))success
                  failure:(void (^)(BayunError))failure;
+
+/**
+ Returns BOOL value for employee active state.
+ */
+- (BOOL)isEmployeeActive;
 
 /*!
  Encrypts file. The file at the given file path is overwritten with the encrypted file.
