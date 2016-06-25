@@ -450,18 +450,18 @@
 		1EADA15A1D1BE05A00B669B4 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				1EADA1601D1BE05A00B669B4 /* RCError.h */,
+				1EADA15D1D1BE05A00B669B4 /* RCConfig.h */,
 				1E19260E1D1D3232009F07EC /* RCCryptManager.h */,
 				1E19260F1D1D3232009F07EC /* RCCryptManager.m */,
 				1EADA15B1D1BE05A00B669B4 /* RCAPIManager.h */,
 				1EADA15C1D1BE05A00B669B4 /* RCAPIManager.m */,
-				1EADA15D1D1BE05A00B669B4 /* RCConfig.h */,
-				1EADA15E1D1BE05A00B669B4 /* RCConstants.h */,
-				1EADA15F1D1BE05A00B669B4 /* RCConstants.m */,
-				1EADA1601D1BE05A00B669B4 /* RCError.h */,
 				1EADA1611D1BE05A00B669B4 /* RCMessage.h */,
 				1EADA1621D1BE05A00B669B4 /* RCMessage.m */,
 				1EADA1631D1BE05A00B669B4 /* RCUtilities.h */,
 				1EADA1641D1BE05A00B669B4 /* RCUtilities.m */,
+				1EADA15E1D1BE05A00B669B4 /* RCConstants.h */,
+				1EADA15F1D1BE05A00B669B4 /* RCConstants.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";

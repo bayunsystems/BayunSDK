@@ -49,7 +49,7 @@
         
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         
-        NSString *base64String = [RCUtilities base64String:[NSString stringWithFormat:@"%@:%@",kApplicationKey,kApplicationSecretKey] ];
+        NSString *base64String = [RCUtilities base64String:[NSString stringWithFormat:@"%@:%@",kApplicationKeyProd,kApplicationSecretKeyProd] ];
         
         [manager.requestSerializer setValue:[NSString stringWithFormat:@"Basic %@",base64String]  forHTTPHeaderField:@"Authorization"];
         [manager.requestSerializer setValue:@"application/x-www-form-urlencoded"
