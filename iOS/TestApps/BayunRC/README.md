@@ -17,7 +17,7 @@
 
 5. In the workspace, select the first target 'BayunRC'
        
-6. Embed the Bayun framework in project
+6. Embed the Bayun framework from BayunCoreSDK in the project
          i. In target settings select the "General" tab.
         ii. Under "Embedded Binaries", click the "+" button to add an item.
        iii. On the popup, click "Add Other..." 
