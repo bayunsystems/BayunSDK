@@ -43,7 +43,7 @@ A set of example applications that use the above SDKs to showcase common usage.
 
 A sample application that uses BayunCoreSDK to provide end-to-end encryption for SMS messages. It uses RingCentral's APIs to send and receive secure messages within the same organization. Users can login with their RingCentral phone-number and extension, and communicate securely with other extensions associated with the same main number, without RingCentral or anyone else having access to the message contents (including Bayun itself). 
 
-For detailed step-by-step instructions on how to build and run the iOS application, see the README file in the folder iOS/TestApps/BayunRC.
+For detailed step-by-step instructions on how to build and run the iOS application, see the README file in the folder [iOS/TestApps/BayunRC](iOS/TestApps/BayunRC/README.md).
 
 
 #### `BayunS3`
