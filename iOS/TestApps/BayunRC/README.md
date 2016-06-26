@@ -34,6 +34,6 @@
 9. You should be able to send and receive encrypted text-messages to other extensions
    within the same company (those using the same main phone-number). The RingCentral app 
    itself will show garbled text for these secure messages sent by BayunRC app, while BayunRC 
-   app will be able to correctly decipher messages sent from both BayunRC app as well 
-   as RingCentral app.
+   app will be able to correctly decipher both secure messages sent by another BayunRC app 
+   as well as cleartext messages sent by RingCentral app.
 ~~~~~
