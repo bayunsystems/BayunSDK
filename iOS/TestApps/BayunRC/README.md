@@ -7,9 +7,9 @@
    by executing the following command in a terminal window:
       'sudo gem install cocoapods'
 
-3. Make sure the BayunRC Xcode project is not open. Go to the folder 
+3. Make sure the BayunRC project is not open in XCode. Go to the folder 
    BayunSDK/iOS/TestApps/BayunRC in a terminal window and run the following 
-   command to update the xcode workspace file.
+   command to generate the xcode workspace file.
       'pod install'
 
 4. Use XCode 7.0 or higher to open the just created BayunRC.xcworkspace file in 
@@ -32,8 +32,8 @@
    and extension in the Extension field.
 
 9. You should be able to send and receive encrypted text-messages to other extensions
-   within the same company (using the same main phone-number). The RingCentral app 
-   itself will show garbage for these secure messages sent by BayunRC app, while BayunRC 
-   app will be able to correctly decipher messages sent from both RingCentral app as well 
-   as BayunRC app.
+   within the same company (those using the same main phone-number). The RingCentral app 
+   itself will show garbled text for these secure messages sent by BayunRC app, while BayunRC 
+   app will be able to correctly decipher messages sent from both BayunRC app as well 
+   as RingCentral app.
 ~~~~~
