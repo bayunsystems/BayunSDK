@@ -8,7 +8,7 @@ The following sections give an overview of different components present in this 
 
 ## `BayunCoreSDK` Framework
 
-BayunCoreSDK provides a simple to use framework for locking/unlocking of different data-types for employees of a company, including files, text, and binary data. Developers can integrate this framework into any application to start protecting the application data. This core SDK forms the basis for all security and control functionality provided by Bayun. For example usage of the SDK, see the different sample apps in TestApps folder below to get started quickly. There are also different variants of the SDK for different OS environments as follows: 
+BayunCoreSDK provides a simple to use framework for locking/unlocking of different data-types for employees of a company, including files, text, and binary data. Developers can integrate this framework into any application to start protecting the application data. This core SDK forms the basis for all security and control functionality provided by Bayun. For sample usage of the SDK, see the different example apps in TestApps folder below to get started quickly. There are also different variants of the SDK for different OS environments as follows: 
 
 #### iOS
 
@@ -23,7 +23,7 @@ BayunCoreSDK provides a simple to use framework for locking/unlocking of differe
 
 ## Bayun `S3Wrapper` SDK
 
-As the name suggests, it provides a wrapper SDK on top of AWS S3's original SDK, to make life easy for developers storing any part of their application data on S3. It internally relies on BayunCoreSDK to do the actual locking or unlocking of objects, before uploading them to an S3 bucket, or after downloading them from a bucket respectively. The developer uses exactly similar API as provided by the original AWS S3 SDK, and the underlying calls take care of all encryption/decryption and key-management transparently, while keeping the user or enterprise IT in full control. The developer herself doesn't need to worry about any key-management, or even having any access to any customer data or encryption keys. For sample usage of the S3Wrapper SDK, see the BayunS3 TestApp below. 
+As the name suggests, it provides a wrapper on top of AWS S3's original SDK, to make life easy for developers storing any part of their application data on S3. It internally relies on BayunCoreSDK to do the actual locking or unlocking of objects, before uploading them to an S3 bucket, or after downloading them from a bucket respectively. The developer uses exactly similar API as provided by the original AWS S3 SDK, and the underlying calls take care of all encryption/decryption and key-management transparently, while keeping the user or enterprise IT in full control. The developer herself doesn't need to worry about any key-management, or even having any access to any customer data or encryption keys. For sample usage of the S3Wrapper SDK, see the BayunS3 TestApp below. 
 
 #### iOS
 
