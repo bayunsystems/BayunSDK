@@ -28,7 +28,7 @@ typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
 };
 
 /**
- 
+ AWSS3Service is a Wrapper over AWSS3Service for secure transfer of objects. It overrides getObject and putObject methods of AWSS3Service class of AWSS3 SDK.
  */
 @interface SecureAWSS3 :AWSS3
 

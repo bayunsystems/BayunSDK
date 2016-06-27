@@ -174,7 +174,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 - (AWSTask *)getObject:(AWSS3GetObjectRequest *)request {
     
     return [[super getObject:request] continueWithBlock:^id(AWSTask *task) {
-
+        
         __block AWSTask *taskNew = task;
         
         if (task.error) {
@@ -188,7 +188,11 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
             __block NSString*  encryptedFilePath=
             [NSTemporaryDirectory() stringByAppendingPathComponent:filePathURL.lastPathComponent];
             
-            [[BayunCore sharedInstance] decryptFileAtPath:encryptedFilePath success:nil failure:^(NSUInteger errorCode){
+            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+            
+            [[BayunCore sharedInstance] decryptFileAtPath:encryptedFilePath success:^{
+                dispatch_semaphore_signal(semaphore);
+            } failure:^(NSUInteger errorCode){
                 if (errorCode == BayunErrorAccessDenied) {
                     NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"User Authentication Failed", nil)};
                     taskNew = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain code:SecureAWSS3ServiceErrorAccessDenied userInfo:userInfo]];
@@ -199,9 +203,17 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                     NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Something Went Wrong", nil)};
                     taskNew = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain code:SecureAWSS3ServiceErrorSomethingWentWrong userInfo:userInfo]];
                 }
+                dispatch_semaphore_signal(semaphore);
             }];
+            //wait for BayunCore to decrypt the file
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            if (taskNew) {
+                return taskNew;
+            }
         }
-        return taskNew;
+        
+        return task;
+        
     }];
 }
 
@@ -234,7 +246,6 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
         }
         
     } failure:^(NSUInteger errorCode) {
-        NSLog(@"SecureAWSS3Service : File encryption failed");
         if (errorCode == BayunErrorAccessDenied) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"User Authentication Failed", nil)};
             task = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain code:SecureAWSS3ServiceErrorAccessDenied userInfo:userInfo]];
