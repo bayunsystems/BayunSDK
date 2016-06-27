@@ -25,8 +25,6 @@ public class Constants {
     public static final int CALLBACK_SUCCESS = 1;
     public static final int CALLBACK_FAILURE = 0;
     public static final String INBOUND = "Inbound";
-    public static final String ERROR_MESSAGE_AUTHENTICATION_FAILURE = "Invalid Credentials";
-    public static final String ERROR_MESSAGE_SESSION_EXPIRE = "Session is expired";
 
     public static final String SHARED_PREFERENCES_ACTIVITY = "activity";
     public static final String SHARED_PREFERENCES_ACTIVITY_STATUS = "back_button";
@@ -44,11 +42,14 @@ public class Constants {
     public static final String SHARED_PREFERENCES_ACCOUNT_ID = "account";
     public static final String SHARED_PREFERENCES_EXTENSION_NUMBER = "ext_number";
 
+    public static final String ERROR_MESSAGE_INVALID_CREDENTIALS = "Invalid Credentials";
+    public static final String ERROR_MESSAGE_SESSION_EXPIRE = "Session is expired";
+    public static final String ERROR_MESSAGE_PASSCODE= "Incorrect Passcode.";
+    public static final String ERROR_MESSAGE_USER_INACTIVE = "Please contact your Admin to activate your account.";
     public static final String ERROR_INTERNET_OFFLINE = "Internet connection appears to be offline.";
     public static final String ERROR_REQUEST_TIMEOUT = "Sorry, we could not contact the server. Please try again.";
     public static final String ERROR_COULD_NOT_CONNECT_TO_SERVER = "Could not connect to the server. Please try again.";
     public static final String ERROR_UNEXPECTED_HAPPENED = "Something unexpected happened on server.Please try again later.";
-    public static final String ERROR_USER_INACTIVE = "Please contact your Admin to activate your account.";
     public static final String AUTH_RESPONSE = "BayunAuthResponse";
     public static final String PASSCODE_REQUIRED = "BayunPasscodeRequired";
     public static final String AUTH_SUCCESS = "BayunAuthStatusSuccess";

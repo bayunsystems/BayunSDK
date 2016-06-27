@@ -62,11 +62,16 @@ public class RegisterActivity extends AbstractActivity {
                     startActivity(intent);
                     finish();
                 } else if (response.equalsIgnoreCase(BayunError.ERROR_USER_NOT_ACTIVE)) {
-                    Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_SHORT);
+                    Utility.displayToast(Constants.ERROR_MESSAGE_USER_INACTIVE, Toast.LENGTH_SHORT);
+                } else if (response.equalsIgnoreCase(BayunError.ERROR_INVALID_PASSCODE)) {
+                    Utility.displayToast(Constants.ERROR_MESSAGE_PASSCODE, Toast.LENGTH_SHORT);
+                } else if (response.equalsIgnoreCase(BayunError.ERROR_INVALID_CREDENTIALS)) {
+                    Utility.displayToast(Constants.ERROR_MESSAGE_INVALID_CREDENTIALS, Toast.LENGTH_SHORT);
                 }
                 return false;
             }
         };
+
         // Validate passcode.
         passcodeCallback = new Handler.Callback() {
             @Override

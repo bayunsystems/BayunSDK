@@ -72,7 +72,7 @@ public class RingCentralAPIManager {
                     @Override
                     public void failure(RetrofitError error) {
                         if (error.getResponse() != null && error.getResponse().getStatus() == 400) {
-                            Utility.displayToast(Constants.ERROR_MESSAGE_AUTHENTICATION_FAILURE, Toast.LENGTH_SHORT);
+                            Utility.displayToast(Constants.ERROR_MESSAGE_INVALID_CREDENTIALS, Toast.LENGTH_SHORT);
                         }
                         message.what = Constants.CALLBACK_FAILURE;
                         callback.handleMessage(message);

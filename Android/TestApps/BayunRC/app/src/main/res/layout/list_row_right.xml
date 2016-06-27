@@ -6,46 +6,37 @@
     android:paddingTop="2dp">
 
 
+    <RelativeLayout
+        android:id="@+id/chat_text_View_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/rounded_cube_out"
+        android:paddingBottom="6dp"
+        android:paddingLeft="13dp"
+        android:paddingRight="13dp"
+        android:paddingTop="6dp">
 
-        <RelativeLayout
-            android:id="@+id/chat_text_View_layout"
+        <TextView
+            android:id="@+id/chat_layout_conversation_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_cube_out"
-            android:paddingBottom="6dp"
-            android:paddingLeft="13dp"
-            android:layout_marginRight="20dp"
-            android:layout_alignParentRight="true"
-            android:paddingRight="13dp"
-            android:paddingTop="6dp">
+            android:autoLink="all"
+            android:text="Encrypted Messaage"
+            android:textColor="@android:color/primary_text_light"
+            android:textSize="17sp" />
 
+        <TextView
+            android:id="@+id/chat_layout_text_view_date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/chat_layout_conversation_text"
+            android:textColor="@color/light_gray_color"
+            android:text="Sat 13:27 pm"
+            android:textSize="13sp" />
 
-
-            <TextView
-                android:id="@+id/chat_layout_conversation_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:autoLink="all"
-                android:textColor="@android:color/primary_text_light"
-                android:textSize="17sp" />
-
-            <TextView
-                android:id="@+id/chat_layout_text_view_date_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:textColor="@color/light_gray_color"
-                
-                android:textSize="13sp"
-
-               android:layout_below="@+id/chat_layout_conversation_text"
-                />
-
-        </RelativeLayout>
-
-
-
-
+    </RelativeLayout>
 
 
     <!--  <TextView
