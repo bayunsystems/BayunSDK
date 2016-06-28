@@ -26,7 +26,7 @@
 }
 
 /*
- * Returns encrypted text
+ * Returns decrypted text
  */
 - (NSString*) decryptText :(NSString*) text {
     
@@ -45,7 +45,7 @@
 }
 
 /*
- * Returns decrypted text
+ * Returns encrypted text
  */
 -(NSString*) encryptText:(NSString *)text {
     
