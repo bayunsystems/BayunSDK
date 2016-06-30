@@ -1,0 +1,12 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '7.0'
+
+target 'BayunS3' do
+
+pod 'AFNetworking', '~> 2.0'
+pod 'AWSCore' , '2.3.3'
+pod 'AWSS3', '2.3.3'
+pod 'Reachability'
+pod 'SVProgressHUD'
+
+end
