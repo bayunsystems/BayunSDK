@@ -26,11 +26,14 @@ v. A pop up opens to choose options for adding the files. Choose the options
 "Copy items if needed" and "Create groups". Click on "Finish". 
 This integrates the Bayun framework into the app.
 
-7. You will need your AWSS3 access key and secret key. Place the access key and secret key in the AppConfig.h file.
+7. You will need your AWSS3 access key and secret key. 
+   Place the access key and secret key in the AppConfig.h file.
 
 8. Build and Run the project.
 
-9. Enter your company in the Company field, your employee id in Employee field, and your password in Password field and hit Register button.
+9. Enter your company in the Company field, your employee id in Employee field, 
+   and your password in Password field and hit Register button.
 
-10. After authenticating with the Bayun Key Management Server, a bucket with name 'bayun-yourCompanyName' is created. You should be able to upload and download files from the bucket. 
+10. After authenticating with the Bayun Key Management Server, a bucket with name 'bayun-yourCompanyName' 
+    is created. You should be able to upload and download files from the bucket. 
 ~~~~~
