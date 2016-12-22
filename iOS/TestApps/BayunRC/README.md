@@ -16,13 +16,15 @@
    the folder BayunSDK/iOS/TestApps/BayunRC.
        
 5. In the workspace, embed the Bayun framework from BayunCoreSDK in the project. You need to add Bayun.framework in both the targets.
-         i. In targets ("BayunRC-Sandbox" and "BayunRC-Production") settings select the "General" tab.
-        ii. Under "Embedded Binaries", click the "+" button to add an item.
-       iii. On the popup, click "Add Other..." (For the second target choose the existing Bayun.framework from the suggestions instead of clicking "Add Other"). 
-        iv. Select Bayun.framework from BayunSDK/iOS/BayunCoreSDK and click "Open". 
-         v. A pop up opens to choose options for adding the files. Choose the options 
-            "Copy items if needed" and "Create groups". Click on "Finish". 
-            This integrates the Bayun framework into the app.
+ ```
+  i. In targets ("BayunRC-Sandbox" and "BayunRC-Production") settings select the "General" tab.
+ ii. Under "Embedded Binaries", click the "+" button to add an item.
+iii. On the popup, click "Add Other..." (For the second target choose the existing Bayun.framework from the suggestions instead of clicking "Add Other"). 
+ iv. Select Bayun.framework from BayunSDK/iOS/BayunCoreSDK and click "Open". 
+  v. A pop up opens to choose options for adding the files. Choose the options 
+     "Copy items if needed" and "Create groups". Click on "Finish". 
+     This integrates the Bayun framework into the app.
+ ```
 
 6.  You are provided with an appId when your app is registered with Bayun, see [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_ios/before_you_begin.html).  
     In the RCConfig.h file, replace value of "kBayunAppId" with your Bayun AppId.
