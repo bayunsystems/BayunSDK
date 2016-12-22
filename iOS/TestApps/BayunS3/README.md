@@ -18,6 +18,7 @@ the folder BayunSDK/iOS/TestApps/BayunS3.
 5. In the workspace, select the first target 'BayunS3'
 
 6. Embed the Bayun framework from BayunCoreSDK in the project
+ ```
 i. In target settings select the "General" tab.
 ii. Under "Embedded Binaries", click the "+" button to add an item.
 iii. On the popup, click "Add Other..." 
@@ -25,6 +26,7 @@ iv. Select Bayun.framework from BayunSDK/iOS/BayunCoreSDK and click "Open".
 v. A pop up opens to choose options for adding the files. Choose the options 
 "Copy items if needed" and "Create groups". Click on "Finish". 
 This integrates the Bayun framework into the app.
+ ```
 
 7. You will need your AWSS3 access key and secret key. 
    Place the access key and secret key in the AppConfig.h file.
