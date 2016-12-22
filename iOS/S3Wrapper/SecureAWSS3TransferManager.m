@@ -3,7 +3,7 @@
 //  
 //
 //  Created by Preeti-Gaur on 11/18/15.
-//
+//  Copyright © 2016 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "SecureAWSS3TransferManager.h"
@@ -11,6 +11,8 @@
 #import <AWSTMCache.h>
 #import <AWSTask.h>
 #import "SecureAWSS3Service.h"
+
+static NSString *const AWSInfoS3TransferManager = @"S3TransferManager";
 
 
 NSUInteger const SecureAWSS3TransferManagerMinimumPartSize = 5 * 1024 * 1024; // 5MB
@@ -46,6 +48,12 @@ NSTimeInterval const SecureAWSS3TransferManagerAgeLimitDefault = 0.0; // Keeps t
 
 @end
 
+@interface SecureAWSS3()
+
+- (instancetype)initWithConfiguration:(AWSServiceConfiguration *)configuration;
+
+@end
+
 
 @implementation SecureAWSS3TransferManager
 
@@ -53,16 +61,42 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
 
 + (instancetype)defaultS3TransferManager {
-    if (![AWSServiceManager defaultServiceManager].defaultServiceConfiguration) {
-        return nil;
-    }
+//    if (![AWSServiceManager defaultServiceManager].defaultServiceConfiguration) {
+//        return nil;
+//    }
+//    
+//    static SecureAWSS3TransferManager *_defaultS3TransferManager = nil;
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        _defaultS3TransferManager = [[SecureAWSS3TransferManager alloc] initWithConfiguration:[AWSServiceManager defaultServiceManager].defaultServiceConfiguration
+//                                                                              cacheName:SecureAWSS3TransferManagerCacheName];
+//    });
+//    return _defaultS3TransferManager;
     
     static SecureAWSS3TransferManager *_defaultS3TransferManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _defaultS3TransferManager = [[SecureAWSS3TransferManager alloc] initWithConfiguration:[AWSServiceManager defaultServiceManager].defaultServiceConfiguration
+        AWSServiceConfiguration *serviceConfiguration = nil;
+        AWSServiceInfo *serviceInfo = [[AWSInfo defaultAWSInfo] defaultServiceInfo:AWSInfoS3TransferManager];
+        if (serviceInfo) {
+            serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:serviceInfo.region
+                                                               credentialsProvider:serviceInfo.cognitoCredentialsProvider];
+        }
+        
+        if (!serviceConfiguration) {
+            serviceConfiguration = [AWSServiceManager defaultServiceManager].defaultServiceConfiguration;
+        }
+        
+        if (!serviceConfiguration) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                           reason:@"The service configuration is `nil`. You need to configure `Info.plist` or set `defaultServiceConfiguration` before using this method."
+                                         userInfo:nil];
+        }
+        
+        _defaultS3TransferManager = [[SecureAWSS3TransferManager alloc] initWithConfiguration:serviceConfiguration
                                                                               cacheName:SecureAWSS3TransferManagerCacheName];
     });
+    
     return _defaultS3TransferManager;
 }
 
@@ -79,7 +113,25 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 }
 
 + (instancetype)S3TransferManagerForKey:(NSString *)key {
-    return [_serviceClients objectForKey:key];
+   // return [_serviceClients objectForKey:key];
+    @synchronized(self) {
+        SecureAWSS3TransferManager *serviceClient = [_serviceClients objectForKey:key];
+        if (serviceClient) {
+            return serviceClient;
+        }
+        
+        AWSServiceInfo *serviceInfo = [[AWSInfo defaultAWSInfo] serviceInfo:AWSInfoS3TransferManager
+                                                                     forKey:key];
+        if (serviceInfo) {
+            AWSServiceConfiguration *serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:serviceInfo.region
+                                                                                        credentialsProvider:serviceInfo.cognitoCredentialsProvider];
+            [SecureAWSS3TransferManager registerS3TransferManagerWithConfiguration:serviceConfiguration
+                                                                      forKey:key];
+        }
+        
+        return [_serviceClients objectForKey:key];
+    }
+
 }
 
 + (void)removeS3TransferManagerForKey:(NSString *)key {
@@ -106,6 +158,8 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                                      rootPath:[NSTemporaryDirectory() stringByAppendingPathComponent:SecureAWSS3TransferManagerCacheName]];
     _cache.diskCache.byteLimit = SecureAWSS3TransferManagerByteLimitDefault;
     _cache.diskCache.ageLimit = SecureAWSS3TransferManagerAgeLimitDefault;
+    
+    
     return self;
 }
 
@@ -191,7 +245,7 @@ continueWithExecutor:(AWSExecutor *)executor
                            forKey:cacheKey];
         return nil;
     }] continueWithSuccessBlock:^id(AWSTask *task) {
-        //after encryption for file size > 5MB multipart upload is handled by SecureAWSS3Service
+        //after locking, for file size > 5MB multipart upload is handled by SecureAWSS3Service
         return [weakSelf putObject:uploadRequest fileSize:fileSize cacheKey:cacheKey];
         
     }] continueWithBlock:^id(AWSTask *task) {

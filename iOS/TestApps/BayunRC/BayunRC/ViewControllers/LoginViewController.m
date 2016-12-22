@@ -89,6 +89,9 @@
                                           @"extension" : extension,
                                           @"password" : password};
             
+            [SVProgressHUD showWithMaskType:SVProgressHUDMaskTypeClear];
+            
+            
             [[RCAPIManager sharedInstance] loginWithCredentials:credentials success:^{
                 //Delete entities for User, Receiver, Sender, Message, Conversation
                 [Message deleteAll];
@@ -105,29 +108,34 @@
                 [[NSUserDefaults standardUserDefaults] synchronize];
                 
                 //authenticate with Bayun Key Management Server after authenticating with RingCentral
-                NSDictionary *credentials = @{@"company" : phoneNumber,
-                                              @"employee" : extension,
+                NSDictionary *credentials = @{@"companyName" : phoneNumber,
+                                              @"companyEmployeeId" : extension,
                                               @"password" : password,
-                                              @"appName" : [RCUtilities appName],
                                               @"appId" : [RCUtilities appId]};
                 
                 [[BayunCore sharedInstance] authenticateWithCredentials:credentials passcode:nil success:^{
+                    [SVProgressHUD dismiss];
+                    
                     [[NSUserDefaults standardUserDefaults]setBool:YES forKey:kIsUserLoggedIn];
                     [[NSUserDefaults standardUserDefaults] synchronize];
                     [self getExtensionsAndMessages];
                     [self performSegueWithIdentifier:@"MessagesListSegue" sender:nil];
-                } failure:^(NSUInteger errorCode) {
+                } failure:^(BayunError errorCode) {
+                    [SVProgressHUD dismiss];
                     if (errorCode == BayunErrorUserInActive) {
                         [SVProgressHUD showErrorWithStatus:kErrorUserInActive];
                     } else if (errorCode == BayunErrorInvalidCredentials){
                         [SVProgressHUD showErrorWithStatus:kErrorInvalidCredentials];
                     } else if (errorCode == BayunErrorInvalidPasscode){
                         [SVProgressHUD showErrorWithStatus:kErrorIncorrectPasscode];
-                    } else {
+                    } else if (errorCode == BayunErrorAuthenticationFailed){
+                        [SVProgressHUD showErrorWithStatus:kErrorMsgAuthenticationFailed];
+                    }else {
                         [SVProgressHUD showErrorWithStatus:kErrorSomethingWentWrong];
                     }
                 }];
             } failure:^(RCError errorCode) {
+                [SVProgressHUD dismiss];
                 if (errorCode == RCErrorInvalidToken) {
                     AppDelegate  *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
                     [appDelegate logoutWithMessage:kErrorSessionIsExpired];

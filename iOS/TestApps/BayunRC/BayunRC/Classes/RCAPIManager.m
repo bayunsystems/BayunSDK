@@ -1,4 +1,4 @@
-//
+////
 //  RCAPIManager.m
 //  Bayun
 //
@@ -45,11 +45,13 @@
 - (void) loginWithCredentials:(NSDictionary*)credentials success:(void (^)(void))success failure:(void (^)(RCError))failure {
     if (!self.isGetTokenCallRunning) {
         self.isGetTokenCallRunning = YES;
-        [SVProgressHUD showWithMaskType:SVProgressHUDMaskTypeClear];
         
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         
-        NSString *base64String = [RCUtilities base64String:[NSString stringWithFormat:@"%@:%@",kApplicationKeyProd,kApplicationSecretKeyProd] ];
+        NSString *applicationKey = [RCUtilities rcApplicationKey];
+        NSString *secretKey = [RCUtilities rcSecretKey];
+        
+        NSString *base64String = [RCUtilities base64String:[NSString stringWithFormat:@"%@:%@",applicationKey,secretKey]];
         
         [manager.requestSerializer setValue:[NSString stringWithFormat:@"Basic %@",base64String]  forHTTPHeaderField:@"Authorization"];
         [manager.requestSerializer setValue:@"application/x-www-form-urlencoded"
@@ -59,7 +61,6 @@
         
         [manager POST:url parameters:credentials success:^(AFHTTPRequestOperation *operation, id responseObject) {
             
-            [SVProgressHUD dismiss];
             self.isGetTokenCallRunning = NO;
             
             NSDictionary *responseDict = responseObject;
@@ -79,7 +80,7 @@
                 success();
             }
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-             [SVProgressHUD dismiss];
+    
              self.isGetTokenCallRunning = NO;
 
             if (failure) {
@@ -93,9 +94,12 @@
                     NSDictionary *errorDict= operation.responseObject;
                     if ([[errorDict valueForKey:@"error_description"] isEqualToString:@"Invalid resource owner credentials."]){
                         failure(RCErrorInvalidCredentials);
+                    } else if ([[errorDict valueForKey:@"error"] isEqualToString:@"invalid_grant"]) {
+                        failure(RCErrorInvalidToken);
+                        [manager.operationQueue cancelAllOperations];
                     } else {
                         [manager.operationQueue cancelAllOperations];
-                         failure(RCErrorSomethingWentWrong);
+                        failure(RCErrorSomethingWentWrong);
                     }
                 } else {
                     [self failedWithError:error requestOperation:operation failure:failure];
@@ -151,6 +155,14 @@
                      failure(RCErrorInvalidToken);
                      [manager.operationQueue cancelAllOperations];
                  }                 
+             } else if (statusCode == 400) {
+                  NSDictionary *errorDict= operation.responseObject;
+                 if ([[errorDict valueForKey:@"error"] isEqualToString:@"invalid_grant"]) {
+                     failure(RCErrorInvalidToken);
+                     [manager.operationQueue cancelAllOperations];
+                 } else {
+                     [self failedWithError:error requestOperation:operation failure:failure];
+                 }
              } else {
                  [self failedWithError:error requestOperation:operation failure:failure];
              }
@@ -197,6 +209,14 @@
                          failure(RCErrorInvalidToken);
                      }
                      [manager.operationQueue cancelAllOperations];
+                 }
+             } else if (statusCode == 400) {
+                 NSDictionary *errorDict= operation.responseObject;
+                 if ([[errorDict valueForKey:@"error"] isEqualToString:@"invalid_grant"]) {
+                     failure(RCErrorInvalidToken);
+                     [manager.operationQueue cancelAllOperations];
+                 }  else {
+                     [self failedWithError:error requestOperation:operation failure:failure];
                  }
              } else {
                  [self failedWithError:error requestOperation:operation failure:failure];
@@ -272,7 +292,15 @@
                          failure(RCErrorInvalidToken);
                      }
                  }
-             } else {
+             } else if (statusCode == 400) {
+                 NSDictionary *errorDict= operation.responseObject;
+                 if ([[errorDict valueForKey:@"error"] isEqualToString:@"invalid_grant"]) {
+                     failure(RCErrorInvalidToken);
+                     [manager.operationQueue cancelAllOperations];
+                 }  else {
+                     [self failedWithError:error requestOperation:operation failure:failure];
+                 }
+             }  else {
                  [self failedWithError:error requestOperation:operation failure:failure];
              }
          }];

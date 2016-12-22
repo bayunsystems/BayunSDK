@@ -12,6 +12,6 @@
 
 @property (strong, nonatomic) IBOutlet UITextView *textView;
 
-- (IBAction)saveButtonIsPressed :(id)sender;
+- (IBAction)saveButtonIsPressed:(id)sender;
 
 @end

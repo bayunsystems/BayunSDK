@@ -8,12 +8,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.http.RingCentralAPIManager;
 import com.bayun.http.model.ExtensionInfo;
-import com.bayun.http.model.ExtensionListInfo;
 import com.bayun.screens.adapter.ExtensionListAdapter;
 import com.bayun.screens.helper.DividerItemDecoration;
 import com.bayun.util.Constants;
@@ -50,8 +50,12 @@ public class ListExtensionActivity extends AbstractActivity {
                 }
                 return false;
             }
-        };
-        getExtensionList();
+        };if (Utility.isNetworkAvailable()) {
+            getExtensionList();
+        } else {
+            Utility.displayToast(Constants.ERROR_INTERNET_OFFLINE, Toast.LENGTH_SHORT);
+        }
+
     }
 
     /**

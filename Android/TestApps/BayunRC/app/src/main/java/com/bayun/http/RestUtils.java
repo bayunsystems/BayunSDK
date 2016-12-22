@@ -2,14 +2,11 @@ package com.bayun.http;
 
 import android.content.SharedPreferences;
 import android.util.Base64;
-import android.util.Log;
 
 import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.util.Constants;
 import com.squareup.okhttp.OkHttpClient;
-
-import java.io.UnsupportedEncodingException;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -23,7 +20,9 @@ class RestUtils {
 
             String authHeader = "";
             // Required by Ringcentral Apis in Auth Header.
-            authHeader = "Basic ".concat("NDA0QjI3QUU1MmU1ZGExM2I1ZTBDQTJGNTczNjZGNUM5OEZEMjZFMWEzNjQ5NWJlODk1RTYwNTE5MjQxYzQ5YjoyMUNGNDlBODUwNTYyNEMyODc4OGQ5MGY2Mzg5QzVENTA4ZTIyQjQ3OGZhZjY2MEVDMTYwY2Q1YUYzNjY4NTgz");
+            String base64 = BayunApplication.appContext.getString(R.string.application_key) + ":" + BayunApplication.appContext.getString(R.string.application_secret);
+            base64 = Base64.encodeToString(base64.getBytes(), Base64.NO_WRAP);
+            authHeader = "Basic ".concat(base64);
             request.addHeader("Authorization", authHeader);
             request.addHeader("Accept-Language", "en-US,en;q=0.8");
         }
@@ -67,7 +66,7 @@ class RestUtils {
             .setEndpoint(RestUtils.getUrl())
             .setRequestInterceptor(loginRequestInterceptor)
             .setLogLevel(Constants.RETROFIT_LOG_LEVEL)
-            .setErrorHandler(new NonRestErrorhandler())
+            .setErrorHandler(new ErrorHandler())
             .build();
 
     public static RestAdapter getNonRestAdapter() {
@@ -83,6 +82,6 @@ class RestUtils {
     }
 
     private static String getUrl() {
-        return Constants.BASE_URL;
+        return BayunApplication.appContext.getString(R.string.base_url);
     }
 }

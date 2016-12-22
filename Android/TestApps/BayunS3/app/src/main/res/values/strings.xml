@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <string name="app_name">BayunS3</string>
+
+    // Aws Credentials.
+    <string name="aws_access_key">YOUR AWS ACCESS KEY</string>
+    <string name="aws_secret_key">YOUR AWS SECRET KEY</string>
+
+    // App Id
+    <string name="app_id">YOUR APP ID</string>
+
+    // login activity values
+    <string name="company_name">Company</string>
+    <string name="employee_id">Employee</string>
+    <string name="password">Password</string>
+    <string name="passcode">Enter Your Passcode</string>
+    <string name="register">Login/Register</string>
+
+    // list view file activity values
+    <string name="files">Files</string>
+    <string name="more_options">More</string>
+
+    <string name="list_view_list_empty">No File Found.</string>
+
+    // create new file activity values
+    <string name="new_files">Untitled</string>
+    <string name="save_file">Save</string>
+    <string name="edit_file">Edit</string>
+    <string name="file_text_hint">Enter Text Here.\n\nFor this demo, text entered here is encrypted and saved as text file on S3 server.\nOnly employees from same company can view decrypted text.</string>
+
+    <string name="ok">OK</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="enter_file_name">Enter File Name</string>
+    <string name="dialog_title">Do you want to save the changes?</string>
+    <string name="dialog_delete_title">Delete File?</string>
+
+    <string name="please_wait">Please wait...</string>
+    <string name="incomplete_fields_error_message">Please complete all fields below.</string>
+
+    <string name="action_done_label"><b>Done</b></string>
+    <string name="skip_lable">SKIP</string>
+    <string name="continue_label">CONTINUE</string>
+
+    <string name="internal_storage">Internal storage</string>
+    <string name="something_went_wrong">BayunErrorSomethingWentWrong</string>
+    <string name="size">Size :</string>
+    <string name="modified_date">Last Modified :</string>
+    <string name="title_activity_demo">Demo</string>
+    <string name="action_settings">Action Settings</string>
+
+</resources>

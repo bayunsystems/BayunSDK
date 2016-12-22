@@ -1,39 +1,32 @@
 package com.bayun.util;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bayun.R;
 import com.bayun.app.BayunApplication;
-
-import java.util.Calendar;
 
 /**
  * Created by Gagan on 01-06-2015.
  */
+
 public class Utility {
 
-    private static AlertDialog.Builder builder;
     private static AlertDialog alertDialog;
 
     /**
      * Display Message using toast.
      *
-     * @param message
-     * @param toastLength
+     * @param message     message.
+     * @param toastLength toast lenght.
      */
     public static void displayToast(String message, int toastLength) {
         Toast toast = Toast.makeText(BayunApplication.appContext, message, toastLength);
@@ -43,7 +36,7 @@ public class Utility {
     /**
      * Checks if Network is available or not
      *
-     * @return
+     * @return True/False
      */
     public static boolean isNetworkAvailable() {
         ConnectivityManager connectivity = (ConnectivityManager) BayunApplication.appContext
@@ -60,9 +53,9 @@ public class Utility {
     /**
      * Creates progress dialog
      *
-     * @param ctx
-     * @param message
-     * @return
+     * @param ctx     context
+     * @param message message
+     * @return progress dialog.
      */
     public static ProgressDialog createProgressDialog(Context ctx, String message) {
         ProgressDialog progressDialog = new ProgressDialog(ctx);
@@ -75,8 +68,8 @@ public class Utility {
     /**
      * Show message alert for certain duration
      *
-     * @param context
-     * @param message
+     * @param context context.
+     * @param message message.
      */
     public static void messageAlertForCertainDuration(Context context, String message) {
         alertDialog = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_LIGHT).create();
@@ -102,7 +95,7 @@ public class Utility {
     /**
      * Hide soft keyboard on button event
      *
-     * @param view
+     * @param view view.
      */
     public static void hideKeyboard(View view) {
         InputMethodManager inputManager = (InputMethodManager)

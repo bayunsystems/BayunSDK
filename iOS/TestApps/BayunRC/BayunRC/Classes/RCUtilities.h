@@ -21,6 +21,17 @@
 + (NSString*) baseURL;
 
 /**
+ * Returns RingCentral Application Key
+ */
++ (NSString*) rcApplicationKey;
+
+/**
+ * Returns RingCentral Secret Key
+ */
++ (NSString*) rcSecretKey;
+
+
+/**
  Returns RingCentral Access Token
  */
 + (NSString*)rcAccessToken;
@@ -39,11 +50,6 @@
  Returns Extension
  */
 + (NSString*)extension;
-
-/**
- Returns App Name
- */
-+ (NSString*)appName;
 
 /**
  Clears the App Id

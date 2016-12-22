@@ -15,8 +15,7 @@ import retrofit.client.Response;
  * Created by Gagan on 05/06/15.
  */
 
-
- class ErrorHandler implements retrofit.ErrorHandler {
+class ErrorHandler implements retrofit.ErrorHandler {
 
     private static final Handler MAIN_LOOPER_HANDLER = new Handler(Looper.getMainLooper());
 
@@ -25,9 +24,9 @@ import retrofit.client.Response;
         Response r = cause.getResponse();
         if (r != null) {
             switch (r.getStatus()) {
-                case 400 :
+                case 400:
 
-                case 403 :
+                case 403:
                     break;
                 case 401:
                     MAIN_LOOPER_HANDLER.post(new Runnable() {
@@ -45,7 +44,7 @@ import retrofit.client.Response;
                             Utility.displayToast(Constants.ERROR_REQUEST_TIMEOUT, Toast.LENGTH_SHORT);
                         }
                     });
-                    
+
                     break;
                 case -1009:
                     MAIN_LOOPER_HANDLER.post(new Runnable() {

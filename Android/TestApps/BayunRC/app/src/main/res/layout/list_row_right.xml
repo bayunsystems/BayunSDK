@@ -23,7 +23,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autoLink="all"
-            android:text="Encrypted Messaage"
             android:textColor="@android:color/primary_text_light"
             android:textSize="17sp" />
 
@@ -33,7 +32,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/chat_layout_conversation_text"
             android:textColor="@color/light_gray_color"
-            android:text="Sat 13:27 pm"
             android:textSize="13sp" />
 
     </RelativeLayout>

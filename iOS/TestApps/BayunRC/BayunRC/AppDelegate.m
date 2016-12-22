@@ -75,7 +75,7 @@
 
 // Logs out from application with the message if any.
 -(void) logoutWithMessage:(NSString*)message {
-    [[BayunCore sharedInstance] logoutBayun];
+    [[BayunCore sharedInstance] deauthenticate];
     [RCUtilities clearCacheData];
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];

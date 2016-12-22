@@ -8,6 +8,7 @@
 
 
 #define kS3Host                         @"https://s3.amazonaws.com"
-#define kS3AccessKey                    @"your AWSS3 access key"
-#define kS3SecretKey                    @"your AWSS3 secret key"
+#define kS3AccessKey                    @"Your S3 Access Key"
+#define kS3SecretKey                    @"Your S3 Secret Key"
+#define kBayunAppId                     @"Your Bayun AppId"
 

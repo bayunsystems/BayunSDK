@@ -3,7 +3,7 @@
 //  
 //
 //  Created by Preeti-Gaur on 11/18/15.
-//
+//  Copyright © 2016 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "AWSS3TransferManager.h"
@@ -24,10 +24,6 @@ typedef NS_ENUM(NSInteger, SecureAWSS3TransferManagerErrorType) {
     SecureAWSS3TransferManagerErrorNoInternetConnection
 };
 
-@class SecureAWSS3TransferManagerUploadRequest;
-@class SecureAWSS3TransferManagerUploadOutput;
-@class SecureAWSS3TransferManagerDownloadRequest;
-@class SecureAWSS3TransferManagerDownloadOutput;
 
 /**
  Utility for managing secure transfers to Amazon S3. SecureAWSS3TransferManager provides a simple API for uploading and downloading content to Amazon S3.
@@ -66,7 +62,7 @@ typedef NS_ENUM(NSInteger, SecureAWSS3TransferManagerErrorType) {
  *Objective-C*
  
  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    AWSStaticCredentialsProvider *credentialsProvider = [[AWSStaticCredentialsProvider alloc] initWithAccessKey:S3AccessKey secretKey:S3SecretKey];
+    AWSStaticCredentialsProvider *credentialsProvider = [[AWSStaticCredentialsProvider alloc] initWithAccessKey:YourS3AccessKey secretKey:YourS3SecretKey];
  
     AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSWest2 credentialsProvider:credentialsProvider];
  

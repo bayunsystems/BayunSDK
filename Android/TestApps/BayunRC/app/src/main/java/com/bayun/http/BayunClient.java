@@ -6,20 +6,25 @@ package com.bayun.http;
 
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.StrictMode;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.bayun.app.BayunApplication;
+import com.bayun.database.ActivityDBOperations;
+import com.bayun.http.model.ErrorInfo;
 import com.bayun.http.model.LoginInfo;
 import com.bayun.screens.RegisterActivity;
 import com.bayun.util.Constants;
 import com.bayun.util.Utility;
 import com.squareup.okhttp.OkHttpClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,23 +53,39 @@ class BayunClient extends OkClient {
         StrictMode.ThreadPolicy policy =
                 new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        if (!verifyAccessToken()) {
-            if (Utility.isNetworkAvailable()) {
-                Boolean authTokenRefreshed = getRefreshedAuthToken();
-                if (authTokenRefreshed) {
-                    return execute(request);
+        Request newReq = new Request(request.getMethod(), request.getUrl(), headers, request.getBody());
+        response = super.execute(newReq);
+        if (response.getStatus() == 401) {
+            try {
+                StringBuilder sb = new StringBuilder();
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getBody().in()));
+                    String line;
+                    try {
+                        while ((line = reader.readLine()) != null) {
+                            sb.append(line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }
-        } else {
-            Request newReq = new Request(request.getMethod(), request.getUrl(), headers, request.getBody());
-            response = super.execute(newReq);
-            if (response.getStatus() == 401) {
-                if (Utility.isNetworkAvailable()) {
+
+                JSONObject jsonObject = new JSONObject(sb.toString());
+                String result = jsonObject.getString("errorCode");
+                //Log.v("error here", result);
+                if (result.equalsIgnoreCase("TokenInvalid")) {
+                    // Log.v("here", "invalid and logout");
+                    logout();
+                } else if (result.equalsIgnoreCase("TokenExpired")) {
                     Boolean authTokenRefreshed = getRefreshedAuthToken();
                     if (authTokenRefreshed) {
                         return execute(request);
                     }
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
         return response;
@@ -72,6 +93,7 @@ class BayunClient extends OkClient {
 
     /**
      * Returns new auth token.
+     *
      * @return True/False.
      */
     private boolean getRefreshedAuthToken() {
@@ -83,10 +105,9 @@ class BayunClient extends OkClient {
                 try {
                     LoginInfo loginInfo = api.getAccessToken(Constants.SHARED_PREFERENCES_REFRESH_TOKEN, token);
                     if (loginInfo != null) {
-                        SharedPreferences.Editor editor = BayunApplication.settings.edit();
-                        editor.putString(Constants.SHARED_PREFERENCES_ACCESS_TOKEN, loginInfo.getAccess_token());
-                        editor.putString(Constants.SHARED_PREFERENCES_REFRESH_TOKEN, loginInfo.getRefresh_token());
-                        editor.putLong(Constants.SHARED_PREFERENCES_ACCESS_TOKEN_EXPIRATION_TIME, loginInfo.getExpires_in());
+                        BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_ACCESS_TOKEN, loginInfo.getAccess_token());
+                        BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_REFRESH_TOKEN, loginInfo.getRefresh_token());
+                        BayunApplication.tinyDB.putLong(Constants.SHARED_PREFERENCES_ACCESS_TOKEN_EXPIRATION_TIME, loginInfo.getExpires_in());
                         Date currentDate = new Date();
                         long t = currentDate.getTime();
                         Date tokenExpireDate = new Date(t + loginInfo.getExpires_in() * 1000);
@@ -94,42 +115,37 @@ class BayunClient extends OkClient {
                         return true;
                     }
                 } catch (RetrofitError error) {
-                    BayunApplication.clearDB();
-                    Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    BayunApplication.appContext.startActivity(intent);
+                    if (error != null && error.getResponse() != null) {
+                        {
+                            if (error.getResponse().getStatus() == 400) {
+                                ErrorInfo body = (ErrorInfo) error.getBodyAs(ErrorInfo.class);
+                                if (body.getError_description().equalsIgnoreCase("Token not found")) {
+                                    Log.v("here", "not found and logout");
+                                    logout();
+                                }
+                            } else {
+                                Utility.displayToast(Constants.ERROR_SOMETHING_WENT_WRONG, Toast.LENGTH_SHORT);
+                            }
+                        }
+                    }
+
                 }
             } else {
-                BayunApplication.clearDB();
-                Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                BayunApplication.appContext.startActivity(intent);
+                logout();
             }
         }
         return false;
     }
 
     /**
-     * Verifies access token
-     * @return True/False.
+     * Clear tiny DB and logout application.
      */
-    private Boolean verifyAccessToken() {
-        Boolean isTokenValid;
-        String date = BayunApplication.settings.getString(Constants.SHARED_PREFERENCES_TOKEN_EXPIRES, Constants.EMPTY_STRING);
-        Date currentDate = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy");
-        Date expireDate = null;
-        try {
-            expireDate = formatter.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        if (currentDate.after(expireDate)) {
-            isTokenValid = false;
-        } else {
-            isTokenValid = true;
-        }
-        return isTokenValid;
+    private void logout() {
+        BayunApplication.tinyDB.clear();
+        BayunApplication.bayunCore.deauthenticate();
+        ActivityDBOperations.deleteAll();
+        Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        BayunApplication.appContext.startActivity(intent);
     }
-
 }

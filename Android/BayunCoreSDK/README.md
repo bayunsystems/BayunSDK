@@ -1,1 +1,1 @@
-##Bayun Core SDK for Amdroid
+##Bayun Core SDK for Android

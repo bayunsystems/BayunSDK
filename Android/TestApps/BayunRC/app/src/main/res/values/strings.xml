@@ -5,6 +5,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    // App Id
+    <string name="app_id">YOUR APP ID</string>
+
     / list view file activity values
     <string name="more_options">More</string>
 
@@ -24,6 +27,5 @@
 
     <string name="send">Send</string>
     <string name="message_placeholder_text">Your Message...</string>
-
 
 </resources>

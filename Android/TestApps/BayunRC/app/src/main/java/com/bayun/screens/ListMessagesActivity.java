@@ -108,12 +108,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
                     Intent intent = new Intent(ListMessagesActivity.this, ListExtensionActivity.class);
                     startActivity(intent);
                 } else {
-                    Intent intent = new Intent(ListMessagesActivity.this, RegisterActivity.class);
-                    startActivity(intent);
-                    finish();
-                    BayunApplication.tinyDB.clear();
-                    activityDBOperations.deleteAll();
-                    BayunApplication.bayunCore.logoutBayun();
+                    logout();
                 }
 
             }
@@ -156,7 +151,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
     /**
      * Gets Message using last modified date.
      *
-     * @param lastMessageDate
+     * @param lastMessageDate last message time stamp.
      */
     private void getMessage(String lastMessageDate) {
         if (Utility.isNetworkAvailable()) {
@@ -189,11 +184,36 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
         return lastModifiedDate;
     }
 
+    private void logout() {
+        BayunApplication.tinyDB.clear();
+        activityDBOperations.deleteAll();
+        BayunApplication.bayunCore.deauthenticate();
+        Intent intent = new Intent(ListMessagesActivity.this, RegisterActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    public void onClickCalled(int position) {
+        if (Utility.isNetworkAvailable()) {
+            Intent intent = new Intent(ListMessagesActivity.this, ConversationViewActivity.class);
+            BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER, ListMessagesActivity.conversationInfoArrayList.get(position).getExtensionNumber());
+            intent.putExtra(Constants.MESSAGE_NAME, ListMessagesActivity.conversationInfoArrayList.get(position).getName());
+            startActivityForResult(intent, 1);
+        } else {
+            Utility.messageAlertForCertainDuration(ListMessagesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
+        }
+
+    }
+
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_ACTIVITY).equalsIgnoreCase(Constants.SHARED_PREFERENCES_ACTIVITY_STATUS)) {
-            getMessage(getLastModifiedTime());
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                getMessage(getLastModifiedTime());
+            }
+
         }
     }
 }

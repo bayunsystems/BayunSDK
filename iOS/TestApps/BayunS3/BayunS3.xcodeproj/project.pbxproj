@@ -14,6 +14,9 @@
 		1E648FB51D252A3200A53D85 /* SVRadialGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E648FB01D252A3200A53D85 /* SVRadialGradientLayer.m */; };
 		1E6BBAE41D2146BD0025AE2D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1E6BBAE31D2146BD0025AE2D /* Images.xcassets */; };
 		1E7176DB1D23C50F0015AD53 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 1E7176DA1D23C50E0015AD53 /* Podfile */; };
+		1E83AE181D41FBD200469E3C /* SecureAWSS3Service.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E83AE131D41FBD200469E3C /* SecureAWSS3Service.m */; };
+		1E83AE191D41FBD200469E3C /* SecureAWSS3TransferManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E83AE151D41FBD200469E3C /* SecureAWSS3TransferManager.m */; };
+		1E83AE1A1D41FBD200469E3C /* SecureAWSS3TransferUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E83AE171D41FBD200469E3C /* SecureAWSS3TransferUtility.m */; };
 		1EF100321D22616F00952D33 /* ALAlertBanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EF100221D22616F00952D33 /* ALAlertBanner.m */; };
 		1EF100331D22616F00952D33 /* ALAlertBannerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EF100241D22616F00952D33 /* ALAlertBannerManager.m */; };
 		1EF100341D22616F00952D33 /* bannerAlert.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EF100261D22616F00952D33 /* bannerAlert.png */; };
@@ -46,8 +49,6 @@
 		1EF3F3E91D213923009D0B72 /* fileImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EF3F3C01D213923009D0B72 /* fileImage@2x.png */; };
 		1EF3F3EA1D213923009D0B72 /* register_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EF3F3C11D213923009D0B72 /* register_button.png */; };
 		1EF3F3EB1D213923009D0B72 /* splashScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EF3F3C21D213923009D0B72 /* splashScreen.png */; };
-		1EF3F3EC1D213923009D0B72 /* SecureAWSS3Service.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EF3F3C51D213923009D0B72 /* SecureAWSS3Service.m */; };
-		1EF3F3ED1D213923009D0B72 /* SecureAWSS3TransferManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EF3F3C71D213923009D0B72 /* SecureAWSS3TransferManager.m */; };
 		1EF3F3EE1D213923009D0B72 /* CreateTextFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EF3F3CA1D213923009D0B72 /* CreateTextFileViewController.m */; };
 		1EF3F3EF1D213923009D0B72 /* ListFilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EF3F3CC1D213923009D0B72 /* ListFilesViewController.m */; };
 		1EF3F3F01D213923009D0B72 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EF3F3CE1D213923009D0B72 /* LoginViewController.m */; };
@@ -97,6 +98,12 @@
 		1E648FB01D252A3200A53D85 /* SVRadialGradientLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVRadialGradientLayer.m; sourceTree = "<group>"; };
 		1E6BBAE31D2146BD0025AE2D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		1E7176DA1D23C50E0015AD53 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		1E83AE121D41FBD200469E3C /* SecureAWSS3Service.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureAWSS3Service.h; sourceTree = "<group>"; };
+		1E83AE131D41FBD200469E3C /* SecureAWSS3Service.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureAWSS3Service.m; sourceTree = "<group>"; };
+		1E83AE141D41FBD200469E3C /* SecureAWSS3TransferManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureAWSS3TransferManager.h; sourceTree = "<group>"; };
+		1E83AE151D41FBD200469E3C /* SecureAWSS3TransferManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureAWSS3TransferManager.m; sourceTree = "<group>"; };
+		1E83AE161D41FBD200469E3C /* SecureAWSS3TransferUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureAWSS3TransferUtility.h; sourceTree = "<group>"; };
+		1E83AE171D41FBD200469E3C /* SecureAWSS3TransferUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureAWSS3TransferUtility.m; sourceTree = "<group>"; };
 		1EF100201D22616F00952D33 /* ALAlertBanner+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALAlertBanner+Private.h"; sourceTree = "<group>"; };
 		1EF100211D22616F00952D33 /* ALAlertBanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALAlertBanner.h; sourceTree = "<group>"; };
 		1EF100221D22616F00952D33 /* ALAlertBanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ALAlertBanner.m; sourceTree = "<group>"; };
@@ -144,10 +151,6 @@
 		1EF3F3C01D213923009D0B72 /* fileImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fileImage@2x.png"; sourceTree = "<group>"; };
 		1EF3F3C11D213923009D0B72 /* register_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = register_button.png; sourceTree = "<group>"; };
 		1EF3F3C21D213923009D0B72 /* splashScreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splashScreen.png; sourceTree = "<group>"; };
-		1EF3F3C41D213923009D0B72 /* SecureAWSS3Service.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureAWSS3Service.h; sourceTree = "<group>"; };
-		1EF3F3C51D213923009D0B72 /* SecureAWSS3Service.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureAWSS3Service.m; sourceTree = "<group>"; };
-		1EF3F3C61D213923009D0B72 /* SecureAWSS3TransferManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureAWSS3TransferManager.h; sourceTree = "<group>"; };
-		1EF3F3C71D213923009D0B72 /* SecureAWSS3TransferManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureAWSS3TransferManager.m; sourceTree = "<group>"; };
 		1EF3F3C91D213923009D0B72 /* CreateTextFileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateTextFileViewController.h; sourceTree = "<group>"; };
 		1EF3F3CA1D213923009D0B72 /* CreateTextFileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateTextFileViewController.m; sourceTree = "<group>"; };
 		1EF3F3CB1D213923009D0B72 /* ListFilesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListFilesViewController.h; sourceTree = "<group>"; };
@@ -158,10 +161,11 @@
 		1EF3F3D01D213923009D0B72 /* PasscodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PasscodeViewController.m; sourceTree = "<group>"; };
 		1EF3F3F61D213E69009D0B72 /* BayunS3.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BayunS3.pch; sourceTree = "<group>"; };
 		1EF3F3F71D214229009D0B72 /* BayunS3.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BayunS3.entitlements; sourceTree = "<group>"; };
+		398421ED7A66E64887B3002D /* libPods-BayunS3.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BayunS3.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		1EF3F35D1D213831009D0B72 /* Frameworks */ = {
+		1E5689701E0BA84B00B81720 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -200,6 +204,19 @@
 				1E648FB01D252A3200A53D85 /* SVRadialGradientLayer.m */,
 			);
 			path = SVProgressHUD;
+			sourceTree = "<group>";
+		};
+		1E83AE111D41FBD200469E3C /* SecureAWSS3 */ = {
+			isa = PBXGroup;
+			children = (
+				1E83AE121D41FBD200469E3C /* SecureAWSS3Service.h */,
+				1E83AE131D41FBD200469E3C /* SecureAWSS3Service.m */,
+				1E83AE141D41FBD200469E3C /* SecureAWSS3TransferManager.h */,
+				1E83AE151D41FBD200469E3C /* SecureAWSS3TransferManager.m */,
+				1E83AE161D41FBD200469E3C /* SecureAWSS3TransferUtility.h */,
+				1E83AE171D41FBD200469E3C /* SecureAWSS3TransferUtility.m */,
+			);
+			path = SecureAWSS3;
 			sourceTree = "<group>";
 		};
 		1EF1001E1D22616F00952D33 /* CustomControls */ = {
@@ -263,10 +280,10 @@
 		1EF3F3621D213831009D0B72 /* BayunS3 */ = {
 			isa = PBXGroup;
 			children = (
+				1E83AE111D41FBD200469E3C /* SecureAWSS3 */,
 				1E7176DA1D23C50E0015AD53 /* Podfile */,
 				1EF3F3661D213831009D0B72 /* AppDelegate.h */,
 				1EF3F3671D213831009D0B72 /* AppDelegate.m */,
-				1EF3F3C31D213923009D0B72 /* SecureAWSS3 */,
 				1EF1001E1D22616F00952D33 /* CustomControls */,
 				1EF3F3991D213923009D0B72 /* Categories */,
 				1EF3F39C1D213923009D0B72 /* Classes */,
@@ -351,17 +368,6 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		1EF3F3C31D213923009D0B72 /* SecureAWSS3 */ = {
-			isa = PBXGroup;
-			children = (
-				1EF3F3C41D213923009D0B72 /* SecureAWSS3Service.h */,
-				1EF3F3C51D213923009D0B72 /* SecureAWSS3Service.m */,
-				1EF3F3C61D213923009D0B72 /* SecureAWSS3TransferManager.h */,
-				1EF3F3C71D213923009D0B72 /* SecureAWSS3TransferManager.m */,
-			);
-			path = SecureAWSS3;
-			sourceTree = "<group>";
-		};
 		1EF3F3C81D213923009D0B72 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -380,6 +386,7 @@
 		B62F3725D8B3392DBD827923 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				398421ED7A66E64887B3002D /* libPods-BayunS3.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -392,9 +399,9 @@
 			buildConfigurationList = 1EF3F3901D213831009D0B72 /* Build configuration list for PBXNativeTarget "BayunS3" */;
 			buildPhases = (
 				1EF3F35C1D213831009D0B72 /* Sources */,
-				1EF3F35D1D213831009D0B72 /* Frameworks */,
 				1EF3F35E1D213831009D0B72 /* Resources */,
 				1EF3F3F51D213A11009D0B72 /* Embed Frameworks */,
+				1E5689701E0BA84B00B81720 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -447,13 +454,16 @@
 		1EF3F3581D213831009D0B72 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = bayun;
 				TargetAttributes = {
 					1EF3F35F1D213831009D0B72 = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = RL8J62A42V;
 						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
 							com.apple.iCloud = {
 								enabled = 1;
 							};
@@ -461,10 +471,12 @@
 					};
 					1EF3F37B1D213831009D0B72 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = RL8J62A42V;
 						TestTargetID = 1EF3F35F1D213831009D0B72;
 					};
 					1EF3F3861D213831009D0B72 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = RL8J62A42V;
 						TestTargetID = 1EF3F35F1D213831009D0B72;
 					};
 				};
@@ -542,10 +554,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E83AE1A1D41FBD200469E3C /* SecureAWSS3TransferUtility.m in Sources */,
 				1EF3F3D11D213923009D0B72 /* NSDate+TimeAgoConversion.m in Sources */,
-				1EF3F3EC1D213923009D0B72 /* SecureAWSS3Service.m in Sources */,
 				1EF3F3711D213831009D0B72 /* BayunS3.xcdatamodeld in Sources */,
-				1EF3F3ED1D213923009D0B72 /* SecureAWSS3TransferManager.m in Sources */,
 				1EF3F3DC1D213923009D0B72 /* AWSManager.m in Sources */,
 				1E648FB41D252A3200A53D85 /* SVProgressHUD.m in Sources */,
 				1EF3F3F01D213923009D0B72 /* LoginViewController.m in Sources */,
@@ -554,7 +565,9 @@
 				1EF3F3EF1D213923009D0B72 /* ListFilesViewController.m in Sources */,
 				1E648FB21D252A3200A53D85 /* SVProgressAnimatedView.m in Sources */,
 				1E648FB51D252A3200A53D85 /* SVRadialGradientLayer.m in Sources */,
+				1E83AE181D41FBD200469E3C /* SecureAWSS3Service.m in Sources */,
 				1EF100321D22616F00952D33 /* ALAlertBanner.m in Sources */,
+				1E83AE191D41FBD200469E3C /* SecureAWSS3TransferManager.m in Sources */,
 				1EF100331D22616F00952D33 /* ALAlertBannerManager.m in Sources */,
 				1E648FB11D252A3200A53D85 /* SVIndefiniteAnimatedView.m in Sources */,
 				1EF3F3F11D213923009D0B72 /* PasscodeViewController.m in Sources */,
@@ -629,14 +642,17 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = RL8J62A42V;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -656,7 +672,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "16d6f7bc-d4d9-4acb-99ad-2ef2b34ac83d";
+				PROVISIONING_PROFILE = "6ed6b2ab-f2f0-44ea-9bb7-b4b59a4af48d";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -676,14 +692,17 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = RL8J62A42V;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -696,7 +715,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "16d6f7bc-d4d9-4acb-99ad-2ef2b34ac83d";
+				PROVISIONING_PROFILE = "6ed6b2ab-f2f0-44ea-9bb7-b4b59a4af48d";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -709,8 +728,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = BayunS3/BayunS3.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
+				DEVELOPMENT_TEAM = RL8J62A42V;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -721,7 +741,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bayun.BayunS3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "6ed6b2ab-f2f0-44ea-9bb7-b4b59a4af48d";
+				PROVISIONING_PROFILE_SPECIFIER = BayunS3;
 			};
 			name = Debug;
 		};
@@ -731,8 +752,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = BayunS3/BayunS3.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
+				DEVELOPMENT_TEAM = RL8J62A42V;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -743,7 +765,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bayun.BayunS3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "6ed6b2ab-f2f0-44ea-9bb7-b4b59a4af48d";
+				PROVISIONING_PROFILE_SPECIFIER = BayunS3;
 			};
 			name = Release;
 		};

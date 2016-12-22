@@ -3,7 +3,7 @@
 //  
 //
 //  Created by Preeti-Gaur on 12/10/15.
-//
+//  Copyright © 2016 Bayun Systems, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -21,8 +21,8 @@ typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
     SecureAWSS3ServiceErrorInvalidParameters,
     SecureAWSS3ServiceErrorAccessDenied,
     SecureAWSS3ServiceErrorUserInactive,
-    SecureAWSS3ServiceErrorEncryptionFailed,
-    SecureAWSS3ServiceErrorDecryptionFailed,
+    SecureAWSS3ServiceErrorLockingFailed,
+    SecureAWSS3ServiceErrorUnlockingFailed,
     SecureAWSS3ServiceErrorInternetConnection,
     SecureAWSS3ServiceErrorSomethingWentWrong,
     SecureAWSS3ServiceErrorNoInternetConnection
@@ -40,6 +40,7 @@ typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
  */
 @property (nonatomic, strong, readonly) AWSServiceConfiguration *configuration;
 
+
 /**
  Returns the singleton service client. If the singleton object does not exist, the SDK instantiates the default service client with `defaultServiceConfiguration` from `[AWSServiceManager defaultServiceManager]`. The reference to this object is maintained by the SDK, and you do not need to retain it manually.
  
@@ -49,7 +50,7 @@ typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
  
  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
  
- AWSStaticCredentialsProvider *credentialsProvider = [[AWSStaticCredentialsProvider alloc] initWithAccessKey:kS3AccessKey secretKey:kS3SecretKey];
+ AWSStaticCredentialsProvider *credentialsProvider = [[AWSStaticCredentialsProvider alloc] initWithAccessKey:YourS3AccessKey secretKey:YourS3SecretKey];
  
  AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSWest2 credentialsProvider:credentialsProvider];
  [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
@@ -138,7 +139,7 @@ typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
 + (void)removeS3ForKey:(NSString *)key;
 
 /**
- Retrieves and decrypts objects from Amazon S3.
+ Retrieves and unlocks objects from Amazon S3.
  
  @param request A container for the necessary parameters to execute the GetObject service method.
  
@@ -151,7 +152,7 @@ typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
 
 
 /**
- Adds an object to a bucket after encryption.
+ Adds an object to a bucket after locking.
  
  @param request A container for the necessary parameters to execute the PutObject service method.
  

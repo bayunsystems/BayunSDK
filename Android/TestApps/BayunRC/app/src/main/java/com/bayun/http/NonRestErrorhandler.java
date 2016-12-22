@@ -25,9 +25,9 @@ class NonRestErrorhandler implements retrofit.ErrorHandler {
                 case 403:
                     break;
                 case 401:
-                    if (r.getUrl().contains("oauth/token")) {
+                  /*  if (r.getUrl().contains("oauth/token")) {
                         throw cause;
-                    }
+                    }*/
                     break;
                 case -1001:
                     MAIN_LOOPER_HANDLER.post(new Runnable() {

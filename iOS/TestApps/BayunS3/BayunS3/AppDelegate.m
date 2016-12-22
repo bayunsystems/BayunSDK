@@ -43,9 +43,7 @@
         UINavigationController *navigationController = (UINavigationController*) self.window.rootViewController;
         [navigationController pushViewController:[storyboard instantiateViewControllerWithIdentifier:@"ListFilesViewController"] animated:NO];
     } else {
-        UINavigationController *navigationController = (UINavigationController*) self.window.rootViewController;
-        [navigationController pushViewController:[storyboard instantiateViewControllerWithIdentifier:@"LoginViewController"] animated:NO];
-        [Utilities  clearKeychainAndUserDefaults];
+        [self showLoginScreen];
     }
     
     NSDictionary *textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil];
@@ -59,8 +57,20 @@
     AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSWest2 credentialsProvider:credentialsProvider];
     [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
     [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+    
     return YES;
 }
+
+- (void)showLoginScreen {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UINavigationController *navigationController = (UINavigationController*) self.window.rootViewController;
+    [navigationController pushViewController:[storyboard instantiateViewControllerWithIdentifier:@"LoginViewController"] animated:NO];
+    [Utilities  clearKeychainAndUserDefaults];
+    [[BayunCore sharedInstance] deauthenticate];
+    
+}
+
+
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

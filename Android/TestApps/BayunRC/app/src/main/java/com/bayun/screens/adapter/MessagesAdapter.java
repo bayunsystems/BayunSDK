@@ -1,7 +1,6 @@
 package com.bayun.screens.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 
 import com.bayun.R;
 import com.bayun.app.BayunApplication;
-import com.bayun.screens.ConversationViewActivity;
 import com.bayun.screens.ListMessagesActivity;
 import com.bayun.util.Constants;
 
@@ -41,11 +39,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
         // list item on click event
         public void onClick(final View view) {
-            Intent intent = new Intent(context, ConversationViewActivity.class);
-            BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER, ListMessagesActivity.conversationInfoArrayList.get(getPosition()).getExtensionNumber());
-            intent.putExtra(Constants.MESSAGE_NAME, ListMessagesActivity.conversationInfoArrayList.get(getPosition()).getName());
-            context.startActivity(intent);
-
+            ((ListMessagesActivity) context).onClickCalled(getPosition());
         }
 
     }

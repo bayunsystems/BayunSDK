@@ -24,28 +24,28 @@ import com.bayun.http.model.CallerInfo;
 import com.bayun.http.model.Extension;
 import com.bayun.screens.adapter.ConversationViewAdapter;
 import com.bayun.util.Constants;
-import com.bayun.util.RCCryptManager;
 import com.bayun.util.Utility;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class ConversationViewActivity extends AbstractActivity {
+
     private RecyclerView recyclerView;
     private RecyclerView.Adapter conversationAdapter;
-    private TextView emptyView, senderName;
+    private TextView emptyView;
     private EditText messageEditText;
     private Button sendButton;
     private ActivityDBOperations activityDBOperations;
     private Handler.Callback callback, messageCallback;
     public static ArrayList<MessageInfo> messageInfoArrayList = new ArrayList<>();
-    private String messageId, extensionNumber, name;
+    private String messageId, extensionNumber;
     private Extension extension;
-    private Timer timer;
+    private static Handler handler = new Handler();
+    int flag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +97,9 @@ public class ConversationViewActivity extends AbstractActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+
         getConversationList(messageId);
+
     }
 
     /**
@@ -105,7 +107,7 @@ public class ConversationViewActivity extends AbstractActivity {
      */
     private void setUpView() {
         progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
-        senderName = (TextView) findViewById(R.id.sender_name);
+        TextView senderName = (TextView) findViewById(R.id.sender_name);
         sendButton = (Button) findViewById(R.id.send);
         recyclerView = (RecyclerView) findViewById(R.id.list_files_recycler_view);
         messageEditText = (EditText) findViewById(R.id.editText1);
@@ -117,13 +119,15 @@ public class ConversationViewActivity extends AbstractActivity {
         conversationAdapter = new ConversationViewAdapter(ConversationViewActivity.this);
         recyclerView.setAdapter(conversationAdapter);
         activityDBOperations = new ActivityDBOperations(ConversationViewActivity.this);
-        timer = new Timer();
-        timer.schedule(new RefreshView(), 0, 10000);
         Intent intent = getIntent();
         extensionNumber = BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER);
-        name = intent.getExtras().getString(Constants.MESSAGE_NAME, Constants.EMPTY_STRING);
+        String name = intent.getExtras().getString(Constants.MESSAGE_NAME, Constants.EMPTY_STRING);
         messageId = activityDBOperations.getConversationId(extensionNumber);
         senderName.setText(name);
+        if (Utility.isNetworkAvailable()) {
+            handler.post(runnable);
+        }
+
     }
 
     /**
@@ -147,7 +151,7 @@ public class ConversationViewActivity extends AbstractActivity {
         if (Utility.isNetworkAvailable()) {
             RingCentralAPIManager.getInstance(BayunApplication.appContext).getMessageList(lastMessageDate, callback);
         } else {
-            Utility.messageAlertForCertainDuration(ConversationViewActivity.this, Constants.ERROR_INTERNET_OFFLINE);
+            Utility.displayToast(Constants.ERROR_INTERNET_OFFLINE, Toast.LENGTH_SHORT);
         }
     }
 
@@ -157,7 +161,7 @@ public class ConversationViewActivity extends AbstractActivity {
      * @param view back button view.
      */
     public void backButtonImageClick(View view) {
-        timer.cancel();
+        stopTimer();
         BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_ACTIVITY, Constants.SHARED_PREFERENCES_ACTIVITY_STATUS);
         finish();
     }
@@ -165,21 +169,21 @@ public class ConversationViewActivity extends AbstractActivity {
     /**
      * Handles User Send Button Click.
      *
-     * @param view
+     * @param view send button view.
      */
     public void sendClick(View view) {
         String message = messageEditText.getText().toString();
         if (message.equalsIgnoreCase(Constants.EMPTY_STRING)) {
-            Utility.displayToast(Constants.FILE_EMPTY, Toast.LENGTH_SHORT);
+            //Utility.displayToast(Constants.FILE_EMPTY, Toast.LENGTH_SHORT);
         } else {
             String encryptedText = BayunApplication.rcCryptManager.encryptText(message);
             if (encryptedText.isEmpty()) {
                 Utility.displayToast("Message could not be sent.", Toast.LENGTH_SHORT);
             } else {
+                flag = 1;
                 message(encryptedText);
                 sendNewMessage();
             }
-
             Utility.hideKeyboard(view);
         }
     }
@@ -191,6 +195,8 @@ public class ConversationViewActivity extends AbstractActivity {
         if (Utility.isNetworkAvailable()) {
             if (!isFinishing())
                 RingCentralAPIManager.getInstance(BayunApplication.appContext).sendMessage(extension, messageCallback);
+        } else {
+            Utility.displayToast(Constants.ERROR_INTERNET_OFFLINE, Toast.LENGTH_SHORT);
         }
     }
 
@@ -253,15 +259,44 @@ public class ConversationViewActivity extends AbstractActivity {
 
     private class RefreshView extends TimerTask {
         public void run() {
-            getMessage(getLastModifiedTime());
+            if (Utility.isNetworkAvailable()) {
+                getMessage(getLastModifiedTime());
+            }
         }
     }
 
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (Utility.isNetworkAvailable()) {
+                getMessage(getLastModifiedTime());
+            }
+            handler.postDelayed(this, 10000);
+        }
+    };
+
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        timer.cancel();
-        BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_ACTIVITY, Constants.SHARED_PREFERENCES_ACTIVITY_STATUS);
+        stopTimer();
+        Intent intent = new Intent();
+        if (flag == 1) {
+            setResult(RESULT_OK, intent);
+        } else {
+            setResult(RESULT_CANCELED, intent);
+        }
+
+
         finish();
+    }
+
+    public void stopTimer() {
+        if (handler != null)
+            handler.removeCallbacks(runnable);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopTimer();
     }
 }

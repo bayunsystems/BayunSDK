@@ -29,7 +29,7 @@ typedef NS_ENUM( NSInteger, BayunEmployeeStatus) {
 
 /**
  Provides methods to perform encryption and decryption of texts, files, NSData.
- It also provides methods to Authenticate with Bayun Key Management Server, Validate passcode
+ It also provides methods to Authenticate with Bayun Lockbox Management Server, Validate passcode
  and Logout.
  */
 @interface BayunCore : NSObject
@@ -55,8 +55,8 @@ typedef NS_ENUM( NSInteger, BayunEmployeeStatus) {
 
 
 /*!
- Authenticate user with Key Management Server.
- @param credentials NSDictionary mapping companyName, employeeId, password, appId, appName.
+ Authenticate user with Lockbox Management Server.
+ @param credentials NSDictionary mapping companyName, companyEmployeeId, password, appId.
  @param passcode Optional block if passcode is enabled. Provide custom UI block to take
  user passcode and call validatePasscode method to validate the user passcode.
  If nil, default Bayun AlertView is displayed to take user passcode.
@@ -71,7 +71,7 @@ typedef NS_ENUM( NSInteger, BayunEmployeeStatus) {
                             failure:(void (^)(BayunError))failure;
 
 /*!
- Validates user passcode with Key Management Server.
+ Validates user passcode with Lockbox Management Server.
  @param passcode User passcode
  @param success Success block to be executed after passcode is successfully verified.
  @param failure Failure block to be executed if set passcode fails, returns BayunError.
@@ -82,87 +82,104 @@ typedef NS_ENUM( NSInteger, BayunEmployeeStatus) {
                  success:(void (^)(void))success
                  failure:(void (^)(BayunError))failure;
 
+/*!
+ Updates user password on Lockbox Management Server.
+ @param currentPassword User Current Password
+ @param newPassword User New Password
+ @param success Success block to be executed after password is successfully updated.
+ @param failure Failure block to be executed if update password fails, returns BayunError.
+ 
+ @see BayunError
+ */
+- (void)changePassword:(NSString*)currentPassword
+           newPassword:(NSString*) newPassword
+               success:(void (^)(void))success
+               failure:(void (^)(BayunError))failure;
+
 /**
  Returns BOOL value for employee active state.
  */
 - (BOOL)isEmployeeActive;
 
 /*!
- Encrypts file. The file at the given file path is overwritten with the encrypted file.
- @param filePath Path of the file to be encrypted.
- @param success Success block to be executed after successful file encryption.
- @param failure Failure block to be executed if encryption fails, returns BayunError.
+ Locks file. The file at the given file path is overwritten with the locked file.
+ @param filePath Path of the file to be locked.
+ @param success Success block to be executed after file is successfully locked.
+ @param failure Failure block to be executed if locking fails, returns BayunError.
  
  @see BayunError
  */
-- (void)encryptFileAtPath:(NSString*)filePath
+- (void)lockFile:(NSURL*)fileURL
                   success:(void (^)(void))success
                   failure:(void (^)(BayunError))failure;
 
-/*!
- Decrypts file. The file at the given file path is overwritten with the decrypted file.
- @param filePath Path of the file to be decrypted.
- @param success Success block to be executed after successful file decryption.
- @param failure Failure block to be executed if decryption fails, returns BayunError.
- 
- @see BayunError
- */
-- (void)decryptFileAtPath:(NSString*)filePath
-                  success:(void (^)(void))success
-                  failure:(void (^)(BayunError))failure;
 
 /*!
- Encrypts text.
- @param text Text to be encrypted.
- @param success Success block to be executed after successful text encryption, returns encrypted text.
- @param failure Failure block to be executed if encryption fails, returns BayunError.
+ Locks file. The file at the given file path is overwritten with the unlocked file.
+ @param filePath Path of the file to be unlocked.
+ @param success Success block to be executed after file is successfully unlocked.
+ @param failure Failure block to be executed if unlocking fails, returns BayunError.
  
  @see BayunError
  */
-- (void)encryptText:(NSString*)text
+- (void)unlockFile:(NSURL*)fileURL
+            success:(void (^)(void))success
+            failure:(void (^)(BayunError))failure;
+
+
+/*!
+ Locks text.
+ @param text Text to be locked.
+ @param success Success block to be executed after text is successfully locked, returns locked text.
+ @param failure Failure block to be executed if locking fails, returns BayunError.
+ 
+ @see BayunError
+ */
+- (void)lockText:(NSString*)text
             success:(void (^)(NSString*))success
             failure:(void (^)(BayunError))failure;
 
 /*!
- Decrypts text
- @param text Text to be decrypted.
- @param success Success block to be executed after successful text decryption, returns decrypted text.
- @param failure Failure block to be executed if decryption fails, returns BayunError.
+ Locks text
+ @param text Text to be unlocked.
+ @param success Success block to be executed after text is successfully unlocked, returns unlocked text.
+ @param failure Failure block to be executed if unlocking fails, returns BayunError.
  
  @see BayunError
  */
-- (void)decryptText:(NSString*)text
+- (void)unlockText:(NSString*)text
             success:(void (^)(NSString*))success
             failure:(void (^)(BayunError))failure;
 
+
 /*!
- Encrypts NSData.
- @param data NSdata to be encrypted.
- @param success Success block to be executed after successful data encryption, returns encrypted data.
- @param failure Failure block to be executed if encryption fails, returns BayunError.
+ Locks NSData.
+ @param data NSData to be locked.
+ @param success Success block to be executed after data is successfully locked, returns locked data.
+ @param failure Failure block to be executed if locking fails, returns BayunError.
  
  @see BayunError
  */
-- (void)encryptData:(NSData*)data
+- (void)lockData:(NSData*)data
             success:(void (^)(NSData*))success
             failure:(void (^)(BayunError))failure;
 
 /*!
- Decrypts NSData.
- @param data NSdata to be decrypted.
- @param success Success block to be executed after successful data decryption, returns decrypted data.
- @param failure Failure block to be executed if decryption fails, returns BayunError.
+ Locks NSData.
+ @param data NSData to be unlocked.
+ @param success Success block to be executed after data is successfully unlocked, returns unlocked data.
+ @param failure Failure block to be executed if unlocking fails, returns BayunError.
  
  @see BayunError
  */
-- (void)decryptData:(NSData*)data
+- (void)unlockData:(NSData*)data
             success:(void (^)(NSData*))success
             failure:(void (^)(BayunError))failure;
 
 /*!
  Logs out user and stops background Bayun services.
  */
-- (void)logoutBayun;
+- (void)deauthenticate;
 
 
 @end

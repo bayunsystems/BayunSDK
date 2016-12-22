@@ -22,6 +22,7 @@ import java.util.Date;
 /**
  * Created by Gagan on 01/07/2015.
  */
+
 public class ActivityDBOperations {
 
     final private SQLiteOpenHelper dbHelper;
@@ -42,23 +43,29 @@ public class ActivityDBOperations {
                 com.bayun.http.model.MessageInfo item = records.get(i);
                 SenderDetail from = item.getFrom();
                 ArrayList<ReceiverDetail> to = item.getTo();
-                Conversation conversation = item.getConversation();
-                insert.bindString(1, item.getId().toString());
-                insert.bindString(2, item.getType());
-                insert.bindString(3, item.getDirection());
-                insert.bindString(4, from.getExtensionNumber());
-                insert.bindString(5, from.getName());
-                insert.bindString(6, to.get(0).getExtensionNumber());
-                insert.bindString(7, to.get(0).getName());
-                insert.bindString(8, item.getSubject());
-                insert.bindString(9, item.getReadStatus());
-                insert.bindString(10, item.getCreationTime());
-                insert.bindString(11, conversation.getId());
-                insert.execute();
+
+                if (isRecordExist(String.valueOf(item.getId()))) {
+
+                } else {
+                    Conversation conversation = item.getConversation();
+                    insert.bindString(1, item.getId().toString());
+                    insert.bindString(2, item.getType());
+                    insert.bindString(3, item.getDirection());
+                    insert.bindString(4, from.getExtensionNumber());
+                    insert.bindString(5, from.getName());
+                    insert.bindString(6, to.get(0).getExtensionNumber());
+                    insert.bindString(7, to.get(0).getName());
+                    insert.bindString(8, item.getSubject());
+                    insert.bindString(9, item.getReadStatus());
+                    insert.bindString(10, item.getCreationTime());
+                    insert.bindString(11, conversation.getId());
+                    insert.execute();
+                }
+
             }
             database.setTransactionSuccessful();
         } catch (Exception e) {
-		    e.printStackTrace();
+            e.printStackTrace();
         } finally {
             database.endTransaction();
             DatabaseManager.getInstance().closeDatabase();
@@ -89,7 +96,7 @@ public class ActivityDBOperations {
             }
             database.setTransactionSuccessful();
         } catch (Exception e) {
-            e.printStackTrace();   
+            e.printStackTrace();
         } finally {
             database.endTransaction();
             DatabaseManager.getInstance().closeDatabase();
@@ -275,8 +282,21 @@ public class ActivityDBOperations {
         return conversationId;
     }
 
+    // Check message record exist or not.
+    public Boolean isRecordExist(String messageId) {
+        SQLiteDatabase sqldb = DatabaseManager.getInstance().openDatabase();
+        String Query = "Select * from " + Constants.TABLE_MESSAGE_DETAIL + " where " + Constants.ID + " = " + messageId;
+        Cursor cursor = sqldb.rawQuery(Query, null);
+        if (cursor.getCount() <= 0) {
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
     // Delete the data from both conversation and message tables.
-    public void deleteAll() {
+    public static void deleteAll() {
         SQLiteDatabase database = DatabaseManager.getInstance().openDatabase();
         database.delete(Constants.TABLE_CONVERSATION_DETAIL, null, null);
         database.delete(Constants.TABLE_MESSAGE_DETAIL, null, null);

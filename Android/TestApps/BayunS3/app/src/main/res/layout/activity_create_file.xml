@@ -1,0 +1,60 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/activity_create_new_file_navigation_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="44dp"
+        android:background="@color/background"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/activity_create_new_file_back_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:onClick="backButtonImageClick"
+            android:src="@drawable/ic_ab_back_holo_dark_am" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/new_files"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+
+        <TextView
+            android:id="@+id/activity_create_new_file_save_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:onClick="saveClick"
+            android:text="@string/save_file"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/activity_create_new_file_editText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/activity_create_new_file_navigation_bar"
+        android:layout_margin="10dp"
+        android:background="@drawable/rounded_corner_edit_text"
+        android:focusableInTouchMode="true"
+        android:gravity="start"
+        android:hint="@string/file_text_hint"
+        android:padding="5dp"
+        android:textSize="18sp">
+
+        <requestFocus />
+    </EditText>
+
+</RelativeLayout>

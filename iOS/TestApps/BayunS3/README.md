@@ -1,5 +1,5 @@
 ## Instructions for use
-~~~~~
+
 1. Check out the latest code for BayunS3 sample application, along-with Bayun SDK,
 by cloning the top-level BayunSDK repository.
 
@@ -29,11 +29,14 @@ This integrates the Bayun framework into the app.
 7. You will need your AWSS3 access key and secret key. 
    Place the access key and secret key in the AppConfig.h file.
 
-8. Build and Run the project.
+8. You are provided with an appId when your app is registered with Bayun, see [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_ios/before_you_begin.html).  
+    In the AppConfig.h file, replace value of "kBayunAppId" with your Bayun AppId.
 
-9. Enter your company in the Company field, your employee id in Employee field, 
+9. Build and Run the project.
+
+10. Enter your company in the Company field, your employee id in Employee field, 
    and your password in Password field and hit Register button.
 
-10. After authenticating with the Bayun Key Management Server, a bucket with name 'bayun-yourCompanyName' 
+11. After authenticating with the Bayun Key Management Server, a bucket with name 'bayun-yourCompanyName' 
     is created. You should be able to upload and download files from the bucket. 
-~~~~~
+

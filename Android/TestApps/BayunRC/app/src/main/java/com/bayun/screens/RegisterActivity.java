@@ -34,14 +34,14 @@ public class RegisterActivity extends AbstractActivity {
         ringcentralCallback = new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
-
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
                 if (message.what == Constants.CALLBACK_SUCCESS) {
-                    String appId = "com.bayun.BayunRC";
-                    BasicBayunCredentials basicBayunCredentials = new BasicBayunCredentials(appId, "BayunRC", userName.toString(), extension.toString(), password);
-                    BayunApplication.bayunCore.authenticateWithCredentials(RegisterActivity.this, basicBayunCredentials, passcodeCallback, responseCallback);
+                    String appId = getString(R.string.app_id);
+                    BasicBayunCredentials basicBayunCredentials = new BasicBayunCredentials(appId, userName.toString(), extension.toString(), password);
+                    BayunApplication.bayunCore.authenticateWithCredentials(RegisterActivity.this, basicBayunCredentials, null, responseCallback);
+                } else {
+                    if (progressDialog != null && progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
                 }
                 return false;
 
@@ -67,6 +67,10 @@ public class RegisterActivity extends AbstractActivity {
                     Utility.displayToast(Constants.ERROR_MESSAGE_PASSCODE, Toast.LENGTH_SHORT);
                 } else if (response.equalsIgnoreCase(BayunError.ERROR_INVALID_CREDENTIALS)) {
                     Utility.displayToast(Constants.ERROR_MESSAGE_INVALID_CREDENTIALS, Toast.LENGTH_SHORT);
+                } else if (response.equalsIgnoreCase(BayunError.ERROR_AUTHENTICATION_FAILED)) {
+                    Utility.displayToast(Constants.ERROR_AUTHENTICATION_FAILED, Toast.LENGTH_SHORT);
+                } else if (response.equalsIgnoreCase(BayunError.ERROR_APP_NOT_LINKED)) {
+                    Utility.displayToast(Constants.ERROR_APP_NOT_LINKED, Toast.LENGTH_SHORT);
                 }
                 return false;
             }
@@ -88,6 +92,8 @@ public class RegisterActivity extends AbstractActivity {
 
             }
         };
+
+
     }
 
     /**

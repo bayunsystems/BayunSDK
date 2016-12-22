@@ -13,14 +13,14 @@
 @interface CreateTextFileViewController ()<AWSManagerDelegate,UITextFieldDelegate,UITextViewDelegate>
 
 @property (strong , nonatomic) UIBarButtonItem *saveButton;
-@property (strong, nonatomic) NSString *encryptedFilePath;
+@property (strong, nonatomic) NSString *lockedFilePath;
 @property (strong,nonatomic) NSString *userProvidedFileName;
 @property (nonatomic,assign) BOOL autoPop;
 
 @end
 
 /**
- Creates a  new text file and uploads on s3 after encryption.
+ Creates a  new text file and uploads on s3 after locking.
  */
 @implementation CreateTextFileViewController
 
@@ -141,11 +141,11 @@
 - (void)uploadTextFile {
     NSString *text = self.textView.text;
     
-    self.encryptedFilePath= [NSTemporaryDirectory() stringByAppendingPathComponent:
+    self.lockedFilePath= [NSTemporaryDirectory() stringByAppendingPathComponent:
                              [NSString stringWithFormat:@"%@.txt",self.userProvidedFileName]];
     
     NSError *errorWhileWriting = nil;
-    [text writeToFile:self.encryptedFilePath
+    [text writeToFile:self.lockedFilePath
                     atomically:YES
                       encoding:NSUTF8StringEncoding
                          error:&errorWhileWriting];
@@ -153,7 +153,7 @@
     if (!errorWhileWriting) {
         [AWSManager sharedInstance].delegate = self;
         // upload file
-        [[AWSManager sharedInstance] uploadFileFromPath:self.encryptedFilePath];
+        [[AWSManager sharedInstance] uploadFile:[NSURL fileURLWithPath:self.lockedFilePath]];
     } else {
         [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
     }
@@ -168,21 +168,21 @@
 
 
 - (void)s3UploadCompleted {
-    //remove the encrypted file after successful upload
+    //remove the locked file after successful upload
     NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:self.encryptedFilePath error:&error];
+    [[NSFileManager defaultManager] removeItemAtPath:self.lockedFilePath error:&error];
    
-    [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@ saved.",[self.encryptedFilePath lastPathComponent]]];
+    [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@ saved.",[self.lockedFilePath lastPathComponent]]];
     [self.textView setEditable:NO];
     [[NSNotificationCenter defaultCenter] postNotificationName:kNewFileCreated object:nil];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)s3FileTransferFailed:(NSString *)errorMessage {
-    [SVProgressHUD dismiss];
+   // [SVProgressHUD dismiss];
     if (errorMessage) {
         if (errorMessage == kErrorMsgUserInActive) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Permission Denied"
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:kErrorMsgPermissionDenied
                                                                 message:kErrorMsgUserInActive
                                                                delegate:self
                                                       cancelButtonTitle:@"OK"
@@ -192,7 +192,7 @@
             [SVProgressHUD showErrorWithStatus:errorMessage];
         }
     } else {
-        [SVProgressHUD showErrorWithStatus:@"File could not be saved. Please try again."];
+        [SVProgressHUD showErrorWithStatus:kErrorMsgFileNotSaved];
     }
 }
 
@@ -204,7 +204,7 @@
         [self updateTextViewFrame];
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                        message:@"File name already exists."
+                                                        message:kErrorMsgFileNameExists
                                                        delegate:self
                                               cancelButtonTitle:@"OK"
                                               otherButtonTitles:nil];

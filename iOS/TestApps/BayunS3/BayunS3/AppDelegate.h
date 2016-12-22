@@ -15,6 +15,7 @@
 
 @property (nonatomic, assign) BOOL isNetworkReachable;
 
+- (void)showLoginScreen;
 
 @end
 

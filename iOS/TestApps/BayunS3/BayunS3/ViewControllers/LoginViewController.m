@@ -88,11 +88,10 @@
     if (employeeId.length > 0 &&   companyName.length > 0 && password.length > 0) {
         AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication]delegate];
         if (appDelegate.isNetworkReachable) {
-            NSDictionary *postParamsDict = @{@"company" : companyName,
-                                             @"employee" : employeeId,
+            NSDictionary *postParamsDict = @{@"companyName" : companyName,
+                                             @"companyEmployeeId" : employeeId,
                                              @"password" : password,
-                                             @"appId" : [Utilities appId],
-                                             @"appName" : [Utilities appName]};
+                                             @"appId" : [Utilities appId]};
             
             [SVProgressHUD show];
             
@@ -119,6 +118,12 @@
                     [SVProgressHUD showErrorWithStatus:kErrorMsgCouldNotConnectToServer];
                 } else if (errorCode == BayunErrorAppNotLinked) {
                     [SVProgressHUD showErrorWithStatus:kErrorMsgAppNotLinked];
+                } else if (errorCode == BayunErrorInvalidPassword) {
+                    [SVProgressHUD showErrorWithStatus:kErrorMsgIncorrectPassword];
+                } else if (errorCode == BayunErrorAuthenticationFailed) {
+                    [SVProgressHUD showErrorWithStatus:kErrorMsgAuthenticationFailed];
+                } else if (errorCode == BayunErrorInvalidPasscode) {
+                    [SVProgressHUD showErrorWithStatus:kErrorMsgIncorrectPasscode];
                 } else {
                     [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
                 }

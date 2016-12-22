@@ -15,21 +15,24 @@ extern NSString *const kS3BucketName;
 
 extern NSString *const kIsUserLoggedIn;
 extern NSString *const kBucketExists;
-extern NSString *const kPlaceholderTextView;
+extern NSString *const kPlaceholderTextView ;
 extern NSString *const kNewFileCreated;
 
 extern NSString *const kErrorMsgNoTextToSave;
+extern NSString *const kErrorMsgFileNotSaved;
+extern NSString *const kErrorMsgFileNameExists;
 extern NSString *const kErrorMsgInternetConnection;
 extern NSString *const kErrorMsgRequestTimeOut;
 extern NSString *const kErrorMsgCouldNotConnectToServer;
 extern NSString *const kErrorMsgAccessDenied;
+extern NSString *const kErrorMsgPermissionDenied;
 extern NSString *const kErrorMsgSomethingWentWrong;
-extern NSString *const kErrorMsgEncryptionFailed;
-extern NSString *const kErrorMsgDecryptionFailed;
 extern NSString *const kErrorMsgFileDeletionFailed;
 extern NSString *const kErrorMsgIncorrectPasscode;
 extern NSString *const kErrorMsgInvalidCredentials;
 extern NSString *const kErrorMsgUserInActive;
 extern NSString *const kErrorMsgAppNotLinked;
+extern NSString *const kErrorMsgIncorrectPassword;
+extern NSString *const kErrorMsgAuthenticationFailed;
 
 @end

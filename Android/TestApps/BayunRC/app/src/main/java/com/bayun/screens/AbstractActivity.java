@@ -8,6 +8,7 @@ import android.os.Bundle;
 /**
  * Abstract Activity to be extended by all activities to have portrait mode across app
  */
+
 public abstract class AbstractActivity extends Activity {
 
     ProgressDialog progressDialog;

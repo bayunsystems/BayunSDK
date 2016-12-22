@@ -4,6 +4,7 @@ package com.bayun.http.model;
  * Created by gagan on 21/06/16.
  */
 public class Paging {
+
     private int page;
     private int totalPages;
     private int perPage;

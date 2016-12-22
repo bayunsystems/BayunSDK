@@ -12,19 +12,16 @@
 
 @implementation Utilities
 
-+ (NSString*)appId {
-    return @"com.bayun.BayunS3";
-}
-
-+ (NSString*)appName {
-    return @"BayunS3";
-}
-
 + (NSString*)s3BucketName {
     return [[NSUserDefaults standardUserDefaults] valueForKey:kS3BucketName];
 }
 
-+ (id)transformedFileSizeValue:(id)value {
++ (NSString*)appId {
+    return [NSString stringWithFormat:@"%@",kBayunAppId];
+}
+
+
++ (id)getFileSize:(id)value {
     double convertedValue = [value doubleValue];
     int multiplyFactor = 0;
     
@@ -38,7 +35,7 @@
     return [NSString stringWithFormat:@"%4.0f %@",convertedValue, [tokens objectAtIndex:multiplyFactor]];
 }
 
-+ (NSString*) getCurrentTimeStampDateString:(NSDate*) date {
++ (NSString*)getCurrentTimeStampDateString:(NSDate*) date {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.timeZone = [NSTimeZone systemTimeZone];
     [formatter setDateFormat:@"dd-MM-yyyy HH:mm:ss"];
@@ -49,6 +46,9 @@
 
 + (void)clearKeychainAndUserDefaults {
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kIsUserLoggedIn];
+    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kCompanyName];
+    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kS3BucketName];
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kBucketExists];
     [[NSUserDefaults standardUserDefaults]synchronize];
 }
 

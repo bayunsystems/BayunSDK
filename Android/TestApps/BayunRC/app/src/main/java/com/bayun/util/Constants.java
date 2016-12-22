@@ -5,13 +5,12 @@ import retrofit.RestAdapter;
 /**
  * Created by gagan on 01-06-2015.
  */
+
 public class Constants {
 
     public static final retrofit.RestAdapter.LogLevel RETROFIT_LOG_LEVEL = RestAdapter.LogLevel.FULL;
 
-    public static final String APP_NAME = "Bayun";
-    public static final String BASE_URL="https://platform.ringcentral.com";
-    public static final String FILE_EMPTY = "No text to be saved";
+    public static final String APP_NAME = "BayunRC";
     public static final String CREATION_TIME = "creation_time";
     public static final String EMPTY_STRING = "";
     public static final String STRING_NULL = null;
@@ -42,14 +41,17 @@ public class Constants {
     public static final String SHARED_PREFERENCES_ACCOUNT_ID = "account";
     public static final String SHARED_PREFERENCES_EXTENSION_NUMBER = "ext_number";
 
-    public static final String ERROR_MESSAGE_INVALID_CREDENTIALS = "Invalid Credentials";
-    public static final String ERROR_MESSAGE_SESSION_EXPIRE = "Session is expired";
-    public static final String ERROR_MESSAGE_PASSCODE= "Incorrect Passcode.";
+    public static final String ERROR_APP_NOT_LINKED = "Please link this app with your company employee account via Bayun admin-panel first.";
+    public static final String ERROR_AUTHENTICATION_FAILED = "Authentication Failed.";
+    public static final String ERROR_MESSAGE_INVALID_CREDENTIALS = "Invalid Credentials.";
+    public static final String ERROR_MESSAGE_SESSION_EXPIRE = "Session is expired.";
+    public static final String ERROR_MESSAGE_PASSCODE = "Incorrect Passcode.";
     public static final String ERROR_MESSAGE_USER_INACTIVE = "Please contact your Admin to activate your account.";
     public static final String ERROR_INTERNET_OFFLINE = "Internet connection appears to be offline.";
     public static final String ERROR_REQUEST_TIMEOUT = "Sorry, we could not contact the server. Please try again.";
     public static final String ERROR_COULD_NOT_CONNECT_TO_SERVER = "Could not connect to the server. Please try again.";
     public static final String ERROR_UNEXPECTED_HAPPENED = "Something unexpected happened on server.Please try again later.";
+    public static final String ERROR_SOMETHING_WENT_WRONG = "Sorry, Something went wrong.";
     public static final String AUTH_RESPONSE = "BayunAuthResponse";
     public static final String PASSCODE_REQUIRED = "BayunPasscodeRequired";
     public static final String AUTH_SUCCESS = "BayunAuthStatusSuccess";
@@ -60,7 +62,7 @@ public class Constants {
     public static final String TABLE_MESSAGE_DETAIL = "MESSAGE_ACTIVITY";
     public static final String TABLE_CONVERSATION_DETAIL = "CONVERSATION_ACTIVITY";
 
-    private static final String ID = "id";
+    public static final String ID = "id";
     public static final String CONVERSATION_MESSAGE_ID = "conversation_id";
     private static final String MESSAGE_TYPE = "type";
     private static final String MESSAGE_SENDER_EXTENSION = "sender_extension";
@@ -101,6 +103,7 @@ public class Constants {
                     LAST_MESSAGE_NAME + " TEXT, " +
                     MESSAGE_UPDATE_TIME + " DATE, " + MESSAGE_DIRECTION + " TEXT, " + EXTENSION_NUMBER + " TEXT " +
                     ");";
+
 
 }
 

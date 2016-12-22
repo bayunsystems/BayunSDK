@@ -16,11 +16,10 @@ typedef NS_ENUM(NSInteger, alertViewTag) {
 
 @interface Utilities : NSObject
 
-+ (NSString*)appId;
-+ (NSString*)appName;
-+ (NSString*) s3BucketName;
-+ (id)transformedFileSizeValue:(id)value;
-+ (NSString*)getCurrentTimeStampDateString:(NSDate*) date;
++ (NSString*)s3BucketName;
 + (void)clearKeychainAndUserDefaults;
++ (id)getFileSize:(id)value;
++ (NSString*)getCurrentTimeStampDateString:(NSDate*) date;
++ (NSString*)appId;
 
 @end

@@ -6,12 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.screens.ConversationViewActivity;
 import com.bayun.util.Constants;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,7 +20,6 @@ import java.util.TimeZone;
 public class ConversationViewAdapter extends RecyclerView.Adapter<ConversationViewAdapter.ViewHolder> {
 
     private static Context context;
-    private String extensionNumber = "";
 
 
     // Provide a reference to the views for each data item
@@ -39,7 +38,6 @@ public class ConversationViewAdapter extends RecyclerView.Adapter<ConversationVi
     // Provide a suitable constructor (depends on the kind of dataset)
     public ConversationViewAdapter(Context context) {
         ConversationViewAdapter.context = context;
-        extensionNumber = BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER);
     }
 
     // Create new views (invoked by the layout manager)

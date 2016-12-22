@@ -27,7 +27,7 @@
 
 /**
  Implemented to show download progress
- @param progress Download progress
+@param progress Download progress
  */
 - (void)s3DownloadProgress:(float)progress;
 
@@ -93,36 +93,36 @@
 + (instancetype)sharedInstance;
 
 /**
- Uploads a file to S3.
+ Uploads a file to Amazon S3 bucket.
  @param filePath Local Path of the file to be uploaded.
  */
-- (void)uploadFileFromPath:(NSString*)filePath;
+- (void)uploadFile:(NSURL*)uploadingFileURL;
 
 /**
- Downloads a file from S3.
+ Downloads a file from Amazon S3 bucket.
  @param filePath Local Path of the file at which it is downloaded.
  */
-- (void)downloadFileAtPath:(NSString *)filePath ;
+- (void)downloadFileToURL:(NSURL *)downloadingFileURL;
 
 /**
- Downloads all files in S3 Bucket.
+ Downloads all files in Amazon S3 bucket.
  */
 - (void)getS3FileList;
 
 /**
- Creates a bucket on S3.
+ Creates a bucket on Amazon S3.
  @param bucketName Name of bucket to be created
  */
 - (void)createS3BucketWithName:(NSString*)bucketName;
 
 /**
- Checks if the file with given key exists in bucket.
+ Checks if the file with given key exists in Amazon S3 bucket.
  @param key Key of the file.
  */
 - (void)checkFileExistenceForKey:(NSString*) key;
 
 /**
- Deletes a file from S3 bucket
+ Deletes a file from Amazon S3 bucket.
  @param fileName Name of the file to be deleted
  */
 - (void)deleteFileWithName:(NSString *)fileName;

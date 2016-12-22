@@ -8,6 +8,7 @@
 
 
 #import "User.h"
+#import "RCConfig.h"
 #import "NSDate+TimeAgoConversion.h"
 
 
@@ -19,6 +20,40 @@
 + (NSString*) baseURL {
     NSString *path = [[NSBundle mainBundle] pathForResource: @"Info" ofType: @"plist"];
     return [[NSDictionary dictionaryWithContentsOfFile: path] objectForKey: @"RCBaseURL"];
+}
+
+/**
+ * Returns RingCentral Application Key
+ */
++ (NSString*) rcApplicationKey {
+    
+    NSString *applicationKey;
+    #ifdef BAYUN_RC_SANDBOX
+    applicationKey = kApplicationKeySandbox;
+    #endif
+    
+    #ifdef BAYUN_RC_PRODUCTION
+        applicationKey = kApplicationKeyProd;
+    #endif
+    
+    return applicationKey;
+}
+
+/**
+ * Returns RingCentral Secret Key
+ */
++ (NSString*) rcSecretKey {
+    
+    NSString *secretKey;
+    #ifdef BAYUN_RC_SANDBOX
+        secretKey = kApplicationSecretKeySandbox;
+    #endif
+    
+    #ifdef BAYUN_RC_PRODUCTION
+        secretKey = kApplicationSecretKeyProd;
+    #endif
+    
+    return secretKey;
 }
 
 /**
@@ -66,17 +101,10 @@
 }
 
 /**
- Returns App Name
- */
-+ (NSString*)appName {
-   return @"BayunRC";
-}
-
-/**
  Returns AppId
  */
 + (NSString*)appId {
-    return @"com.bayun.BayunRC";
+    return [NSString stringWithFormat:@"%@",kBayunAppId];;
 }
 
 /**
@@ -238,5 +266,8 @@
         return string;
     }
 }
+
+
+
 
 @end

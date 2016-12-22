@@ -5,12 +5,13 @@ import java.util.ArrayList;
 /**
  * Created by Gagan on 6/30/2015.
  */
+
 public class MessageListInfo {
 
     private Paging paging;
     private Navigation navigation;
     private String uri;
-	private ArrayList<MessageInfo> records;
+    private ArrayList<MessageInfo> records;
 
     public Paging getPaging() {
         return paging;

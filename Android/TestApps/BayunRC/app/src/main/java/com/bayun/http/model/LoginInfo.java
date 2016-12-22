@@ -3,6 +3,7 @@ package com.bayun.http.model;
 /**
  * Created by Gagan on 29/06/15.
  */
+
 public class LoginInfo {
 
     private String access_token;
@@ -12,6 +13,7 @@ public class LoginInfo {
     private Integer refresh_token_expires_in;
     private Long expires_in;
     private String owner_id;
+
 
     public String getToken_type() {
         return token_type;

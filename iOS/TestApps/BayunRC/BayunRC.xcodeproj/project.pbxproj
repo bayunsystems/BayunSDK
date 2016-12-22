@@ -8,6 +8,109 @@
 
 /* Begin PBXBuildFile section */
 		1E1926101D1D3232009F07EC /* RCCryptManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E19260F1D1D3232009F07EC /* RCCryptManager.m */; };
+		1E4BF90B1DFEB3F100C57E27 /* BayunRC-Production-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1E4BF90A1DFEB3F100C57E27 /* BayunRC-Production-Info.plist */; };
+		1E5532501DFE7BBF00403284 /* ExtensionsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1701D1BE05A00B669B4 /* ExtensionsListViewController.m */; };
+		1E5532511DFE7BBF00403284 /* RCCryptManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E19260F1D1D3232009F07EC /* RCCryptManager.m */; };
+		1E5532521DFE7BBF00403284 /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1DC1D1BE05A00B669B4 /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m */; };
+		1E5532531DFE7BBF00403284 /* JSQMessagesCollectionViewLayoutAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1DE1D1BE05A00B669B4 /* JSQMessagesCollectionViewLayoutAttributes.m */; };
+		1E5532541DFE7BBF00403284 /* JSQMessagesCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1F81D1BE05A00B669B4 /* JSQMessagesCollectionView.m */; };
+		1E5532551DFE7BBF00403284 /* NSManagedObjectContext+Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1841D1BE05A00B669B4 /* NSManagedObjectContext+Stack.m */; };
+		1E5532561DFE7BBF00403284 /* JSQPhotoMediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1F11D1BE05A00B669B4 /* JSQPhotoMediaItem.m */; };
+		1E5532571DFE7BBF00403284 /* NSDate+TimeAgoConversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1741D1BE05A00B669B4 /* NSDate+TimeAgoConversion.m */; };
+		1E5532581DFE7BBF00403284 /* JSQMessagesLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2061D1BE05A00B669B4 /* JSQMessagesLabel.m */; };
+		1E5532591DFE7BBF00403284 /* NSString+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1BD1D1BE05A00B669B4 /* NSString+JSQMessages.m */; };
+		1E55325A1DFE7BBF00403284 /* JSQMessagesTypingIndicatorFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2101D1BE05A00B669B4 /* JSQMessagesTypingIndicatorFooterView.m */; };
+		1E55325B1DFE7BBF00403284 /* ConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA16B1D1BE05A00B669B4 /* ConversationListViewController.m */; };
+		1E55325C1DFE7BBF00403284 /* NSManagedObject+Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA19B1D1BE05A00B669B4 /* NSManagedObject+Stack.m */; };
+		1E55325D1DFE7BBF00403284 /* UIImage+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1C31D1BE05A00B669B4 /* UIImage+JSQMessages.m */; };
+		1E55325E1DFE7BBF00403284 /* JSQMessagesCollectionViewCellIncoming.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1FC1D1BE05A00B669B4 /* JSQMessagesCollectionViewCellIncoming.m */; };
+		1E55325F1DFE7BBF00403284 /* JSQMessagesToolbarContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA20D1D1BE05A00B669B4 /* JSQMessagesToolbarContentView.m */; };
+		1E5532601DFE7BBF00403284 /* JSQMessagesAvatarImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1EB1D1BE05A00B669B4 /* JSQMessagesAvatarImage.m */; };
+		1E5532611DFE7BBF00403284 /* UIView+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1C51D1BE05A00B669B4 /* UIView+JSQMessages.m */; };
+		1E5532621DFE7BBF00403284 /* CoreDataStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA18C1D1BE05A00B669B4 /* CoreDataStack.m */; };
+		1E5532631DFE7BBF00403284 /* JSQMessagesComposerTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2021D1BE05A00B669B4 /* JSQMessagesComposerTextView.m */; };
+		1E5532641DFE7BBF00403284 /* JSQMessagesInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2041D1BE05A00B669B4 /* JSQMessagesInputToolbar.m */; };
+		1E5532651DFE7BBF00403284 /* JSQMessagesAvatarImageFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1CE1D1BE05A00B669B4 /* JSQMessagesAvatarImageFactory.m */; };
+		1E5532661DFE7BBF00403284 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2151D1BE05A00B669B4 /* SVProgressHUD.m */; };
+		1E5532671DFE7BBF00403284 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1721D1BE05A00B669B4 /* LoginViewController.m */; };
+		1E5532681DFE7BBF00403284 /* CDObjectImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1961D1BE05A00B669B4 /* CDObjectImporter.m */; };
+		1E5532691DFE7BBF00403284 /* JSQMessagesTimestampFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1D41D1BE05A00B669B4 /* JSQMessagesTimestampFormatter.m */; };
+		1E55326A1DFE7BBF00403284 /* JSQMediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1E31D1BE05A00B669B4 /* JSQMediaItem.m */; };
+		1E55326B1DFE7BBF00403284 /* NSPredicate+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1911D1BE05A00B669B4 /* NSPredicate+Helpers.m */; };
+		1E55326C1DFE7BBF00403284 /* NSSortDescriptor+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1931D1BE05A00B669B4 /* NSSortDescriptor+Helpers.m */; };
+		1E55326D1DFE7BBF00403284 /* JSQMessagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1CA1D1BE05A00B669B4 /* JSQMessagesViewController.m */; };
+		1E55326E1DFE7BBF00403284 /* JSQMessagesCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1FA1D1BE05A00B669B4 /* JSQMessagesCollectionViewCell.m */; };
+		1E55326F1DFE7BBF00403284 /* RCUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1641D1BE05A00B669B4 /* RCUtilities.m */; };
+		1E5532701DFE7BBF00403284 /* JSQMessagesMediaPlaceholderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA20B1D1BE05A00B669B4 /* JSQMessagesMediaPlaceholderView.m */; };
+		1E5532711DFE7BBF00403284 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA9C88D1D1BDFF600BCFCB9 /* AppDelegate.m */; };
+		1E5532721DFE7BBF00403284 /* ConversationListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1671D1BE05A00B669B4 /* ConversationListCell.m */; };
+		1E5532731DFE7BBF00403284 /* Sender.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA22F1D1BE05A00B669B4 /* Sender.m */; };
+		1E5532741DFE7BBF00403284 /* JSQLocationMediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1E11D1BE05A00B669B4 /* JSQLocationMediaItem.m */; };
+		1E5532751DFE7BBF00403284 /* BayunRC.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2991D1BE24300B669B4 /* BayunRC.xcdatamodeld */; };
+		1E5532761DFE7BBF00403284 /* NSPersistentStoreCoordinator+Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1881D1BE05A00B669B4 /* NSPersistentStoreCoordinator+Stack.m */; };
+		1E5532771DFE7BBF00403284 /* NSManagedObjectModel+Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1861D1BE05A00B669B4 /* NSManagedObjectModel+Stack.m */; };
+		1E5532781DFE7BBF00403284 /* NSError+Stack.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA18F1D1BE05A00B669B4 /* NSError+Stack.m */; };
+		1E5532791DFE7BBF00403284 /* JSQMessagesKeyboardController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1C81D1BE05A00B669B4 /* JSQMessagesKeyboardController.m */; };
+		1E55327A1DFE7BBF00403284 /* JSQMessagesCellTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1F61D1BE05A00B669B4 /* JSQMessagesCellTextView.m */; };
+		1E55327B1DFE7BBF00403284 /* RCMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1621D1BE05A00B669B4 /* RCMessage.m */; };
+		1E55327C1DFE7BBF00403284 /* RCAPIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA15C1D1BE05A00B669B4 /* RCAPIManager.m */; };
+		1E55327D1DFE7BBF00403284 /* Conversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2291D1BE05A00B669B4 /* Conversation.m */; };
+		1E55327E1DFE7BBF00403284 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2311D1BE05A00B669B4 /* User.m */; };
+		1E55327F1DFE7BBF00403284 /* NSManagedObject+Resource.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1991D1BE05A00B669B4 /* NSManagedObject+Resource.m */; };
+		1E5532801DFE7BBF00403284 /* JSQVideoMediaItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1F31D1BE05A00B669B4 /* JSQVideoMediaItem.m */; };
+		1E5532811DFE7BBF00403284 /* UIDevice+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1C11D1BE05A00B669B4 /* UIDevice+JSQMessages.m */; };
+		1E5532821DFE7BBF00403284 /* RCConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA15F1D1BE05A00B669B4 /* RCConstants.m */; };
+		1E5532831DFE7BBF00403284 /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA16D1D1BE05A00B669B4 /* ConversationViewController.m */; };
+		1E5532841DFE7BBF00403284 /* JSQMessagesBubbleImageFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1D01D1BE05A00B669B4 /* JSQMessagesBubbleImageFactory.m */; };
+		1E5532851DFE7BBF00403284 /* JSQSystemSoundPlayer+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1BB1D1BE05A00B669B4 /* JSQSystemSoundPlayer+JSQMessages.m */; };
+		1E5532861DFE7BBF00403284 /* JSQMessagesCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1DA1D1BE05A00B669B4 /* JSQMessagesCollectionViewFlowLayout.m */; };
+		1E5532871DFE7BBF00403284 /* JSQMessagesCollectionViewCellOutgoing.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1FF1D1BE05A00B669B4 /* JSQMessagesCollectionViewCellOutgoing.m */; };
+		1E5532881DFE7BBF00403284 /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA22B1D1BE05A00B669B4 /* Message.m */; };
+		1E5532891DFE7BBF00403284 /* JSQMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1E51D1BE05A00B669B4 /* JSQMessage.m */; };
+		1E55328A1DFE7BBF00403284 /* JSQMessagesLoadEarlierHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2081D1BE05A00B669B4 /* JSQMessagesLoadEarlierHeaderView.m */; };
+		1E55328B1DFE7BBF00403284 /* NSManagedObjectCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA19D1D1BE05A00B669B4 /* NSManagedObjectCollection.m */; };
+		1E55328C1DFE7BBF00403284 /* JSQMessagesMediaViewBubbleImageMasker.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1D21D1BE05A00B669B4 /* JSQMessagesMediaViewBubbleImageMasker.m */; };
+		1E55328D1DFE7BBF00403284 /* JSQMessagesToolbarButtonFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1D61D1BE05A00B669B4 /* JSQMessagesToolbarButtonFactory.m */; };
+		1E55328E1DFE7BBF00403284 /* UIColor+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1BF1D1BE05A00B669B4 /* UIColor+JSQMessages.m */; };
+		1E55328F1DFE7BBF00403284 /* JSQMessagesBubbleImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA1ED1D1BE05A00B669B4 /* JSQMessagesBubbleImage.m */; };
+		1E5532901DFE7BBF00403284 /* Receiver.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA22D1D1BE05A00B669B4 /* Receiver.m */; };
+		1E5532911DFE7BBF00403284 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA9C88A1D1BDFF600BCFCB9 /* main.m */; };
+		1E5532961DFE7BBF00403284 /* ConversationListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1681D1BE05A00B669B4 /* ConversationListCell.xib */; };
+		1E5532971DFE7BBF00403284 /* rounded_cube_out@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1A61D1BE05A00B669B4 /* rounded_cube_out@2x.png */; };
+		1E5532981DFE7BBF00403284 /* 37x-Checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2181D1BE05A00B669B4 /* 37x-Checkmark.png */; };
+		1E5532991DFE7BBF00403284 /* app_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA21A1D1BE05A00B669B4 /* app_icon.png */; };
+		1E55329A1DFE7BBF00403284 /* JSQMessagesCollectionViewCellIncoming.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1FD1D1BE05A00B669B4 /* JSQMessagesCollectionViewCellIncoming.xib */; };
+		1E55329B1DFE7BBF00403284 /* JSQMessagesCollectionViewCellOutgoing.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2001D1BE05A00B669B4 /* JSQMessagesCollectionViewCellOutgoing.xib */; };
+		1E55329C1DFE7BBF00403284 /* backgroungImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA21D1D1BE05A00B669B4 /* backgroungImage.png */; };
+		1E55329D1DFE7BBF00403284 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EA9C89A1D1BDFF600BCFCB9 /* LaunchScreen.storyboard */; };
+		1E55329E1DFE7BBF00403284 /* register_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2251D1BE05A00B669B4 /* register_button.png */; };
+		1E55329F1DFE7BBF00403284 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2A01D1BE99500B669B4 /* Images.xcassets */; };
+		1E5532A01DFE7BBF00403284 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EA9C8981D1BDFF600BCFCB9 /* Assets.xcassets */; };
+		1E5532A11DFE7BBF00403284 /* rounded_cube_in.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1A31D1BE05A00B669B4 /* rounded_cube_in.png */; };
+		1E5532A21DFE7BBF00403284 /* ExtensionListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA16F1D1BE05A00B669B4 /* ExtensionListViewController.xib */; };
+		1E5532A31DFE7BBF00403284 /* fileImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2221D1BE05A00B669B4 /* fileImage@2x.png */; };
+		1E5532A41DFE7BBF00403284 /* splashScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2261D1BE05A00B669B4 /* splashScreen.png */; };
+		1E5532A51DFE7BBF00403284 /* rounded_cube_out.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1A51D1BE05A00B669B4 /* rounded_cube_out.png */; };
+		1E5532A61DFE7BBF00403284 /* inBound.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2231D1BE05A00B669B4 /* inBound.png */; };
+		1E5532A71DFE7BBF00403284 /* camera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1A21D1BE05A00B669B4 /* camera@2x.png */; };
+		1E5532A81DFE7BBF00403284 /* backgroungImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA21E1D1BE05A00B669B4 /* backgroungImage@2x.png */; };
+		1E5532A91DFE7BBF00403284 /* backarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA21B1D1BE05A00B669B4 /* backarrow.png */; };
+		1E5532AA1DFE7BBF00403284 /* camera.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1A11D1BE05A00B669B4 /* camera.png */; };
+		1E5532AB1DFE7BBF00403284 /* JSQMessagesAssets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1A71D1BE05A00B669B4 /* JSQMessagesAssets.bundle */; };
+		1E5532AC1DFE7BBF00403284 /* button-OFF.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA21F1D1BE05A00B669B4 /* button-OFF.png */; };
+		1E5532AD1DFE7BBF00403284 /* 37x-Checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2191D1BE05A00B669B4 /* 37x-Checkmark@2x.png */; };
+		1E5532AE1DFE7BBF00403284 /* rounded_cube_in@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1A41D1BE05A00B669B4 /* rounded_cube_in@2x.png */; };
+		1E5532AF1DFE7BBF00403284 /* JSQMessagesTypingIndicatorFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2111D1BE05A00B669B4 /* JSQMessagesTypingIndicatorFooterView.xib */; };
+		1E5532B01DFE7BBF00403284 /* JSQMessages.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1A91D1BE05A00B669B4 /* JSQMessages.strings */; };
+		1E5532B11DFE7BBF00403284 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2131D1BE05A00B669B4 /* SVProgressHUD.bundle */; };
+		1E5532B21DFE7BBF00403284 /* fileImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2211D1BE05A00B669B4 /* fileImage.png */; };
+		1E5532B31DFE7BBF00403284 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EA9C8921D1BDFF600BCFCB9 /* Main.storyboard */; };
+		1E5532B41DFE7BBF00403284 /* backgroungImage-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA21C1D1BE05A00B669B4 /* backgroungImage-568h@2x.png */; };
+		1E5532B51DFE7BBF00403284 /* JSQMessagesLoadEarlierHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2091D1BE05A00B669B4 /* JSQMessagesLoadEarlierHeaderView.xib */; };
+		1E5532B61DFE7BBF00403284 /* button-ON.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2201D1BE05A00B669B4 /* button-ON.png */; };
+		1E5532B71DFE7BBF00403284 /* outBound.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2241D1BE05A00B669B4 /* outBound.png */; };
+		1E5532B81DFE7BBF00403284 /* JSQMessagesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA1CB1D1BE05A00B669B4 /* JSQMessagesViewController.xib */; };
+		1E5532B91DFE7BBF00403284 /* JSQMessagesToolbarContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA20E1D1BE05A00B669B4 /* JSQMessagesToolbarContentView.xib */; };
 		1EA9C88B1D1BDFF600BCFCB9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA9C88A1D1BDFF600BCFCB9 /* main.m */; };
 		1EA9C88E1D1BDFF600BCFCB9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA9C88D1D1BDFF600BCFCB9 /* AppDelegate.m */; };
 		1EA9C8941D1BDFF600BCFCB9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EA9C8921D1BDFF600BCFCB9 /* Main.storyboard */; };
@@ -141,19 +244,33 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1E5532BA1DFE7BBF00403284 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1E19260E1D1D3232009F07EC /* RCCryptManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCCryptManager.h; sourceTree = "<group>"; };
 		1E19260F1D1D3232009F07EC /* RCCryptManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCCryptManager.m; sourceTree = "<group>"; };
-		1EA9C8861D1BDFF600BCFCB9 /* BayunRC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BayunRC.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E4BF9021DFEA4B100C57E27 /* BayunRC_Sandbox.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BayunRC_Sandbox.entitlements; sourceTree = "<group>"; };
+		1E4BF9031DFEA4BF00C57E27 /* BayunRC_Production.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BayunRC_Production.entitlements; sourceTree = "<group>"; };
+		1E4BF90A1DFEB3F100C57E27 /* BayunRC-Production-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "BayunRC-Production-Info.plist"; sourceTree = "<group>"; };
+		1E5532C11DFE7BBF00403284 /* BayunRC-Production.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BayunRC-Production.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1EA9C8861D1BDFF600BCFCB9 /* BayunRC-Sandbox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BayunRC-Sandbox.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EA9C88A1D1BDFF600BCFCB9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1EA9C88C1D1BDFF600BCFCB9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		1EA9C88D1D1BDFF600BCFCB9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		1EA9C8931D1BDFF600BCFCB9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1EA9C8981D1BDFF600BCFCB9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1EA9C89B1D1BDFF600BCFCB9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		1EA9C89D1D1BDFF600BCFCB9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1EA9C89D1D1BDFF600BCFCB9 /* BayunRC-Sandbox-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BayunRC-Sandbox-Info.plist"; sourceTree = "<group>"; };
 		1EA9C8A21D1BDFF600BCFCB9 /* BayunRCTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BayunRCTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EA9C8A61D1BDFF600BCFCB9 /* BayunRCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BayunRCTests.m; sourceTree = "<group>"; };
 		1EA9C8A81D1BDFF600BCFCB9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -348,6 +465,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1E5532921DFE7BBF00403284 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1EA9C8831D1BDFF600BCFCB9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -375,6 +499,8 @@
 		1EA9C87D1D1BDFF600BCFCB9 = {
 			isa = PBXGroup;
 			children = (
+				1E4BF9031DFEA4BF00C57E27 /* BayunRC_Production.entitlements */,
+				1E4BF9021DFEA4B100C57E27 /* BayunRC_Sandbox.entitlements */,
 				1EA9C8881D1BDFF600BCFCB9 /* BayunRC */,
 				1EA9C8A51D1BDFF600BCFCB9 /* BayunRCTests */,
 				1EA9C8B01D1BDFF600BCFCB9 /* BayunRCUITests */,
@@ -386,9 +512,10 @@
 		1EA9C8871D1BDFF600BCFCB9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1EA9C8861D1BDFF600BCFCB9 /* BayunRC.app */,
+				1EA9C8861D1BDFF600BCFCB9 /* BayunRC-Sandbox.app */,
 				1EA9C8A21D1BDFF600BCFCB9 /* BayunRCTests.xctest */,
 				1EA9C8AD1D1BDFF600BCFCB9 /* BayunRCUITests.xctest */,
+				1E5532C11DFE7BBF00403284 /* BayunRC-Production.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -409,7 +536,8 @@
 				1EADA2941D1BE10E00B669B4 /* BayunRC.pch */,
 				1EA9C8981D1BDFF600BCFCB9 /* Assets.xcassets */,
 				1EA9C89A1D1BDFF600BCFCB9 /* LaunchScreen.storyboard */,
-				1EA9C89D1D1BDFF600BCFCB9 /* Info.plist */,
+				1E4BF90A1DFEB3F100C57E27 /* BayunRC-Production-Info.plist */,
+				1EA9C89D1D1BDFF600BCFCB9 /* BayunRC-Sandbox-Info.plist */,
 				1EADA2991D1BE24300B669B4 /* BayunRC.xcdatamodeld */,
 				1EA9C8891D1BDFF600BCFCB9 /* Supporting Files */,
 			);
@@ -800,9 +928,27 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1EA9C8851D1BDFF600BCFCB9 /* BayunRC */ = {
+		1E55324D1DFE7BBF00403284 /* BayunRC-Production */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1EA9C8B61D1BDFF600BCFCB9 /* Build configuration list for PBXNativeTarget "BayunRC" */;
+			buildConfigurationList = 1E5532BE1DFE7BBF00403284 /* Build configuration list for PBXNativeTarget "BayunRC-Production" */;
+			buildPhases = (
+				1E55324F1DFE7BBF00403284 /* Sources */,
+				1E5532921DFE7BBF00403284 /* Frameworks */,
+				1E5532951DFE7BBF00403284 /* Resources */,
+				1E5532BA1DFE7BBF00403284 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "BayunRC-Production";
+			productName = BayunRC;
+			productReference = 1E5532C11DFE7BBF00403284 /* BayunRC-Production.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1EA9C8851D1BDFF600BCFCB9 /* BayunRC-Sandbox */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1EA9C8B61D1BDFF600BCFCB9 /* Build configuration list for PBXNativeTarget "BayunRC-Sandbox" */;
 			buildPhases = (
 				1EA9C8821D1BDFF600BCFCB9 /* Sources */,
 				1EA9C8831D1BDFF600BCFCB9 /* Frameworks */,
@@ -813,9 +959,9 @@
 			);
 			dependencies = (
 			);
-			name = BayunRC;
+			name = "BayunRC-Sandbox";
 			productName = BayunRC;
-			productReference = 1EA9C8861D1BDFF600BCFCB9 /* BayunRC.app */;
+			productReference = 1EA9C8861D1BDFF600BCFCB9 /* BayunRC-Sandbox.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1EA9C8A11D1BDFF600BCFCB9 /* BayunRCTests */ = {
@@ -860,12 +1006,24 @@
 		1EA9C87E1D1BDFF600BCFCB9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = bayun;
 				TargetAttributes = {
+					1E55324D1DFE7BBF00403284 = {
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
 					1EA9C8851D1BDFF600BCFCB9 = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = RL8J62A42V;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 					1EA9C8A11D1BDFF600BCFCB9 = {
 						CreatedOnToolsVersion = 7.3;
@@ -903,7 +1061,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1EA9C8851D1BDFF600BCFCB9 /* BayunRC */,
+				1EA9C8851D1BDFF600BCFCB9 /* BayunRC-Sandbox */,
+				1E55324D1DFE7BBF00403284 /* BayunRC-Production */,
 				1EA9C8A11D1BDFF600BCFCB9 /* BayunRCTests */,
 				1EA9C8AC1D1BDFF600BCFCB9 /* BayunRCUITests */,
 			);
@@ -911,6 +1070,49 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1E5532951DFE7BBF00403284 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1E5532961DFE7BBF00403284 /* ConversationListCell.xib in Resources */,
+				1E5532971DFE7BBF00403284 /* rounded_cube_out@2x.png in Resources */,
+				1E5532981DFE7BBF00403284 /* 37x-Checkmark.png in Resources */,
+				1E5532991DFE7BBF00403284 /* app_icon.png in Resources */,
+				1E55329A1DFE7BBF00403284 /* JSQMessagesCollectionViewCellIncoming.xib in Resources */,
+				1E55329B1DFE7BBF00403284 /* JSQMessagesCollectionViewCellOutgoing.xib in Resources */,
+				1E55329C1DFE7BBF00403284 /* backgroungImage.png in Resources */,
+				1E55329D1DFE7BBF00403284 /* LaunchScreen.storyboard in Resources */,
+				1E55329E1DFE7BBF00403284 /* register_button.png in Resources */,
+				1E55329F1DFE7BBF00403284 /* Images.xcassets in Resources */,
+				1E5532A01DFE7BBF00403284 /* Assets.xcassets in Resources */,
+				1E5532A11DFE7BBF00403284 /* rounded_cube_in.png in Resources */,
+				1E5532A21DFE7BBF00403284 /* ExtensionListViewController.xib in Resources */,
+				1E5532A31DFE7BBF00403284 /* fileImage@2x.png in Resources */,
+				1E5532A41DFE7BBF00403284 /* splashScreen.png in Resources */,
+				1E5532A51DFE7BBF00403284 /* rounded_cube_out.png in Resources */,
+				1E5532A61DFE7BBF00403284 /* inBound.png in Resources */,
+				1E5532A71DFE7BBF00403284 /* camera@2x.png in Resources */,
+				1E5532A81DFE7BBF00403284 /* backgroungImage@2x.png in Resources */,
+				1E5532A91DFE7BBF00403284 /* backarrow.png in Resources */,
+				1E5532AA1DFE7BBF00403284 /* camera.png in Resources */,
+				1E5532AB1DFE7BBF00403284 /* JSQMessagesAssets.bundle in Resources */,
+				1E5532AC1DFE7BBF00403284 /* button-OFF.png in Resources */,
+				1E5532AD1DFE7BBF00403284 /* 37x-Checkmark@2x.png in Resources */,
+				1E5532AE1DFE7BBF00403284 /* rounded_cube_in@2x.png in Resources */,
+				1E5532AF1DFE7BBF00403284 /* JSQMessagesTypingIndicatorFooterView.xib in Resources */,
+				1E5532B01DFE7BBF00403284 /* JSQMessages.strings in Resources */,
+				1E5532B11DFE7BBF00403284 /* SVProgressHUD.bundle in Resources */,
+				1E5532B21DFE7BBF00403284 /* fileImage.png in Resources */,
+				1E5532B31DFE7BBF00403284 /* Main.storyboard in Resources */,
+				1E5532B41DFE7BBF00403284 /* backgroungImage-568h@2x.png in Resources */,
+				1E5532B51DFE7BBF00403284 /* JSQMessagesLoadEarlierHeaderView.xib in Resources */,
+				1E5532B61DFE7BBF00403284 /* button-ON.png in Resources */,
+				1E5532B71DFE7BBF00403284 /* outBound.png in Resources */,
+				1E5532B81DFE7BBF00403284 /* JSQMessagesViewController.xib in Resources */,
+				1E5532B91DFE7BBF00403284 /* JSQMessagesToolbarContentView.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1EA9C8841D1BDFF600BCFCB9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -939,6 +1141,7 @@
 				1EADA2531D1BE05A00B669B4 /* JSQMessagesAssets.bundle in Resources */,
 				1EADA2871D1BE05A00B669B4 /* button-OFF.png in Resources */,
 				1EADA2811D1BE05A00B669B4 /* 37x-Checkmark@2x.png in Resources */,
+				1E4BF90B1DFEB3F100C57E27 /* BayunRC-Production-Info.plist in Resources */,
 				1EADA2501D1BE05A00B669B4 /* rounded_cube_in@2x.png in Resources */,
 				1EADA27D1D1BE05A00B669B4 /* JSQMessagesTypingIndicatorFooterView.xib in Resources */,
 				1EADA2541D1BE05A00B669B4 /* JSQMessages.strings in Resources */,
@@ -971,6 +1174,79 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1E55324F1DFE7BBF00403284 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1E5532501DFE7BBF00403284 /* ExtensionsListViewController.m in Sources */,
+				1E5532511DFE7BBF00403284 /* RCCryptManager.m in Sources */,
+				1E5532521DFE7BBF00403284 /* JSQMessagesCollectionViewFlowLayoutInvalidationContext.m in Sources */,
+				1E5532531DFE7BBF00403284 /* JSQMessagesCollectionViewLayoutAttributes.m in Sources */,
+				1E5532541DFE7BBF00403284 /* JSQMessagesCollectionView.m in Sources */,
+				1E5532551DFE7BBF00403284 /* NSManagedObjectContext+Stack.m in Sources */,
+				1E5532561DFE7BBF00403284 /* JSQPhotoMediaItem.m in Sources */,
+				1E5532571DFE7BBF00403284 /* NSDate+TimeAgoConversion.m in Sources */,
+				1E5532581DFE7BBF00403284 /* JSQMessagesLabel.m in Sources */,
+				1E5532591DFE7BBF00403284 /* NSString+JSQMessages.m in Sources */,
+				1E55325A1DFE7BBF00403284 /* JSQMessagesTypingIndicatorFooterView.m in Sources */,
+				1E55325B1DFE7BBF00403284 /* ConversationListViewController.m in Sources */,
+				1E55325C1DFE7BBF00403284 /* NSManagedObject+Stack.m in Sources */,
+				1E55325D1DFE7BBF00403284 /* UIImage+JSQMessages.m in Sources */,
+				1E55325E1DFE7BBF00403284 /* JSQMessagesCollectionViewCellIncoming.m in Sources */,
+				1E55325F1DFE7BBF00403284 /* JSQMessagesToolbarContentView.m in Sources */,
+				1E5532601DFE7BBF00403284 /* JSQMessagesAvatarImage.m in Sources */,
+				1E5532611DFE7BBF00403284 /* UIView+JSQMessages.m in Sources */,
+				1E5532621DFE7BBF00403284 /* CoreDataStack.m in Sources */,
+				1E5532631DFE7BBF00403284 /* JSQMessagesComposerTextView.m in Sources */,
+				1E5532641DFE7BBF00403284 /* JSQMessagesInputToolbar.m in Sources */,
+				1E5532651DFE7BBF00403284 /* JSQMessagesAvatarImageFactory.m in Sources */,
+				1E5532661DFE7BBF00403284 /* SVProgressHUD.m in Sources */,
+				1E5532671DFE7BBF00403284 /* LoginViewController.m in Sources */,
+				1E5532681DFE7BBF00403284 /* CDObjectImporter.m in Sources */,
+				1E5532691DFE7BBF00403284 /* JSQMessagesTimestampFormatter.m in Sources */,
+				1E55326A1DFE7BBF00403284 /* JSQMediaItem.m in Sources */,
+				1E55326B1DFE7BBF00403284 /* NSPredicate+Helpers.m in Sources */,
+				1E55326C1DFE7BBF00403284 /* NSSortDescriptor+Helpers.m in Sources */,
+				1E55326D1DFE7BBF00403284 /* JSQMessagesViewController.m in Sources */,
+				1E55326E1DFE7BBF00403284 /* JSQMessagesCollectionViewCell.m in Sources */,
+				1E55326F1DFE7BBF00403284 /* RCUtilities.m in Sources */,
+				1E5532701DFE7BBF00403284 /* JSQMessagesMediaPlaceholderView.m in Sources */,
+				1E5532711DFE7BBF00403284 /* AppDelegate.m in Sources */,
+				1E5532721DFE7BBF00403284 /* ConversationListCell.m in Sources */,
+				1E5532731DFE7BBF00403284 /* Sender.m in Sources */,
+				1E5532741DFE7BBF00403284 /* JSQLocationMediaItem.m in Sources */,
+				1E5532751DFE7BBF00403284 /* BayunRC.xcdatamodeld in Sources */,
+				1E5532761DFE7BBF00403284 /* NSPersistentStoreCoordinator+Stack.m in Sources */,
+				1E5532771DFE7BBF00403284 /* NSManagedObjectModel+Stack.m in Sources */,
+				1E5532781DFE7BBF00403284 /* NSError+Stack.m in Sources */,
+				1E5532791DFE7BBF00403284 /* JSQMessagesKeyboardController.m in Sources */,
+				1E55327A1DFE7BBF00403284 /* JSQMessagesCellTextView.m in Sources */,
+				1E55327B1DFE7BBF00403284 /* RCMessage.m in Sources */,
+				1E55327C1DFE7BBF00403284 /* RCAPIManager.m in Sources */,
+				1E55327D1DFE7BBF00403284 /* Conversation.m in Sources */,
+				1E55327E1DFE7BBF00403284 /* User.m in Sources */,
+				1E55327F1DFE7BBF00403284 /* NSManagedObject+Resource.m in Sources */,
+				1E5532801DFE7BBF00403284 /* JSQVideoMediaItem.m in Sources */,
+				1E5532811DFE7BBF00403284 /* UIDevice+JSQMessages.m in Sources */,
+				1E5532821DFE7BBF00403284 /* RCConstants.m in Sources */,
+				1E5532831DFE7BBF00403284 /* ConversationViewController.m in Sources */,
+				1E5532841DFE7BBF00403284 /* JSQMessagesBubbleImageFactory.m in Sources */,
+				1E5532851DFE7BBF00403284 /* JSQSystemSoundPlayer+JSQMessages.m in Sources */,
+				1E5532861DFE7BBF00403284 /* JSQMessagesCollectionViewFlowLayout.m in Sources */,
+				1E5532871DFE7BBF00403284 /* JSQMessagesCollectionViewCellOutgoing.m in Sources */,
+				1E5532881DFE7BBF00403284 /* Message.m in Sources */,
+				1E5532891DFE7BBF00403284 /* JSQMessage.m in Sources */,
+				1E55328A1DFE7BBF00403284 /* JSQMessagesLoadEarlierHeaderView.m in Sources */,
+				1E55328B1DFE7BBF00403284 /* NSManagedObjectCollection.m in Sources */,
+				1E55328C1DFE7BBF00403284 /* JSQMessagesMediaViewBubbleImageMasker.m in Sources */,
+				1E55328D1DFE7BBF00403284 /* JSQMessagesToolbarButtonFactory.m in Sources */,
+				1E55328E1DFE7BBF00403284 /* UIColor+JSQMessages.m in Sources */,
+				1E55328F1DFE7BBF00403284 /* JSQMessagesBubbleImage.m in Sources */,
+				1E5532901DFE7BBF00403284 /* Receiver.m in Sources */,
+				1E5532911DFE7BBF00403284 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1EA9C8821D1BDFF600BCFCB9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1065,12 +1341,12 @@
 /* Begin PBXTargetDependency section */
 		1EA9C8A41D1BDFF600BCFCB9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1EA9C8851D1BDFF600BCFCB9 /* BayunRC */;
+			target = 1EA9C8851D1BDFF600BCFCB9 /* BayunRC-Sandbox */;
 			targetProxy = 1EA9C8A31D1BDFF600BCFCB9 /* PBXContainerItemProxy */;
 		};
 		1EA9C8AF1D1BDFF600BCFCB9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1EA9C8851D1BDFF600BCFCB9 /* BayunRC */;
+			target = 1EA9C8851D1BDFF600BCFCB9 /* BayunRC-Sandbox */;
 			targetProxy = 1EA9C8AE1D1BDFF600BCFCB9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1117,10 +1393,59 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1E5532BF1DFE7BBF00403284 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = BayunRC_Production.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = BayunRC/BayunRC.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = BAYUN_RC_PRODUCTION;
+				INFOPLIST_FILE = "BayunRC/BayunRC-Production-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bayun.BayunRC;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "a0252607-a850-43ee-855f-83e9582678ed";
+				PROVISIONING_PROFILE_SPECIFIER = Bayun;
+			};
+			name = Debug;
+		};
+		1E5532C01DFE7BBF00403284 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = BayunRC_Production.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = BayunRC/BayunRC.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = BAYUN_RC_PRODUCTION;
+				INFOPLIST_FILE = "BayunRC/BayunRC-Production-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bayun.BayunRC;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "a0252607-a850-43ee-855f-83e9582678ed";
+				PROVISIONING_PROFILE_SPECIFIER = Bayun;
+			};
+			name = Release;
+		};
 		1EA9C8B41D1BDFF600BCFCB9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1131,8 +1456,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
@@ -1158,7 +1485,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "16d6f7bc-d4d9-4acb-99ad-2ef2b34ac83d";
+				PROVISIONING_PROFILE = "a0252607-a850-43ee-855f-83e9582678ed";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1168,6 +1495,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1178,8 +1506,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
@@ -1198,7 +1528,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "16d6f7bc-d4d9-4acb-99ad-2ef2b34ac83d";
+				PROVISIONING_PROFILE = "a0252607-a850-43ee-855f-83e9582678ed";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1210,6 +1540,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = BayunRC_Sandbox.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1217,11 +1548,14 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BayunRC/BayunRC.pch;
-				INFOPLIST_FILE = BayunRC/Info.plist;
+				GCC_PREPROCESSOR_DEFINITIONS = BAYUN_RC_SANDBOX;
+				INFOPLIST_FILE = "BayunRC/BayunRC-Sandbox-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bayun.BayunRC;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "a0252607-a850-43ee-855f-83e9582678ed";
+				PROVISIONING_PROFILE_SPECIFIER = Bayun;
 			};
 			name = Debug;
 		};
@@ -1230,6 +1564,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = BayunRC_Sandbox.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Gaurav Kheterpal (Z4E78HLHU9)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1237,11 +1572,14 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BayunRC/BayunRC.pch;
-				INFOPLIST_FILE = BayunRC/Info.plist;
+				GCC_PREPROCESSOR_DEFINITIONS = BAYUN_RC_SANDBOX;
+				INFOPLIST_FILE = "BayunRC/BayunRC-Sandbox-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bayun.BayunRC;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "a0252607-a850-43ee-855f-83e9582678ed";
+				PROVISIONING_PROFILE_SPECIFIER = Bayun;
 			};
 			name = Release;
 		};
@@ -1294,6 +1632,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1E5532BE1DFE7BBF00403284 /* Build configuration list for PBXNativeTarget "BayunRC-Production" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1E5532BF1DFE7BBF00403284 /* Debug */,
+				1E5532C01DFE7BBF00403284 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		1EA9C8811D1BDFF600BCFCB9 /* Build configuration list for PBXProject "BayunRC" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1303,7 +1650,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1EA9C8B61D1BDFF600BCFCB9 /* Build configuration list for PBXNativeTarget "BayunRC" */ = {
+		1EA9C8B61D1BDFF600BCFCB9 /* Build configuration list for PBXNativeTarget "BayunRC-Sandbox" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1EA9C8B71D1BDFF600BCFCB9 /* Debug */,

@@ -11,7 +11,6 @@ import com.bayun.util.RCCryptManager;
 import com.bayun.util.TinyDB;
 import com.bayun_module.BayunCore;
 
-
 /**
  * Created by Gagan on 02/06/15.
  */
@@ -34,20 +33,5 @@ public class BayunApplication extends Application {
         rcCryptManager=new RCCryptManager();
         bayunCore = new BayunCore(appContext);
     }
-
-    /**
-     * Clears stored data in shared preferences.
-     */
-    public static void clearDB() {
-        tinyDB.putString(Constants.SHARED_PREFERENCES_LOGGED_IN, Constants.SHARED_PREFERENCES_DEFAULT_VALUE);
-        tinyDB.remove(Constants.SHARED_PREFERENCES_ACCESS_TOKEN);
-        tinyDB.remove(Constants.SHARED_PREFERENCES_REFRESH_TOKEN);
-        tinyDB.remove(Constants.SHARED_PREFERENCES_USERNAME);
-        tinyDB.remove(Constants.SHARED_PREFERENCES_EXTENSION);
-        tinyDB.remove(Constants.SHARED_PREFERENCES_PASSWORD);
-        tinyDB.remove(Constants.SHARED_PREFERENCES_ACCOUNT_ID);
-        tinyDB.remove(Constants.SHARED_PREFERENCES_ACCESS_TOKEN_EXPIRATION_TIME);
-    }
-
 }
 

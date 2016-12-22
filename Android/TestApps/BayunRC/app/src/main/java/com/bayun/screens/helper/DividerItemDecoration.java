@@ -11,7 +11,9 @@ import com.bayun.R;
 /**
  * Created by Gagan on 05-06-2015.
  */
+
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
+
     private Drawable mDivider;
 
     public DividerItemDecoration(Context context) {

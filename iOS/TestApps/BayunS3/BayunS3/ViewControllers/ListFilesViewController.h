@@ -13,6 +13,6 @@
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *noItemsView;
 
-- (IBAction)createButtonIsPressed:(id)sender;
+- (IBAction)uploadButtonIsPressed:(id)sender;
 
 @end

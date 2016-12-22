@@ -34,4 +34,6 @@ NSString *const kErrorUserInActive = @"Please contact your Admin to activate you
 NSString *const kErrorSessionIsExpired = @"Session is expired.";
 NSString *const kErrorCompleteAllFields = @"Complete all fields";
 NSString *const kErrorMessageCouldNotBeSent = @"Message could not be sent.";
+NSString *const kErrorMsgAuthenticationFailed = @"Authentication Failed.";
+
 @end

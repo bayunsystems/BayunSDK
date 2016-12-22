@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="application_key">YOUR APPLICATION KEY</string>
+    <string name="application_secret">YOUR APPLICATION SECRET</string>
+    <string name="base_url">https://platform.devtest.ringcentral.com</string>
+
+</resources>

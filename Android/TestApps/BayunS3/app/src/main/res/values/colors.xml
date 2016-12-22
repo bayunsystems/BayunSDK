@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- grayscale -->
+    <color name="gray_light">#C7C7CD</color>
+    <color name="gray_dark">#999999</color>
+    <color name="white">#FFF</color>
+    <color name="light_black">#383838</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- basic colors -->
+    <color name="background">#006790</color>
+</resources>

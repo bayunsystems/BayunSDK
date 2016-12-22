@@ -3,25 +3,25 @@ package com.bayun.http.model;
 /**
  * Created by Gagan on 02/06/15.
  */
+
 public class ErrorInfo {
 
-    private String errorCode;
-    private String message;
+    private String error;
+    private String error_description;
 
-    public String getErrorCode() {
-        return errorCode;
+    public String getError() {
+        return error;
     }
 
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
+    public void setError(String error) {
+        this.error = error;
     }
 
-    public String getMessage() {
-        return message;
+    public String getError_description() {
+        return error_description;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setError_description(String error_description) {
+        this.error_description = error_description;
     }
-
 }

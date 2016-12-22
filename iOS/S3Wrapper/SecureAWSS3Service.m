@@ -3,7 +3,7 @@
 //  
 //
 //  Created by Preeti-Gaur on 12/10/15.
-//
+//  Copyright © 2016 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "SecureAWSS3Service.h"
@@ -19,6 +19,7 @@
 #import "AWSSynchronizedMutableDictionary.h"
 #import <Bayun/BayunCore.h>
 
+static NSString *const AWSInfoS3 = @"S3";
 NSString *const SecureAWSS3APIVersion = @"s3-2006-03-01";
 NSString *const SecureAWSS3ServiceErrorDomain = @"com.bayun.SecureAWSS3ServiceErrorDomain";
 NSUInteger const SecureAWSS3ServiceMinimumPartSize = 5 * 1024 * 1024; // 5MB
@@ -80,29 +81,31 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
 + (instancetype)defaultS3 {
     
-    if (![AWSServiceManager defaultServiceManager].defaultServiceConfiguration) {
-        return nil;
-    }
-    
-    
     static SecureAWSS3 *_defaultS3 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        AWSServiceConfiguration *serviceConfiguration = nil;
+        AWSServiceInfo *serviceInfo = [[AWSInfo defaultAWSInfo] defaultServiceInfo:AWSInfoS3];
+        if (serviceInfo) {
+            serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:serviceInfo.region
+                                                               credentialsProvider:serviceInfo.cognitoCredentialsProvider];
+        }
         
-        AWSServiceConfiguration *config = [AWSServiceManager defaultServiceManager].defaultServiceConfiguration;
+        if (!serviceConfiguration) {
+            serviceConfiguration = [AWSServiceManager defaultServiceManager].defaultServiceConfiguration;
+        }
         
-        config.endpoint = [[AWSEndpoint alloc] initWithRegion:[AWSServiceManager defaultServiceManager].defaultServiceConfiguration.regionType
-                                                      service:AWSServiceS3
-                                                 useUnsafeURL:NO];
+        if (!serviceConfiguration) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                           reason:@"The service configuration is `nil`. You need to configure `Info.plist` or set `defaultServiceConfiguration` before using this method."
+                                         userInfo:nil];
+        }
         
-        _defaultS3 = [[SecureAWSS3 alloc] initWithConfiguration:[AWSServiceManager defaultServiceManager].defaultServiceConfiguration];
-        _defaultS3.configuration = config;
-#pragma clang diagnostic pop
+        _defaultS3 = [[SecureAWSS3 alloc] initWithConfiguration:serviceConfiguration];
     });
-
+    
     return _defaultS3;
+
 }
 
 + (void)registerS3WithConfiguration:(AWSServiceConfiguration *)configuration forKey:(NSString *)key {
@@ -112,13 +115,30 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     });
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_serviceClients setObject:[[AWSS3 alloc] initWithConfiguration:configuration]
+    [_serviceClients setObject:[[SecureAWSS3 alloc] initWithConfiguration:configuration]
                         forKey:key];
 #pragma clang diagnostic pop
 }
 
 + (instancetype)S3ForKey:(NSString *)key {
-    return [_serviceClients objectForKey:key];
+    //return [_serviceClients objectForKey:key];
+    @synchronized(self) {
+        SecureAWSS3 *serviceClient = [_serviceClients objectForKey:key];
+        if (serviceClient) {
+            return serviceClient;
+        }
+        
+        AWSServiceInfo *serviceInfo = [[AWSInfo defaultAWSInfo] serviceInfo:AWSInfoS3
+                                                                     forKey:key];
+        if (serviceInfo) {
+            AWSServiceConfiguration *serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:serviceInfo.region
+                                                                                        credentialsProvider:serviceInfo.cognitoCredentialsProvider];
+            [SecureAWSS3 registerS3WithConfiguration:serviceConfiguration
+                                        forKey:key];
+        }
+        
+        return [_serviceClients objectForKey:key];
+    }
 }
 
 + (void)removeS3ForKey:(NSString *)key {
@@ -169,9 +189,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 #pragma mark - Service method
 
 - (AWSTask *)getObject:(AWSS3GetObjectRequest *)request {
-    
     return [[super getObject:request] continueWithBlock:^id(AWSTask *task) {
-
         __block AWSTask *taskNew = task;
         
         if (task.error) {
@@ -179,15 +197,9 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
         }
         
         if (task.result) {
-            AWSS3GetObjectOutput *getObjectOutput = task.result;
-            
-            NSURL *filePathURL = getObjectOutput.body;
-            __block NSString*  encryptedFilePath=
-            [NSTemporaryDirectory() stringByAppendingPathComponent:filePathURL.lastPathComponent];
-            
             dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
             
-            [[BayunCore sharedInstance] decryptFileAtPath:encryptedFilePath success:^{
+            [[BayunCore sharedInstance] unlockFile:request.downloadingFileURL success:^{
                 dispatch_semaphore_signal(semaphore);
             } failure:^(BayunError errorCode){
                 if (errorCode == BayunErrorAccessDenied) {
@@ -208,28 +220,22 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                 }
                  dispatch_semaphore_signal(semaphore);
             }];
-            //wait for BayunCore to decrypt the file before returning the task
+            //wait for BayunCore to unlock the file before returning the task
             dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-            
             if (taskNew) {
                 return taskNew;
             }
         }
-        
         return task;
-       
     }];
 }
 
 - (AWSTask *)putObject:(AWSS3PutObjectRequest *)request {
     __block AWSTask *task;
-    __block NSString *filePathString = [NSTemporaryDirectory()
-                                        stringByAppendingPathComponent:request.key];
-    
+  
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    [[BayunCore sharedInstance] encryptFileAtPath:filePathString success:^{
+    [[BayunCore sharedInstance] lockFile:request.body success:^{
         NSError *error = nil;
-        request.body = [NSURL fileURLWithPath:filePathString];
         NSURL *url = request.body;
         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[[url path] stringByResolvingSymlinksInPath]
                                                                                     error:&error];
@@ -268,7 +274,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
         }
          dispatch_semaphore_signal(semaphore);
     }];
-    //wait for BayunCore to encrypt the file before returning the task
+    //wait for BayunCore to lock the file before returning the task
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     return task;
 }

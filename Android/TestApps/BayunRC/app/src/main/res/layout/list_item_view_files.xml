@@ -34,7 +34,6 @@
         android:textSize="12sp" />
 
 
-
     <TextView
         android:id="@+id/message_creation_time"
         android:layout_width="wrap_content"

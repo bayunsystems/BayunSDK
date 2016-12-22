@@ -36,8 +36,9 @@
  */
 - (NSString*) decryptText :(NSString*) text {
 
+    self.decryptedText = text;
     //Decrypt text using Bayun Library
-    [[BayunCore sharedInstance]decryptText:text success:^(NSString *decryptedTextResponse) {
+    [[BayunCore sharedInstance] unlockText:text success:^(NSString *decryptedTextResponse) {
         self.decryptedText = decryptedTextResponse;
     } failure:^(BayunError errorCode) {
         //errorCode might be BayunErrorUserInActive (if user is not active or cancelled by admin),
@@ -54,9 +55,8 @@
  */
 -(NSString*) encryptText:(NSString *)text {
     
-    __block NSString *encryptedText;
     //Encrypt text using Bayun Library
-    [[BayunCore sharedInstance]encryptText:text success:^(NSString *responseText) {
+    [[BayunCore sharedInstance] lockText:text success:^(NSString *responseText) {
         self.encryptedText = responseText;
     } failure:^(BayunError errorCode) {
         //errorCode might be BayunErrorUserInActive (if user is not active or cancelled by admin),

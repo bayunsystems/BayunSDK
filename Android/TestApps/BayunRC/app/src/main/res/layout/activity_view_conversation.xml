@@ -46,22 +46,16 @@
 
     </RelativeLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
-        android:layout_above="@+id/line"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-          android:layout_below="@+id/activity_list_extensions_navigation_bar">
-
         <!-- A RecyclerView with some commonly used attributes -->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/list_files_recycler_view"
+            android:layout_above="@+id/line"
             android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/activity_list_extensions_navigation_bar"
           />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
 
      <TextView
          android:id="@+id/empty_view"

@@ -13,6 +13,7 @@
             android:id="@+id/activity_create_new_file_back_image_view"
             android:layout_width="30dp"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:onClick="backButtonImageClick"

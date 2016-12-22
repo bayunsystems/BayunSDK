@@ -8,10 +8,6 @@ import android.widget.Toast;
 import com.bayun.app.BayunApplication;
 import com.bayun.database.ActivityDBOperations;
 import com.bayun.http.model.*;
-import com.bayun.http.model.ExtensionListInfo;
-import com.bayun.http.model.LoginInfo;
-import com.bayun.http.model.MessageInfo;
-import com.bayun.http.model.MessageListInfo;
 import com.bayun.screens.ListExtensionActivity;
 
 import com.bayun.util.Constants;
@@ -27,6 +23,7 @@ import retrofit.client.Response;
 /**
  * Created by Gagan on 6/29/2015.
  */
+
 public class RingCentralAPIManager {
 
     private static Context appContext;
@@ -37,14 +34,13 @@ public class RingCentralAPIManager {
         return new RingCentralAPIManager();
     }
 
-
     /**
      * Authenticates User with Ringcentral.
      *
-     * @param username
-     * @param extension
-     * @param password
-     * @param callback
+     * @param username  username
+     * @param extension extension
+     * @param password  password
+     * @param callback  callback for success/failure handling.
      */
     public void authenticate(final Long username, final Long extension, final String password, final Handler.Callback callback) {
         RestClient api = RestUtils.getLoginRestAdapter().create(RestClient.class);
@@ -71,8 +67,10 @@ public class RingCentralAPIManager {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        if (error.getResponse() != null && error.getResponse().getStatus() == 400) {
-                            Utility.displayToast(Constants.ERROR_MESSAGE_INVALID_CREDENTIALS, Toast.LENGTH_SHORT);
+                        if (error != null && error.getResponse() != null) {
+                            if (error.getResponse().getStatus() == 400) {
+                                Utility.displayToast(Constants.ERROR_MESSAGE_INVALID_CREDENTIALS, Toast.LENGTH_SHORT);
+                            }
                         }
                         message.what = Constants.CALLBACK_FAILURE;
                         callback.handleMessage(message);
@@ -83,8 +81,8 @@ public class RingCentralAPIManager {
     /**
      * Gets Message list from Ringcentral.
      *
-     * @param date
-     * @param callback
+     * @param date     date
+     * @param callback callback for success/failure handling.
      */
     public void getMessageList(String date, final Handler.Callback callback) {
         RestClient api = RestUtils.restAdapter().create(RestClient.class);
@@ -101,7 +99,6 @@ public class RingCentralAPIManager {
 
             @Override
             public void failure(RetrofitError error) {
-                Utility.displayToast(error.getMessage(), Toast.LENGTH_SHORT);
                 message.what = Constants.CALLBACK_FAILURE;
                 callback.handleMessage(message);
             }
@@ -111,7 +108,7 @@ public class RingCentralAPIManager {
     /**
      * Gets Extension List of User.
      *
-     * @param callback
+     * @param callback callback for success/failure handling.
      */
     public void getExtensionList(final Handler.Callback callback) {
         RestClient api = RestUtils.restAdapter().create(RestClient.class);
@@ -134,7 +131,6 @@ public class RingCentralAPIManager {
 
             @Override
             public void failure(RetrofitError error) {
-                Utility.displayToast(error.getMessage(), Toast.LENGTH_SHORT);
                 message.what = Constants.CALLBACK_FAILURE;
                 callback.handleMessage(message);
             }
@@ -144,8 +140,8 @@ public class RingCentralAPIManager {
     /**
      * Sends a new message.
      *
-     * @param extension
-     * @param callback
+     * @param extension extension.
+     * @param callback  callback for success/failure handling.
      */
     public void sendMessage(Extension extension, final Handler.Callback callback) {
         RestClient api = RestUtils.restAdapter().create(RestClient.class);
@@ -159,7 +155,6 @@ public class RingCentralAPIManager {
 
             @Override
             public void failure(RetrofitError error) {
-                Utility.displayToast(error.getMessage(), Toast.LENGTH_SHORT);
                 message.what = Constants.CALLBACK_FAILURE;
                 callback.handleMessage(message);
             }
