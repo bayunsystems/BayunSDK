@@ -61,18 +61,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
 
 + (instancetype)defaultS3TransferManager {
-//    if (![AWSServiceManager defaultServiceManager].defaultServiceConfiguration) {
-//        return nil;
-//    }
-//    
-//    static SecureAWSS3TransferManager *_defaultS3TransferManager = nil;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        _defaultS3TransferManager = [[SecureAWSS3TransferManager alloc] initWithConfiguration:[AWSServiceManager defaultServiceManager].defaultServiceConfiguration
-//                                                                              cacheName:SecureAWSS3TransferManagerCacheName];
-//    });
-//    return _defaultS3TransferManager;
-    
+
     static SecureAWSS3TransferManager *_defaultS3TransferManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -93,8 +82,10 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                                          userInfo:nil];
         }
         
+        
         _defaultS3TransferManager = [[SecureAWSS3TransferManager alloc] initWithConfiguration:serviceConfiguration
                                                                               cacheName:SecureAWSS3TransferManagerCacheName];
+        _defaultS3TransferManager.encryptionPolicy = BayunEncryptionPolicyDefault;
     });
     
     return _defaultS3TransferManager;
@@ -158,7 +149,6 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                                      rootPath:[NSTemporaryDirectory() stringByAppendingPathComponent:SecureAWSS3TransferManagerCacheName]];
     _cache.diskCache.byteLimit = SecureAWSS3TransferManagerByteLimitDefault;
     _cache.diskCache.ageLimit = SecureAWSS3TransferManagerAgeLimitDefault;
-    
     
     return self;
 }
@@ -282,6 +272,8 @@ continueWithExecutor:(AWSExecutor *)executor
     [putObjectRequest aws_copyPropertiesFromObject:uploadRequest];
     __weak SecureAWSS3TransferManager *weakSelf = self;
     
+    weakSelf.s3.encryptionPolicy = weakSelf.encryptionPolicy;
+    weakSelf.s3.groupId = weakSelf.groupId;
     AWSTask *uploadTask = [[weakSelf.s3 putObject:putObjectRequest] continueWithBlock:^id(AWSTask *task) {
         
         //delete cached Object if state is not Paused

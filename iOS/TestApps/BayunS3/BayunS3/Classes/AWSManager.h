@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Bayun/BayunCore.h>
 
 @class AWSS3ListObjectsOutput;
 
@@ -21,66 +22,12 @@
 - (void)s3UploadProgress:(float)progress;
 
 /**
- Implemented to perform operation after upload is completed
- */
-- (void)s3UploadCompleted;
-
-/**
  Implemented to show download progress
-@param progress Download progress
+ @param progress Download progress
  */
 - (void)s3DownloadProgress:(float)progress;
 
-/**
- Implemented to perform operation after download is completed
- */
-- (void)s3DownloadCompleted;
-
-/**
- Implemented to track if file transfered is failed
- @param Error message
- */
-- (void)s3FileTransferFailed:(NSString*)errorMessage;
-
-/**
- Implemented to perform operation after bucket object list is downloaded
- @param buketObjectList AWSS3ListObjectsOutput
- */
-- (void)s3BucketObjectListDownload:(AWSS3ListObjectsOutput *)bucketObjectsList;
-
-/**
- Implemented to check if file exists for key
- @param exists True/False
- */
-- (void)s3FileExistsForKey:(BOOL)exists;
-
-/**
- Implemented to track if file deletion is failed
- */
-- (void)s3FileDeletionFailed;
-
-/**
- Implemented to track if file deletion is completed
- */
-- (void)s3FileDeletionCompleted;
-
-/**
- Implemented to track if bucket is created.
- */
-- (void)s3BucketCreated;
-
-/**
- Implemented to track if bucket already exists
- */
-- (void)s3BucketAlreadyExists;
-
-/**
- Implemented to track if bucket creation is failed
- */
-- (void)s3BucketCreationFailed;
-
 @end
-
 
 @interface AWSManager : NSObject
 
@@ -93,39 +40,65 @@
 + (instancetype)sharedInstance;
 
 /**
+ Sets type of Encryption policy
+ */
+- (void)setEncryptionPolicy:(BayunEncryptionPolicy)policy;
+
+/**
+ Sets Group Id
+ */
+- (void)setGroupId:(NSString*)groupId;
+
+/**
  Uploads a file to Amazon S3 bucket.
  @param filePath Local Path of the file to be uploaded.
  */
-- (void)uploadFile:(NSURL*)uploadingFileURL;
+- (void)uploadFile:(NSURL*)fileURL
+        bucketName:(NSString*)bucketName
+           success:(void (^)(void))success
+           failure:(void (^)(NSError*))failure;
 
 /**
  Downloads a file from Amazon S3 bucket.
  @param filePath Local Path of the file at which it is downloaded.
  */
-- (void)downloadFileToURL:(NSURL *)downloadingFileURL;
+- (void)downloadFile:(NSURL *)downloadingFileURL
+          bucketName:(NSString*)bucketName
+             success:(void (^)(void))success
+             failure:(void (^)(NSError*))failure;
 
 /**
  Downloads all files in Amazon S3 bucket.
  */
-- (void)getS3FileList;
+- (void)getBucketFiles:(NSString*)bucketName
+               success:(void (^)(AWSS3ListObjectsOutput*))success
+               failure:(void (^)(NSError*))failure;
 
 /**
  Creates a bucket on Amazon S3.
  @param bucketName Name of bucket to be created
  */
-- (void)createS3BucketWithName:(NSString*)bucketName;
+- (void)createS3BucketWithName:(NSString*)bucketName
+                       success:(void (^)(void))success
+                       failure:(void (^)(void))failure;
 
 /**
  Checks if the file with given key exists in Amazon S3 bucket.
  @param key Key of the file.
  */
-- (void)checkFileExistenceForKey:(NSString*) key;
+- (void)isFileExistsFor:(NSString*) key
+             bucketName:(NSString*)bucketName
+                success:(void (^)(BOOL))success
+                failure:(void (^)(NSError*))failure;
 
 /**
  Deletes a file from Amazon S3 bucket.
  @param fileName Name of the file to be deleted
  */
-- (void)deleteFileWithName:(NSString *)fileName;
+- (void)deleteFile:(NSString *)fileName
+        bucketName:(NSString*)bucketName
+           success:(void (^)(void))success
+           failure:(void (^)(NSError*))failure;
 
 /**
  Cancels all of the upload and download requests.

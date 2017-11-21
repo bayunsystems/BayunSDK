@@ -92,8 +92,10 @@
                     }
                 } else if(statusCode == 400) {
                     NSDictionary *errorDict= operation.responseObject;
-                    if ([[errorDict valueForKey:@"error_description"] isEqualToString:@"Invalid resource owner credentials."]){
+                    if ([[errorDict valueForKey:@"error_description"] isEqualToString:@"Invalid resource owner credentials"]){
                         failure(RCErrorInvalidCredentials);
+                    } else if([[errorDict valueForKey:@"error_description"] isEqualToString:@"The account is locked out due to multiple unsuccessful logon attempts. Please use Single Sign-on way to authenticate."]) {
+                        
                     } else if ([[errorDict valueForKey:@"error"] isEqualToString:@"invalid_grant"]) {
                         failure(RCErrorInvalidToken);
                         [manager.operationQueue cancelAllOperations];

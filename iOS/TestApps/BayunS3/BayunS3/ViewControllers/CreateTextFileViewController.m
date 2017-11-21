@@ -7,7 +7,12 @@
 //
 
 #import "CreateTextFileViewController.h"
+#import "SecureAWSS3TransferManager.h"
 #import "AWSManager.h"
+#import "DropDownView.h"
+#import "DLAVAlertViewTheme.h"
+#import "DLAVAlertView.h"
+#import "MKDropdownMenu.h"
 
 
 @interface CreateTextFileViewController ()<AWSManagerDelegate,UITextFieldDelegate,UITextViewDelegate>
@@ -16,6 +21,8 @@
 @property (strong, nonatomic) NSString *lockedFilePath;
 @property (strong,nonatomic) NSString *userProvidedFileName;
 @property (nonatomic,assign) BOOL autoPop;
+@property (strong,nonatomic) UILabel *selectPolicyLabel;
+
 
 @end
 
@@ -61,7 +68,7 @@
          [NSCharacterSet whitespaceCharacterSet]].length == 0  ||
         [[self.textView.text stringByTrimmingCharactersInSet:
           [NSCharacterSet whitespaceCharacterSet]] isEqualToString:kPlaceholderTextView]) {
-         [self.navigationController popViewControllerAnimated:YES];
+        [self.navigationController popViewControllerAnimated:YES];
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
                                                         message:@"Do you want to save the file?"
@@ -104,9 +111,9 @@
 
 - (void)addNavigationBarButton {
     self.saveButton = [[UIBarButtonItem alloc] initWithTitle:@"Save"
-                                                          style:UIBarButtonItemStylePlain
-                                                         target:self
-                                                         action:@selector(saveButtonIsPressed:)];
+                                                       style:UIBarButtonItemStylePlain
+                                                      target:self
+                                                      action:@selector(saveButtonIsPressed:)];
     self.navigationItem.rightBarButtonItem = self.saveButton;
 }
 
@@ -142,75 +149,56 @@
     NSString *text = self.textView.text;
     
     self.lockedFilePath= [NSTemporaryDirectory() stringByAppendingPathComponent:
-                             [NSString stringWithFormat:@"%@.txt",self.userProvidedFileName]];
+                          [NSString stringWithFormat:@"%@.txt",self.userProvidedFileName]];
     
     NSError *errorWhileWriting = nil;
     [text writeToFile:self.lockedFilePath
-                    atomically:YES
-                      encoding:NSUTF8StringEncoding
-                         error:&errorWhileWriting];
+           atomically:YES
+             encoding:NSUTF8StringEncoding
+                error:&errorWhileWriting];
     
     if (!errorWhileWriting) {
         [AWSManager sharedInstance].delegate = self;
-        // upload file
-        [[AWSManager sharedInstance] uploadFile:[NSURL fileURLWithPath:self.lockedFilePath]];
+        
+        if (self.group) {
+            [[AWSManager sharedInstance] setGroupId:[self.group valueForKey:@"id"]];
+            [[AWSManager sharedInstance] setEncryptionPolicy:BayunEncryptionPolicyGroup];
+        } else {
+            [[AWSManager sharedInstance] setGroupId:nil];
+            [[AWSManager sharedInstance] setEncryptionPolicy:
+             [[NSUserDefaults standardUserDefaults] integerForKey:kEncryptionPolicy]];
+        }
+        
+        [[AWSManager sharedInstance] uploadFile:[NSURL fileURLWithPath:self.lockedFilePath] bucketName:self.bucketName success:^{
+            
+            //remove the locked file after successful upload
+            NSError *error;
+            [[NSFileManager defaultManager] removeItemAtPath:self.lockedFilePath error:&error];
+            
+            [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@ saved.",[self.lockedFilePath lastPathComponent]]];
+            [self.textView setEditable:NO];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNewFileCreated object:nil];
+            [self.navigationController popViewControllerAnimated:YES];
+            
+        } failure:^(NSError *error) {
+            [SVProgressHUD dismiss];
+            if (error.code == SecureAWSS3TransferManagerErrorUserInactive) {
+                [SVProgressHUD showErrorWithStatus:kErrorMsgUserInActive];
+            } else if (error.code == SecureAWSS3TransferManagerErrorAccessDenied) {
+                [SVProgressHUD showErrorWithStatus:kErrorMsgAccessDenied];
+            } else if (error.code == SecureAWSS3TransferManagerErrorNoInternetConnection) {
+                [SVProgressHUD showErrorWithStatus:kErrorMsgInternetConnection];
+            } else if (error.code == SecureAWSS3TransferManagerErrorSomethingWentWrong) {
+                [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
+            }
+        }];
     } else {
         [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
     }
 }
 
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-}
-
-#pragma mark - AWSManager Delegate Methods
-
-
-- (void)s3UploadCompleted {
-    //remove the locked file after successful upload
-    NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:self.lockedFilePath error:&error];
-   
-    [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@ saved.",[self.lockedFilePath lastPathComponent]]];
-    [self.textView setEditable:NO];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kNewFileCreated object:nil];
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)s3FileTransferFailed:(NSString *)errorMessage {
-   // [SVProgressHUD dismiss];
-    if (errorMessage) {
-        if (errorMessage == kErrorMsgUserInActive) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:kErrorMsgPermissionDenied
-                                                                message:kErrorMsgUserInActive
-                                                               delegate:self
-                                                      cancelButtonTitle:@"OK"
-                                                      otherButtonTitles:nil, nil];
-            [alertView show];
-        } else {
-            [SVProgressHUD showErrorWithStatus:errorMessage];
-        }
-    } else {
-        [SVProgressHUD showErrorWithStatus:kErrorMsgFileNotSaved];
-    }
-}
-
-- (void)s3FileExistsForKey:(BOOL)exists {
-    if (!exists) {  // new file
-        [self uploadTextFile];
-    } else {
-        [SVProgressHUD dismiss];
-        [self updateTextViewFrame];
-        
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                        message:kErrorMsgFileNameExists
-                                                       delegate:self
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        alert.delegate = self;
-        [alert show];
-    }
 }
 
 - (void)popView {
@@ -226,11 +214,33 @@
             NSString *fileName = [alertView textFieldAtIndex:0].text;
             fileName = [fileName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             if (fileName.length > 0) {
-                    [SVProgressHUD show];
-                    self.userProvidedFileName = fileName;
-                    [AWSManager sharedInstance].delegate = self;
-                    [[AWSManager sharedInstance]checkFileExistenceForKey:
-                     [NSString stringWithFormat:@"%@.txt",self.userProvidedFileName]];
+                [SVProgressHUD show];
+                self.userProvidedFileName = fileName;
+                [AWSManager sharedInstance].delegate = self;
+                NSString *key = [NSString stringWithFormat:@"%@.txt",self.userProvidedFileName];
+                [[AWSManager sharedInstance] isFileExistsFor:key bucketName:self.bucketName success:^(BOOL isExists) {
+                    if (!isExists) {  // new file
+                        [self uploadTextFile];
+                    } else {
+                        [SVProgressHUD dismiss];
+                        [self updateTextViewFrame];
+                        
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
+                                                                        message:kErrorMsgFileNameExists
+                                                                       delegate:self
+                                                              cancelButtonTitle:@"OK"
+                                                              otherButtonTitles:nil];
+                        alert.delegate = self;
+                        [alert show];
+                    }
+                } failure:^(NSError *error) {
+                    if([[error.userInfo valueForKey:@"Code"] isEqualToString:@"AllAccessDisabled"]){
+                        
+                        [SVProgressHUD showErrorWithStatus:@"All access has been disabled"];
+                    } else {
+                        [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
+                    }
+                }];
             } else {
                 [alertView dismissWithClickedButtonIndex:0 animated:NO];
                 [self takeInputForFileName];
@@ -250,7 +260,7 @@
 #pragma mark - UITextField delegate method
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range
-                                                        replacementString:(NSString *)string {
+replacementString:(NSString *)string {
     if(textField.text.length > 25) { // file name must be less than 25 characters
         return NO;
     }
@@ -264,7 +274,7 @@
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range
-                                                replacementText:(NSString *)text {
+ replacementText:(NSString *)text {
     NSString *textViewText = textView.text;
     if ([self firstString:textViewText containsSecond:kPlaceholderTextView]) {
         [textView setText:[textViewText stringByReplacingOccurrencesOfString:kPlaceholderTextView  withString:@""]];
@@ -289,5 +299,6 @@
     NSRange range = [firstString rangeOfString:secondString];
     return range.length != 0;
 }
+
 
 @end

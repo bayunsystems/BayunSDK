@@ -23,6 +23,8 @@ typedef NS_ENUM(NSUInteger, RCError) {
     RCErrorInvalidToken = 0,
     /**Credentials are invalid*/
     RCErrorInvalidCredentials,
+    /**Account is locked*/
+    RCErrorAccountLocked,
     /**No internet connectivity*/
     RCErrorInternetConnection,
     /**Request is timed out*/

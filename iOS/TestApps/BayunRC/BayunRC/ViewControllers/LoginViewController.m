@@ -14,6 +14,7 @@
 #import "Sender.h"
 #import "Receiver.h"
 #import <Bayun/BayunCore.h>
+#import "CTCheckbox.h"
 
 @interface LoginViewController ()
 
@@ -26,6 +27,15 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    //Set default - RC Production Server
+    [[NSUserDefaults standardUserDefaults] setObject:@"Production" forKey:kRCServer];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    [self.checkbox addTarget:self action:@selector(checkboxDidChange:) forControlEvents:UIControlEventValueChanged];
+    self.checkbox.textLabel.text = @"Point to Sandbox Server";
+    [self.checkbox setColor:[UIColor whiteColor] forControlState:UIControlStateNormal];
+    [self.checkbox setColor:[UIColor whiteColor] forControlState:UIControlStateDisabled];
     
     [self.backgroundImageView setImage:[UIImage imageNamed:@"backgroungImage.png"]];
     
@@ -48,6 +58,19 @@
     
     self.navigationController.navigationBar.hidden = YES;
     self.isKeyboardVisible = NO;
+    
+}
+
+- (void)checkboxDidChange:(CTCheckbox *)checkbox
+{
+    if (checkbox.checked) {
+        NSLog(@"Sandbox");
+        [[NSUserDefaults standardUserDefaults] setObject:@"Sandbox" forKey:kRCServer];
+    } else {
+        NSLog(@"Production");
+        [[NSUserDefaults standardUserDefaults] setObject:@"Production" forKey:kRCServer];
+    }
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -62,6 +85,7 @@
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -113,7 +137,7 @@
                                               @"password" : password,
                                               @"appId" : [RCUtilities appId]};
                 
-                [[BayunCore sharedInstance] authenticateWithCredentials:credentials passcode:nil success:^{
+                [[BayunCore sharedInstance] authenticateWithCredentials:credentials passphrase:nil success:^{
                     [SVProgressHUD dismiss];
                     
                     [[NSUserDefaults standardUserDefaults]setBool:YES forKey:kIsUserLoggedIn];
@@ -124,9 +148,11 @@
                     [SVProgressHUD dismiss];
                     if (errorCode == BayunErrorUserInActive) {
                         [SVProgressHUD showErrorWithStatus:kErrorUserInActive];
+                    } if (errorCode == BayunErrorAppNotLinked) {
+                        [SVProgressHUD showErrorWithStatus:kErrorMsgAppNotLinked];
                     } else if (errorCode == BayunErrorInvalidCredentials){
                         [SVProgressHUD showErrorWithStatus:kErrorInvalidCredentials];
-                    } else if (errorCode == BayunErrorInvalidPasscode){
+                    } else if (errorCode == BayunErrorInvalidPassphrase){
                         [SVProgressHUD showErrorWithStatus:kErrorIncorrectPasscode];
                     } else if (errorCode == BayunErrorAuthenticationFailed){
                         [SVProgressHUD showErrorWithStatus:kErrorMsgAuthenticationFailed];
@@ -141,7 +167,9 @@
                     [appDelegate logoutWithMessage:kErrorSessionIsExpired];
                 } else if(errorCode == RCErrorInvalidCredentials) {
                     [SVProgressHUD showErrorWithStatus:kErrorInvalidCredentials];
-                } else {
+                } else if(errorCode == RCErrorAccountLocked) {
+                    [SVProgressHUD showErrorWithStatus:kErrorAccountIsLocked];
+                }else {
                     AppDelegate  *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
                     [appDelegate logoutWithMessage:kErrorSomethingWentWrong];
                 }
@@ -247,7 +275,5 @@
         [self slideViewBy:-140.0f];
     }
 }
-
-
 
 @end

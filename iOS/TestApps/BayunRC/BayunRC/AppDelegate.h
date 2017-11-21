@@ -20,6 +20,7 @@
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, assign) BOOL isNetworkReachable;
 
+
 - (NSURL *)applicationDocumentsDirectory;
 - (void)logoutWithMessage:(NSString*)message;
 

@@ -18,8 +18,11 @@
  * Returns RingCentral API Base URL
  */
 + (NSString*) baseURL {
-    NSString *path = [[NSBundle mainBundle] pathForResource: @"Info" ofType: @"plist"];
-    return [[NSDictionary dictionaryWithContentsOfFile: path] objectForKey: @"RCBaseURL"];
+    if ([[[NSUserDefaults standardUserDefaults] objectForKey:kRCServer] isEqualToString:@"Sandbox"]) {
+        return @"https://platform.devtest.ringcentral.com";
+    } else {
+       return @"https://platform.ringcentral.com";
+    }
 }
 
 /**
@@ -28,13 +31,12 @@
 + (NSString*) rcApplicationKey {
     
     NSString *applicationKey;
-    #ifdef BAYUN_RC_SANDBOX
-    applicationKey = kApplicationKeySandbox;
-    #endif
-    
-    #ifdef BAYUN_RC_PRODUCTION
+
+    if ([[[NSUserDefaults standardUserDefaults] objectForKey:kRCServer] isEqualToString:@"Sandbox"]) {
+        applicationKey = kApplicationKeySandbox;
+    } else {
         applicationKey = kApplicationKeyProd;
-    #endif
+    }
     
     return applicationKey;
 }
@@ -45,14 +47,12 @@
 + (NSString*) rcSecretKey {
     
     NSString *secretKey;
-    #ifdef BAYUN_RC_SANDBOX
+    
+    if ([[[NSUserDefaults standardUserDefaults] objectForKey:kRCServer] isEqualToString:@"Sandbox"]) {
         secretKey = kApplicationSecretKeySandbox;
-    #endif
-    
-    #ifdef BAYUN_RC_PRODUCTION
+    } else {
         secretKey = kApplicationSecretKeyProd;
-    #endif
-    
+    }
     return secretKey;
 }
 
@@ -104,7 +104,7 @@
  Returns AppId
  */
 + (NSString*)appId {
-    return [NSString stringWithFormat:@"%@",kBayunAppId];;
+    return kBayunAppId;
 }
 
 /**

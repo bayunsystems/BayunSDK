@@ -22,6 +22,7 @@ extern NSString *const kRCRefreshToken;
 extern NSString *const kRCRefreshTokenExpIn;
 extern NSString *const kRCLastMessageDate;
 extern NSString *const kRCLastMessageDateString;
+extern NSString *const kRCServer;
 
 extern NSString *const kErrorUserInActive;
 extern NSString *const kErrorInternetConnection;
@@ -31,9 +32,11 @@ extern NSString *const kErrorAccessDenied;
 extern NSString *const kErrorSomethingWentWrong;
 extern NSString *const kErrorIncorrectPasscode;
 extern NSString *const kErrorInvalidCredentials;
+extern NSString *const kErrorAccountIsLocked;
 extern NSString *const kErrorSessionIsExpired;
 extern NSString *const kErrorCompleteAllFields;
 extern NSString *const kErrorMessageCouldNotBeSent;
 extern NSString *const kErrorMsgAuthenticationFailed;
+extern NSString *const kErrorMsgAppNotLinked ;
 
 @end

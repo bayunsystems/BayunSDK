@@ -9,7 +9,6 @@
 #import "SecureAWSS3TransferUtility.h"
 #import "AWSS3PreSignedURL.h"
 #import "AWSSynchronizedMutableDictionary.h"
-#import <Bayun/BayunCore.h>
 
 NSString *const SecureAWSS3TransferUtilityIdentifier = @"com.bayun.SecureAWSS3TransferUtility.Identifier";
 NSTimeInterval const SecureAWSS3TransferUtilityTimeoutIntervalForResource = 50 * 60; // 50 minutes
@@ -27,7 +26,7 @@ static NSString *const AWSInfoS3TransferUtility = @"S3TransferUtility";
 @property (strong, nonatomic) NSString *sessionIdentifier;
 @property (strong, nonatomic) NSString *temporaryDirectoryPath;
 @property (strong, nonatomic) AWSSynchronizedMutableDictionary *taskDictionary;
-@property (copy, nonatomic) void (^backgroundURLSessionCompletionHandler)();
+@property (copy, nonatomic) void (^backgroundURLSessionCompletionHandler)(void);
 
 @end
 
@@ -46,22 +45,7 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
 
 #pragma mark - Initialization methods
 
-+ (instancetype)defaultS3TransferUtility {
-    
-//    if (![AWSServiceManager defaultServiceManager].defaultServiceConfiguration) {
-//        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-//                                       reason:@"`defaultServiceConfiguration` is `nil`. You need to set it before using this method."
-//                                     userInfo:nil];
-//    }
-//    
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        _defaultS3TransferUtility = [[SecureAWSS3TransferUtility alloc] initWithConfiguration:[AWSServiceManager defaultServiceManager].defaultServiceConfiguration
-//                                                                             identifier:nil];
-//    });
-//    
-//    return _defaultS3TransferUtility;
-    
++ (instancetype)defaultS3TransferUtility {    
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         AWSServiceConfiguration *serviceConfiguration = nil;
@@ -81,8 +65,12 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
                                          userInfo:nil];
         }
         
+        
+        
+        
         _defaultS3TransferUtility = [[SecureAWSS3TransferUtility alloc] initWithConfiguration:serviceConfiguration
                                                                              identifier:nil];
+        _defaultS3TransferUtility.encryptionPolicy = BayunEncryptionPolicyDefault;
     });
     
     return _defaultS3TransferUtility;
@@ -200,14 +188,12 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
              expression:(AWSS3TransferUtilityUploadExpression *)expression
        completionHander:(AWSS3TransferUtilityUploadCompletionHandlerBlock)completionHandler {
     
-   
     return [super uploadData:data
                       bucket:bucket
                          key:key
                  contentType:contentType
                   expression:expression
-            completionHander:completionHandler];;
-    
+            completionHandler:completionHandler];
 }
 
 - (AWSTask *)uploadFile:(NSURL *)fileURL
@@ -224,14 +210,17 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
-    [[BayunCore sharedInstance] lockFile:fileURL success:^{
+    [[BayunCore sharedInstance] lockFile:fileURL
+                        encryptionPolicy:self.encryptionPolicy
+                                 groupId:self.groupId
+                                 success:^{
         
         task = [super uploadFile:fileURL
                           bucket:bucket
                              key:key
                      contentType:contentType
                       expression:expression
-                completionHander:completionHandler];
+                completionHandler:completionHandler];
         
         dispatch_semaphore_signal(semaphore);
     } failure:^(BayunError errorCode) {
@@ -258,7 +247,7 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
                    completionHander:(AWSS3TransferUtilityDownloadCompletionHandlerBlock)completionHandler {
     
     
-    return [super downloadDataFromBucket:bucket key:key expression:expression completionHander:completionHandler] ;
+    return [super downloadDataFromBucket:bucket key:key expression:expression completionHandler:completionHandler] ;
 }
 
 - (AWSTask *)downloadToURL:(NSURL *)fileURL
@@ -328,7 +317,7 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
                          bucket:bucket
                             key:key
                      expression:expression
-               completionHander:completionBlock];
+               completionHandler:completionBlock];
    
 }
 

@@ -10,6 +10,7 @@
 #import <AWSCore/AWSCore.h>
 #import "AWSS3Model.h"
 #import <AWSS3/AWSS3Service.h>
+#import <Bayun/BayunCore.h>
 
 typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
     SecureAWSS3ServiceErrorUnknown,
@@ -32,6 +33,15 @@ typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
  
  */
 @interface SecureAWSS3 :AWSS3
+
+@property (strong, nonatomic) NSString *groupId;
+
+/**
+ Encryption Policy determines the key for Encryption.
+ Default encryption policy is BayunEncryptionPolicyDefault.
+ */
+@property (nonatomic, assign) BayunEncryptionPolicy encryptionPolicy;
+
 
 /**
  The service configuration used to instantiate this service client.

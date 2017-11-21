@@ -12,6 +12,10 @@
 
 @property (strong, nonatomic) IBOutlet UITextView *textView;
 
+@property (strong, nonatomic) NSString *bucketName;
+
 - (IBAction)saveButtonIsPressed:(id)sender;
+
+@property (strong,nonatomic) NSDictionary *group;
 
 @end

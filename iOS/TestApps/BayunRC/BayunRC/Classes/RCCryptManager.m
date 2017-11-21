@@ -7,7 +7,7 @@
 //
 
 #import "RCCryptManager.h"
-#import <Bayun/BayunCore.h>
+
 
 @interface RCCryptManager()
 
@@ -34,37 +34,51 @@
 /*
  * Returns decrypted text
  */
-- (NSString*) decryptText :(NSString*) text {
+- (void) decryptText :(NSString*) text success:(void (^)(NSString*))success failure:(void (^)(BayunError))failure{
 
     self.decryptedText = text;
     //Decrypt text using Bayun Library
     [[BayunCore sharedInstance] unlockText:text success:^(NSString *decryptedTextResponse) {
         self.decryptedText = decryptedTextResponse;
+        if (success) {
+            success(decryptedTextResponse);
+        }
+        
     } failure:^(BayunError errorCode) {
         //errorCode might be BayunErrorUserInActive (if user is not active or cancelled by admin),
         //BayunErrorDecryptionFailed (if decryption fails)
         //In the sample app,the message is being returned as is if decryption fails
-        self.decryptedText = text;
+        
+        if (failure) {
+            failure(errorCode);
+        }
     }];
-    
-    return self.decryptedText;
 }
 
 /*
  * Returns encrypted text
  */
--(NSString*) encryptText:(NSString *)text {
+-(void)encryptText:(NSString *)text success:(void (^)(NSString*))success failure:(void (^)(BayunError))failure {
     
     //Encrypt text using Bayun Library
     [[BayunCore sharedInstance] lockText:text success:^(NSString *responseText) {
         self.encryptedText = responseText;
+        
+        if (success) {
+            success(responseText);
+        }
+        
     } failure:^(BayunError errorCode) {
         //errorCode might be BayunErrorUserInActive (if user is not active or cancelled by admin),
         //BayunErrorEncryptionFailed (if encryption fails)
         //In the sample app, nil is being returned if encryption failed
         self.encryptedText = nil;
+        
+        if (failure) {
+            failure(errorCode);
+        }
     }];
-    return self.encryptedText;
+   
 }
 
 

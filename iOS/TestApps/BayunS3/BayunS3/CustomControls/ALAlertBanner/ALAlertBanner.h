@@ -47,7 +47,7 @@ typedef enum {
     ALAlertBannerStateHidden
 } ALAlertBannerState;
 
-@interface ALAlertBanner : UIView
+@interface ALAlertBanner : UIView<CAAnimationDelegate>
 
 @property (nonatomic, readonly) ALAlertBannerStyle style;
 @property (nonatomic, readonly) ALAlertBannerPosition position;

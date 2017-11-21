@@ -17,7 +17,7 @@
 #import "AWSURLResponseSerialization.h"
 #import "AWSURLRequestRetryHandler.h"
 #import "AWSSynchronizedMutableDictionary.h"
-#import <Bayun/BayunCore.h>
+
 
 static NSString *const AWSInfoS3 = @"S3";
 NSString *const SecureAWSS3APIVersion = @"s3-2006-03-01";
@@ -102,6 +102,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
         }
         
         _defaultS3 = [[SecureAWSS3 alloc] initWithConfiguration:serviceConfiguration];
+        _defaultS3.encryptionPolicy = BayunEncryptionPolicyDefault;
     });
     
     return _defaultS3;
@@ -234,7 +235,10 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     __block AWSTask *task;
   
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    [[BayunCore sharedInstance] lockFile:request.body success:^{
+    [[BayunCore sharedInstance] lockFile:request.body
+                        encryptionPolicy:self.encryptionPolicy
+                                 groupId:self.groupId
+                                 success:^{
         NSError *error = nil;
         NSURL *url = request.body;
         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[[url path] stringByResolvingSymlinksInPath]
@@ -403,7 +407,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                     [[NSFileManager defaultManager] removeItemAtURL:tempURL
                                                               error:&error];
                     if (error) {
-                        AWSLogError(@"Failed to delete a temporary file for part upload: [%@]", error);
+                        NSLog(@"Failed to delete a temporary file for part upload: [%@]", error);
                     }
                     
                     if (task.error) {
@@ -464,9 +468,9 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     
     [[weakSelf abortMultipartUpload:abortMultipartUploadRequest] continueWithBlock:^id(AWSTask *task) {
         if (task.error) {
-            AWSLogDebug(@"Received response for abortMultipartUpload with Error:%@",task.error);
+            NSLog(@"Received response for abortMultipartUpload with Error:%@",task.error);
         } else {
-            AWSLogDebug(@"Received response for abortMultipartUpload.");
+            NSLog(@"Received response for abortMultipartUpload.");
         }
         return nil;
     }];

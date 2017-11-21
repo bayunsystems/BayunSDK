@@ -17,6 +17,7 @@
 #import "ExtensionListViewController.h"
 #import "ConversationViewController.h"
 #import "RCCryptManager.h"
+#import <Bayun/BayunError.h>
 
 
 @interface ConversationListViewController ()<NSFetchedResultsControllerDelegate,UIActionSheetDelegate>
@@ -271,9 +272,11 @@
         peerExtension = sender.extension;
     }
     
-    [cell.messageLabel setText:conversation.lastMessage.subject];
-    
-    [cell.messageLabel setText:[[RCCryptManager sharedInstance] decryptText :conversation.lastMessage.subject ]];
+    [[RCCryptManager sharedInstance] decryptText :conversation.lastMessage.subject success:^(NSString *decryptedText) {
+       [cell.messageLabel setText:decryptedText];
+    } failure:^(BayunError error) {
+        [cell.messageLabel setText:conversation.lastMessage.subject];
+    }];
     
     [cell.timeStampLabel setText:[RCUtilities getCurrentTimeStampDateString:conversation.lastMessage.creationTime]];
     return cell;

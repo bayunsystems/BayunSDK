@@ -12,12 +12,10 @@
 
 @implementation Utilities
 
-+ (NSString*)s3BucketName {
-    return [[NSUserDefaults standardUserDefaults] valueForKey:kS3BucketName];
-}
-
 + (NSString*)appId {
-    return [NSString stringWithFormat:@"%@",kBayunAppId];
+    
+    //return @"6dc67116a1f3419cac6074a71c09db2c"; //BayunS3-1
+    return @"6acb2ca252da4ef8a3bc599f75535ecd"; //BayunS3
 }
 
 
@@ -26,12 +24,10 @@
     int multiplyFactor = 0;
     
     NSArray *tokens = [NSArray arrayWithObjects:@"Bytes",@"KB",@"MB",@"GB",@"TB",nil];
-    
     while (convertedValue > 1024) {
         convertedValue /= 1024;
         multiplyFactor++;
     }
-    
     return [NSString stringWithFormat:@"%4.0f %@",convertedValue, [tokens objectAtIndex:multiplyFactor]];
 }
 
@@ -46,9 +42,7 @@
 
 + (void)clearKeychainAndUserDefaults {
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kIsUserLoggedIn];
-    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kCompanyName];
-    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kS3BucketName];
-    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kBucketExists];
+    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kCompany];
     [[NSUserDefaults standardUserDefaults]synchronize];
 }
 

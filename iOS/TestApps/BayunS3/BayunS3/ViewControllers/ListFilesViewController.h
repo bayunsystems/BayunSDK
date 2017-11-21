@@ -8,11 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ListFilesViewController : UIViewController<UITableViewDelegate,UITableViewDataSource>
+@interface ListFilesViewController : UIViewController
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *noItemsView;
 
-- (IBAction)uploadButtonIsPressed:(id)sender;
+- (IBAction)moreButtonIsPressed:(id)sender;
 
 @end

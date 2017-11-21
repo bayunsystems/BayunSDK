@@ -12,6 +12,8 @@
 #import "Sender.h"
 #import "Receiver.h"
 #import "RCCryptManager.h"
+#import <Bayun/BayunError.h>
+
 
 @interface RCMessage()
 
@@ -36,7 +38,14 @@
 
 -(NSString *)text {
     
-    return [[RCCryptManager sharedInstance] decryptText:self.message.subject ];
+    __block NSString *message = self.message.subject;
+    [[RCCryptManager sharedInstance] decryptText:self.message.subject success:^(NSString *decryptedMessage) {
+        message =  decryptedMessage;
+    } failure:^(BayunError error) {
+        message = self.message.subject;
+    }];
+    
+    return message;
 }
 
 -(NSString *)senderId {

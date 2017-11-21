@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class CTCheckbox;
 
 //View Controller to login RingCentral and authenticate with the Bayun.
 
@@ -20,5 +21,6 @@
 @property (strong, nonatomic) IBOutlet UIView *parentView;
 
 - (IBAction)logInButtonIsPressed:(id)sender;
+@property (strong, nonatomic) IBOutlet CTCheckbox *checkbox;
 
 @end

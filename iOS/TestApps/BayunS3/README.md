@@ -12,7 +12,7 @@ BayunSDK/iOS/TestApps/BayunS3 in a terminal window and run the following
 command to generate the xcode workspace file.
 'pod install'
 
-4. Use XCode 7.0 or higher to open the just created BayunS3.xcworkspace file in 
+4. Use XCode 8.0 or higher to open the just created BayunS3.xcworkspace file in 
 the folder BayunSDK/iOS/TestApps/BayunS3.
 
 5. In the workspace, select the first target 'BayunS3'
@@ -28,17 +28,17 @@ v. A pop up opens to choose options for adding the files. Choose the options
 This integrates the Bayun framework into the app.
  ```
 
-7. You will need your AWSS3 access key and secret key. 
-   Place the access key and secret key in the AppConfig.h file.
+7. You will need your CognitoIdentityUserPoolRegion, CognitoIdentityUserPoolId, CognitoIdentityUserPoolAppClientId, CognitoIdentityUserPoolAppClientSecret, CognitoIdentityPoolId.
+   Place the access key and secret key in the Constants.m file.
 
 8. You are provided with an appId when your app is registered with Bayun, see [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_ios/before_you_begin.html).  
-    In the AppConfig.h file, replace value of "kBayunAppId" with your Bayun AppId.
+    In the Constants.m file, replace value of "BayunAppId" with your Bayun AppId.
 
 9. Build and Run the project.
 
-10. Enter your company in the Company field, your employee id in Employee field, 
-   and your password in Password field and hit Register button.
+10. You need to first signUp using Amazon Cognito User Pools .
+      Enter your username, password, phone number and set your company name. Hit Register button.
+      You will receive a confirmation code on your email address. Enter the confirmation code in the confirm signUp screen  and complete your signup process.
 
-11. After authenticating with the Bayun Key Management Server, a bucket with name 'bayun-yourCompanyName' 
-    is created. You should be able to upload and download files from the bucket. 
+11. After signup you can signIn the app. Provide your username and password to signIn. A bucket with name 'bayun-test-yourCompanyName' is created. You should be able to upload/download files to/from the bucket. 
 

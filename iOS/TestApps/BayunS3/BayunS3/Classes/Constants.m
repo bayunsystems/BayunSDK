@@ -11,12 +11,22 @@
 @implementation Constants
 
 NSString *const kIsUserLoggedIn = @"Is user loggedIn";
+NSString *const kCompany = @"Company name";
 
-NSString *const kBucketExists = @"Is bucket exists";
-NSString *const kS3BucketName = @"AWS3 bucket name";
-NSString *const kCompanyName = @"Company name";
-
+NSString *const kEncryptionPolicy = @"EncryptionPolicy";
+NSString *const kInvalidCompany = @"Invalid Company";
 NSString *const kNewFileCreated = @"New file is created";
+NSString *const kDeleteFile = @"Delete File";
+NSString *const kGroupDeleted = @"Group deleted.";
+NSString *const kGroupJoined = @"Group joined.";
+NSString *const kMemberRemovedSuccessfully = @"Member removed from the group successfully";
+NSString *const kMemberAddedSuccessfully = @"Member added to the group successfully";
+NSString *const kMemberAlreadyExists = @"Member already exists in Group";
+NSString *const kMemberDoesNotExists = @"Member doesnot exists in Group";
+NSString *const kEmployeeDoesNotExist = @"Employee doesnot exist";
+NSString *const kFileDeletedSuccessfully = @"File is deleted sucessfully.";
+NSString *const kPermissionDenied = @"Permission Denied";
+
 NSString *const  kPlaceholderTextView =@"Enter Text Here.\n\nFor this demo, text entered here is locked and saved as text file on S3 server.\nOnly employees from same company can view unlocked text.";
 
 NSString *const kErrorMsgNoTextToSave = @"No text to be saved";
@@ -26,15 +36,29 @@ NSString *const kErrorMsgInternetConnection = @"Internet appears to be offline";
 NSString *const kErrorMsgRequestTimeOut = @"Could not connect to the server. Please try again.";
 NSString *const kErrorMsgCouldNotConnectToServer = @"Server is not accessible";
 NSString *const kErrorMsgAccessDenied = @"Access Denied.";
-NSString *const kErrorMsgPermissionDenied = @"Permission Denied";
+
 NSString *const kErrorMsgUserInActive = @"Please contact your Admin to activate your account.";
 NSString *const kErrorMsgSomethingWentWrong = @"Something went wrong.Please try again";
 NSString *const kErrorMsgFileDeletionFailed = @"File could not be deleted. Please try again.";
-NSString *const kErrorMsgIncorrectPasscode = @"Incorrect Passcode.";
+
+NSString *const kErrorMsgGroupDeletionFailed = @"Sorry, cannot delete group at the moment";
+NSString *const kErrorMsgDeleteGroupForNonMember = @"Cannot delete group as you are not a member.";
+
+NSString *const kErrorMsgIncorrectPassphrase = @"Incorrect Passphrase.";
 NSString *const kErrorMsgIncorrectPassword = @"Incorrect Password.";
 NSString *const kErrorMsgAuthenticationFailed = @"Authentication Failed.";
 NSString *const kErrorMsgInvalidCredentials = @"Invalid Credentials.";
 NSString *const kErrorMsgAppNotLinked = @"Please link this app with your company employee account via Bayun admin-panel first";
 
+NSString *const kConfirmationMsgToJoinPublicGroup = @"Do you want to join the Public Group?";
+NSString *const kConfirmationMsgToDeleteGroup = @"Are you sure you want to delete the Group?";
+NSString *const kConfirmationMsgToLeaveGroup = @"Are you sure you want to leave the Group?";
+
+AWSRegionType const CognitoIdentityUserPoolRegion = AWSRegionUSWest2;
+NSString *const CognitoIdentityUserPoolId = @"Your Cognito Identity UserPoolId";
+NSString *const CognitoIdentityUserPoolAppClientId = @"Your Cognito Identity UserPoolAppClientId";
+NSString *const CognitoIdentityUserPoolAppClientSecret = @"Your Cognito Identity UserPoolAppClientSecret";
+NSString *const CognitoIdentityPoolId = @"Your Cognito IdentityPoolId";
+NSString *const BayunAppId = @"Your BayunAppId";
 
 @end

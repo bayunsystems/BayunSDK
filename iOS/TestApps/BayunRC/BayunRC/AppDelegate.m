@@ -35,16 +35,15 @@
     [networkReachability startNotifier];
     self.isNetworkReachable = networkReachability.currentReachabilityStatus;
     
-    UINavigationController *navigationController;
-    
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
+    UINavigationController *navigationController = (UINavigationController*) self.window.rootViewController;
+    
     if ([[NSUserDefaults standardUserDefaults]boolForKey:kIsUserLoggedIn]) {
-        UINavigationController *navigationController = (UINavigationController*) self.window.rootViewController;
+
         [navigationController pushViewController:[storyboard instantiateViewControllerWithIdentifier:@"ConversationListViewController"]
                                         animated:NO];
     } else {
-        UINavigationController *navigationController = (UINavigationController*) self.window.rootViewController;
         [navigationController pushViewController:[storyboard instantiateViewControllerWithIdentifier:@"LoginViewController"]
                                         animated:NO];
     }
@@ -103,7 +102,6 @@
         alert.delegate = self;
         [alert show];
     }
-    
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

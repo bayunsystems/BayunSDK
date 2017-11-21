@@ -3,8 +3,10 @@ platform :ios, '8.0'
 
 target 'BayunS3' do
 
-pod 'AWSCore' , '~> 2.4.1'
-pod 'AWSS3', '~> 2.4.1'
+pod 'AWSCore' , '2.6.0'
+pod 'AWSS3', '2.6.0'
+pod 'AWSCognito’, '2.6.0'
+pod 'AWSCognitoIdentityProvider', '2.6.0'
 pod 'Reachability'
 
 end

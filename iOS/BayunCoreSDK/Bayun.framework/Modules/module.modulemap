@@ -1,6 +1,0 @@
-framework module Bayun {
-  umbrella header "Bayun.h"
-
-  export *
-  module * { export * }
-}

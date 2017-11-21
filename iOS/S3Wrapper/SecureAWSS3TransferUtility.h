@@ -9,12 +9,19 @@
 #import <Foundation/Foundation.h>
 #import <AWSCore/AWSCore.h>
 #import <AWSS3TransferUtility.h>
+#import <Bayun/BayunCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SecureAWSS3TransferUtility : AWSS3TransferUtility
 
+@property (strong, nonatomic) NSString *groupId;
 
+/**
+ Encryption Policy determines the key for Encryption.
+ Default encryption policy is BayunEncryptionPolicyDefault.
+ */
+@property (nonatomic, assign) BayunEncryptionPolicy encryptionPolicy;
 
 /**
  Returns the singleton service client. If the singleton object does not exist, the SDK instantiates the default service client with `defaultServiceConfiguration` from `[AWSServiceManager defaultServiceManager]`. The reference to this object is maintained by the SDK, and you do not need to retain it manually.
@@ -42,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
  @return The default service client.
  */
 + (nullable instancetype)defaultS3TransferUtility;
+
 
 /**
  Creates a service client with the given service configuration and registers it for the key.

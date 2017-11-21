@@ -8,6 +8,7 @@
 
 #import "AWSS3TransferManager.h"
 #import <AWSTask.h>
+#import <Bayun/BayunCore.h>
 
 typedef NS_ENUM(NSInteger, SecureAWSS3TransferManagerErrorType) {
     SecureAWSS3TransferManagerErrorUnknown,
@@ -29,6 +30,14 @@ typedef NS_ENUM(NSInteger, SecureAWSS3TransferManagerErrorType) {
  Utility for managing secure transfers to Amazon S3. SecureAWSS3TransferManager provides a simple API for uploading and downloading content to Amazon S3.
  */
 @interface SecureAWSS3TransferManager : AWSS3TransferManager
+
+@property (strong, nonatomic) NSString *groupId;
+
+/**
+ Encryption Policy determines the key for Encryption.
+ Default encryption policy is BayunEncryptionPolicyDefault.
+ */
+@property (nonatomic, assign) BayunEncryptionPolicy encryptionPolicy;
 
 /**
  Returns the singleton service client. If the singleton object does not exist, the SDK instantiates the default service client with `defaultServiceConfiguration` from `[AWSServiceManager defaultServiceManager]`. The reference to this object is maintained by the SDK, and you do not need to retain it manually.
@@ -125,7 +134,9 @@ typedef NS_ENUM(NSInteger, SecureAWSS3TransferManagerErrorType) {
  continuation block will be run.
  @param block The block to be run once this task is complete.
  */
-- (void)upload:(AWSS3TransferManagerUploadRequest *)uploadRequest continueWithExecutor:(AWSExecutor *)executor withBlock:(AWSContinuationBlock)block;
+- (void)upload:(AWSS3TransferManagerUploadRequest *)uploadRequest
+continueWithExecutor:(AWSExecutor *)executor
+            withBlock:(AWSContinuationBlock)block;
 
 /*!
  Schedules a new transfer to download data from Amazon S3.

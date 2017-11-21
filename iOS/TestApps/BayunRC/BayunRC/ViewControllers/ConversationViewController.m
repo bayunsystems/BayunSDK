@@ -98,8 +98,6 @@
     [self setTitle];
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    [self.collectionView reloadData];
-
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -139,7 +137,7 @@
 /*
  * Sends pager-message
  */
--(void) sendMessage:(NSDictionary*)parameters {
+- (void)sendMessage:(NSDictionary*)parameters {
     [[RCAPIManager sharedInstance]sendMessage:parameters success:^{
         [self doneSendingMessage];
         [self refreshMessages];
@@ -156,13 +154,12 @@
             [SVProgressHUD showErrorWithStatus:kErrorSomethingWentWrong];
         }
     }];
-    
 }
 
 /*
  * Fetches new pager messages
  */
--(void) getNewMessages {
+- (void)getNewMessages {
     [[RCAPIManager sharedInstance]getMessageList:^{
         [self refreshMessages];
     } failure:^(RCError errorCode) {
@@ -185,7 +182,9 @@
 
 #pragma mark - Methods for Sort and Refresh Pager Messages
 
--(void) sortMessages {
+- (void)sortMessages {
+    
+    [SVProgressHUD dismiss];
     if (self.conversation) {
         self.lastMessage = self.conversation.lastMessage;
         
@@ -199,10 +198,10 @@
         [self.collectionView reloadData];
         [self scrollToBottomAnimated:YES];
     }
-    [SVProgressHUD dismiss];
+    
 }
 
--(void) refreshMessages {
+- (void)refreshMessages {
     Conversation *conversation = [[Conversation findWithPredicate:
                                    [NSPredicate predicateWithFormat:@"conversationId=%@",self.conversation.conversationId]] lastObject];
    
@@ -263,13 +262,15 @@
     [parameters setObject:sender forKey:@"from"];
     
     
-   NSString *encryptedMessage =  [[RCCryptManager sharedInstance] encryptText:message];
-    if (encryptedMessage) {
-        [parameters setObject:encryptedMessage  forKey:@"text"];
-        [self sendMessage:parameters];
-    } else {
-        [SVProgressHUD showErrorWithStatus:kErrorMessageCouldNotBeSent];
-    }
+   [[RCCryptManager sharedInstance] encryptText:message success:^(NSString *encryptedMessage) {
+   
+       [parameters setObject:encryptedMessage  forKey:@"text"];
+       [self sendMessage:parameters];
+       
+   } failure:^(BayunError error) {
+       [SVProgressHUD showErrorWithStatus:kErrorMessageCouldNotBeSent];
+   }];
+    
 }
 
 - (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView messageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -340,8 +341,8 @@ attributedTextForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath {
         cell.textView.textColor =[RCUtilities colorFromHexString:@"#383838"];
     }
     
-    cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : [RCUtilities colorFromHexString:@"#0072bc"],
-                                          NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
+    cell.textView.linkTextAttributes = @{NSForegroundColorAttributeName : [RCUtilities colorFromHexString:@"#0072bc"],
+                                         NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     
     return cell;
 }

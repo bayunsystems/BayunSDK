@@ -25,14 +25,6 @@
     
     int minutes;
     
-//    if(deltaSeconds < 5)
-//    {
-//        return @"Just now";
-//    }
-//    else if(deltaSeconds < 60)
-//    {
-//        return [self stringFromFormat:@"%%d %@seconds ago" withValue:deltaSeconds];
-//    }
     if(deltaSeconds < 60)
     {
         return @"few seconds ago";

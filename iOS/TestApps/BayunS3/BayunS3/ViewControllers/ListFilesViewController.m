@@ -16,8 +16,14 @@
 #import "AWSManager.h"
 #import "AppDelegate.h"
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "DropDownView.h"
+#import "DLAVAlertViewTheme.h"
+#import "DLAVAlertView.h"
+#import "MKDropdownMenu.h"
+#import <Bayun/BayunCore.h>
+#import "SecureAWSS3TransferManager.h"
 
-@interface ListFilesViewController ()<AWSManagerDelegate, UIActionSheetDelegate ,UIDocumentPickerDelegate,UIDocumentMenuDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,QLPreviewControllerDataSource,QLPreviewControllerDelegate,UIDocumentInteractionControllerDelegate>
+@interface ListFilesViewController ()<AWSManagerDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate ,UIDocumentPickerDelegate,UIDocumentMenuDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,QLPreviewControllerDataSource,QLPreviewControllerDelegate,UIDocumentInteractionControllerDelegate,MKDropdownMenuDataSource, MKDropdownMenuDelegate>
 
 @property (strong , nonatomic) UIBarButtonItem *createButton;
 @property (strong,nonatomic) NSArray *s3BucketObjectArray;
@@ -26,6 +32,18 @@
 @property (nonatomic, strong) UIDocumentInteractionController *docInteractionController;
 @property (nonatomic,strong) QLPreviewController *previewController;
 @property (nonatomic, strong) NSIndexPath *selectedIndexPath;
+@property (strong,nonatomic) UILabel *selectPolicyLabel;
+@property (strong,nonatomic) MKDropdownMenu *dropDownMenu;
+@property (strong,nonatomic) NSArray *encryptionPolicies;
+@property (nonatomic) NSUInteger selectedEncryptionPolicyRow;
+@property (strong,nonatomic) NSString *selectedEncryptionPolicy;
+
+@property (strong, nonatomic) NSString *bucketName;
+
+@property (nonatomic, strong) AWSCognitoIdentityUser * user;
+@property (nonatomic,strong) AWSCognitoIdentityUserGetDetailsResponse * response;
+@property (nonatomic, strong) AWSCognitoIdentityUserPool * pool;
+
 
 @end
 
@@ -38,22 +56,30 @@
     [super viewDidLoad];
     
     self.title = @"Files";
-    self.navigationItem.hidesBackButton = YES;
-    self.navigationController.navigationBar.hidden = NO;
+    [self.navigationItem setHidesBackButton:YES];
+    [self.navigationController setNavigationBarHidden:NO];
     
     self.s3BucketObjectArray = [[NSMutableArray alloc] init];
     
-    [SVProgressHUD show];
+    self.bucketName = [[NSString stringWithFormat:@"bayun-test-%@",[[NSUserDefaults standardUserDefaults] valueForKey:kCompany]] lowercaseString];
+    self.encryptionPolicies = @[@"None",@"Default",@"Company",@"Employee"];
+    
+    self.dropDownMenu = (MKDropdownMenu*)[[MKDropdownMenu alloc]initWithFrame:CGRectMake(0, 40, 200, 40)];
+    self.dropDownMenu.backgroundDimmingOpacity = 0.0;
+    self.dropDownMenu.delegate = self;
+    self.dropDownMenu.dataSource =  self;
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.tableFooterView = [[UIView alloc] init] ;
+    
     
     self.refreshControl = [[UIRefreshControl alloc] init];
     self.refreshControl.tintColor = [UIColor colorWithRed:3/255.0f
                                                     green:97/255.0f
                                                      blue:134/255.0f
                                                     alpha:1.0];
+    
     [self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:)
                   forControlEvents:UIControlEventValueChanged];
     [self.tableView addSubview:self.refreshControl];
@@ -63,21 +89,37 @@
                                                 name:kNewFileCreated
                                               object:nil];
     [self.navigationItem setHidesBackButton:YES];
+    
+    self.pool = [AWSCognitoIdentityUserPool CognitoIdentityUserPoolForKey:@"UserPool"];
+    //on initial load set the user and refresh to get attributes
+    if(!self.user)
+        self.user = [self.pool currentUser];
+   
+    [self refresh];
+}
+
+-(void) refresh {
+    [[self.user getDetails] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserGetDetailsResponse *> * _Nonnull task) {
+        if(task.error){
+            [SVProgressHUD showErrorWithStatus:task.error.userInfo[NSLocalizedDescriptionKey]];
+            [self.navigationController setToolbarHidden:YES];
+        }else {
+            self.response = task.result;
+            [SVProgressHUD show];
+            //if bucket already exists, files in the bucket are loaded.
+            [self createS3Bucket];
+        }
+        return nil;
+    }];
 }
 
 -(void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self.navigationItem setHidesBackButton:YES];
-}
-
--(void) viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
     
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:kBucketExists]) {
-        [self getS3BucketObjects];
-    } else {
-        [self createS3BucketWithName];
-    }
+    //default encryption policy is BayunEncryptionPolicyDefault
+    self.selectedEncryptionPolicyRow = [[NSUserDefaults standardUserDefaults] integerForKey:kEncryptionPolicy];
+    
+    [self.navigationItem setHidesBackButton:YES];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -95,24 +137,28 @@
     }
 }
 
-- (IBAction)uploadButtonIsPressed:(id)sender {
+- (IBAction)moreButtonIsPressed:(id)sender {
     
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self
                                                     cancelButtonTitle:@"Cancel"
                                                destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"Upload",@"Logout", nil];
-    actionSheet.destructiveButtonIndex = 1;
-    
+                                                    otherButtonTitles:@"Upload",@"Groups",@"Encryption Policy",@"Logout", nil];
+    actionSheet.destructiveButtonIndex = 3;
     [actionSheet showInView:self.view];
-    
 }
 
-- (void)createS3BucketWithName {
+- (void)createS3Bucket {
     AWSManager *awsManagerInstance = [AWSManager sharedInstance];
     awsManagerInstance.delegate = self;
-    NSString *bucketName = [NSString stringWithFormat:@"bayun-test-%@",[[NSUserDefaults standardUserDefaults] valueForKey:kCompanyName]];
-    [awsManagerInstance createS3BucketWithName:[bucketName lowercaseString]];
+    [awsManagerInstance createS3BucketWithName:[self.bucketName lowercaseString] success:^{
+        [self getS3BucketObjects];
+    } failure:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+            [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
+        });
+    }];
 }
 
 - (void)getS3BucketObjects {
@@ -121,11 +167,62 @@
     if (appDelegate.isNetworkReachable) {
         AWSManager *awsManagerInstance = [AWSManager sharedInstance];
         awsManagerInstance.delegate = self;
-        [awsManagerInstance getS3FileList];
+        
+        [SVProgressHUD show];
+        [awsManagerInstance getBucketFiles:self.bucketName success:^(AWSS3ListObjectsOutput *bucketObjectsList) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [SVProgressHUD dismiss];
+            });
+            [self performSelectorOnMainThread:@selector(renderFiles:)
+                                   withObject:bucketObjectsList
+                                waitUntilDone:YES];
+        } failure:^(NSError *error){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self showMessageForAWSError:error.code];
+            });
+        }];
     } else {
         [self endRefreshing];
         [SVProgressHUD showErrorWithStatus:kErrorMsgInternetConnection];
     }
+}
+
+-(void)renderFiles:(AWSS3ListObjectsOutput*)bucketObjectsList {
+    [SVProgressHUD dismiss];
+    [self endRefreshing];
+    
+    NSMutableArray *objectsArray = [[NSMutableArray alloc] init];
+    
+    for (AWSS3Object *s3Object in bucketObjectsList.contents) {
+        [objectsArray addObject:s3Object];
+    }
+    
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"lastModified" ascending:NO];
+    self.s3BucketObjectArray   =  [objectsArray sortedArrayUsingDescriptors:@[sortDescriptor]];
+    
+    if (self.s3BucketObjectArray.count == 0) {
+        self.noItemsView.hidden = NO;
+        self.tableView.hidden = YES;
+    } else {
+        self.noItemsView.hidden = YES;
+        self.tableView.hidden = NO;
+    }
+    [self.tableView reloadData];
+}
+
+- (void)uploadFileAtPath:(NSURL*)filePath {
+    [[AWSManager sharedInstance] uploadFile:filePath bucketName:self.bucketName success:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+        [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeClear];
+        [self getS3BucketObjects];
+        
+    } failure:^(NSError *error) {
+        [self endRefreshing];
+        [self showMessageForAWSError:error.code];
+    }];
 }
 
 - (void)endRefreshing {
@@ -139,7 +236,7 @@
 }
 
 - (void)notifyInactiveUser {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Permission Denied"
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:kPermissionDenied
                                                         message:kErrorMsgUserInActive
                                                        delegate:self
                                               cancelButtonTitle:@"OK"
@@ -151,10 +248,58 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
+- (void)showEncryptionPoliciesDropdown{
+    
+    //show encryption policy to encrypt the file
+    
+    DLAVAlertView *alertView = [[DLAVAlertView alloc] initWithTitle:nil
+                                                            message:nil
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Cancel"
+                                                  otherButtonTitles:@"Ok", nil];
+    alertView.alertViewStyle = DLAVAlertViewStyleDefault;
+    
+    UIView *contentView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 200.0, 80.0)];
+    
+    
+    CGRect frame = CGRectMake(0.0, 0.0, 200.0, 40.0);
+    self.selectPolicyLabel = [[UILabel alloc] initWithFrame:frame];
+    self.selectPolicyLabel.text = @"Select Encryption Policy";
+    self.selectPolicyLabel.textAlignment = NSTextAlignmentCenter;
+    
+    [contentView addSubview:self.selectPolicyLabel];
+    [contentView addSubview:self.dropDownMenu];
+    
+    DLAVAlertViewTheme *theme = [DLAVAlertViewTheme defaultTheme];
+    theme.backgroundColor = [UIColor whiteColor];
+    [alertView applyTheme:theme];
+    alertView.contentView = contentView;
+    
+    [alertView showWithCompletion:^(DLAVAlertView *alertView, NSInteger buttonIndex) {
+        if (buttonIndex == 1) {
+            [[NSUserDefaults standardUserDefaults] setInteger:self.selectedEncryptionPolicyRow forKey:kEncryptionPolicy];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            //Ok button is pressed
+            [[AWSManager sharedInstance] setEncryptionPolicy:self.selectedEncryptionPolicyRow];
+        }
+    }];
+}
+
+- (void) showMessageForAWSError :(SecureAWSS3TransferManagerErrorType) errorType {
+    if (errorType == SecureAWSS3TransferManagerErrorUserInactive) {
+        [SVProgressHUD showErrorWithStatus:kErrorMsgUserInActive];
+    } else if (errorType == SecureAWSS3TransferManagerErrorAccessDenied) {
+        [SVProgressHUD showErrorWithStatus:kErrorMsgAccessDenied];
+    } else if (errorType == SecureAWSS3TransferManagerErrorNoInternetConnection) {
+        [SVProgressHUD showErrorWithStatus:kErrorMsgInternetConnection];
+    } else  {
+        [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
+    }
+}
+
 #pragma mark - UIActionSheet Delegate
 
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
-
     if (buttonIndex == 0) {
         //Upload is opted
         if (self.presentedViewController) {
@@ -164,11 +309,38 @@
         } else {
             [self presentDocumentPicker];
         }
-    } else if (buttonIndex == 1) {
+    }else if (buttonIndex == 1) {
+        [self performSegueWithIdentifier:@"groupsListSegue" sender:nil];
+    } else if (buttonIndex == 2) {
+        //encryption policy is opted
+        [self showEncryptionPoliciesDropdown];
+        
+    } else if (buttonIndex == 3) {
         //logout is opted
-        AppDelegate *delegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
-        [delegate showLoginScreen];
+        [self.user signOut];
+        self.title = nil;
+        self.response = nil;
+        [self.tableView reloadData];
+        [self logout];
     }
+}
+
+-(void) logout {
+    [[self.user getDetails] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserGetDetailsResponse *> * _Nonnull task) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(task.error){
+                [SVProgressHUD showErrorWithStatus:task.error.userInfo[NSLocalizedDescriptionKey]];
+                [self.navigationController setToolbarHidden:YES];
+            }else {
+                self.response = task.result;
+                self.title = self.user.username;
+                [self.tableView reloadData];
+                [self.navigationController setToolbarHidden:NO];
+            }
+        });
+        
+        return nil;
+    }];
 }
 
 - (void) presentDocumentPicker {
@@ -193,6 +365,7 @@
     }];
     
     [importMenu addOptionWithTitle:@"Create New File" image:nil order:UIDocumentMenuOrderFirst handler:^{
+        
         [self performSegueWithIdentifier:@"createTextSegue" sender:nil];
         
     }];
@@ -206,6 +379,14 @@
     }
     
     [self presentViewController:importMenu animated:YES completion:nil];
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    
+    if ([segue.identifier isEqualToString:@"createTextSegue"]) {
+        CreateTextFileViewController *vc = segue.destinationViewController;
+        vc.bucketName = self.bucketName;
+    }
 }
 
 #pragma mark - Table View Delegate methods
@@ -255,7 +436,14 @@
     NSString *filePath = [NSTemporaryDirectory()
                           stringByAppendingPathComponent:[s3Object valueForKey:@"key"]];
     
-    [[AWSManager sharedInstance] downloadFileToURL:[NSURL fileURLWithPath:filePath]];
+    [[AWSManager sharedInstance] downloadFile:[NSURL fileURLWithPath:filePath] bucketName:self.bucketName success:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SVProgressHUD dismiss];
+        });
+        [self.previewController refreshCurrentPreviewItem];
+    } failure:^(NSError *error) {
+        [self showMessageForAWSError:error.code];
+    }];
     
     self.selectedIndexPath =  indexPath;
     
@@ -279,14 +467,14 @@
         if ([[BayunCore sharedInstance] isEmployeeActive]) {
             self.indexPathOfRowToDelete = indexPath;
             AWSS3Object *s3Object = (AWSS3Object*)[self.s3BucketObjectArray objectAtIndex:indexPath.row];
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Delete File"
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:kDeleteFile
                                                                 message:[NSString stringWithFormat:@"Delete %@ permanently?",s3Object.key]
                                                                delegate:self cancelButtonTitle:@"Cancel"
                                                       otherButtonTitles:@"OK",nil];
             [alertView show];
         } else if ([BayunCore sharedInstance].employeeStatus == BayunEmployeeStatusUnknown) {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-                                                                message:[NSString stringWithFormat:@"Sorry, cannot delete file at the moment"]
+                                                                message:kErrorMsgFileDeletionFailed
                                                                delegate:self
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil];
@@ -300,40 +488,9 @@
 
 #pragma mark - AWSManager Delegate Methods
 
-
--(void)s3BucketObjectListDownload:(AWSS3ListObjectsOutput *)bucketObjectsList {
-    [SVProgressHUD dismiss];
-    [self endRefreshing];
-    
-    NSMutableArray *objectsArray = [[NSMutableArray alloc] init];
-    
-    for (AWSS3Object *s3Object in bucketObjectsList.contents) {
-        [objectsArray addObject:s3Object];
-    }
-    
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"lastModified" ascending:NO];
-    self.s3BucketObjectArray   =  [objectsArray sortedArrayUsingDescriptors:@[sortDescriptor]];
-    
-    if (self.s3BucketObjectArray.count == 0) {
-        self.noItemsView.hidden = NO;
-        self.tableView.hidden = YES;
-    } else {
-        self.noItemsView.hidden = YES;
-        self.tableView.hidden = NO;
-    }
-    [self.tableView reloadData];
-}
-
 - (void)s3UploadProgress:(float)progress {
     [SVProgressHUD showProgress:progress status:@"Uploading"];
     [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeClear];
-}
-
-- (void)s3UploadCompleted {
-    [SVProgressHUD dismiss];
-    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeClear];
-    
-    [self getS3BucketObjects];
 }
 
 - (void)s3DownloadProgress:(float)progress {
@@ -341,65 +498,26 @@
     [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeClear];
 }
 
-- (void)s3DownloadCompleted {
-    [SVProgressHUD dismiss];
-    [self.previewController refreshCurrentPreviewItem];
-}
-
-- (void)s3FileDeletionCompleted {
-    [SVProgressHUD dismiss];
-    [self.tableView reloadData];
-    [self getS3BucketObjects];
-    self.indexPathOfRowToDelete = nil;
-    [SVProgressHUD showSuccessWithStatus:@"File is deleted sucessfully."];
-}
-
-- (void)s3BucketCreated {
-    [self getS3BucketObjects];
-}
-
-- (void)s3BucketAlreadyExists {
-    [self getS3BucketObjects];
-}
-
-- (void)s3FileDeletionFailed {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [SVProgressHUD dismiss];
-        [SVProgressHUD showErrorWithStatus:kErrorMsgFileDeletionFailed];
-        [self.tableView reloadRowsAtIndexPaths:@[self.indexPathOfRowToDelete] withRowAnimation:UITableViewRowAnimationNone];
-        self.indexPathOfRowToDelete = nil;
-    });
-}
-
-- (void)s3FileTransferFailed:(NSString *)errorMessage {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self endRefreshing];
-        [SVProgressHUD dismiss];
-        if (errorMessage) {
-            if (errorMessage == kErrorMsgUserInActive) {
-                [self notifyInactiveUser];
-            } else {
-                [SVProgressHUD showErrorWithStatus:errorMessage];
-            }
-        } else {
-            [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
-        }
-    });
-}
-
-- (void) s3BucketCreationFailed {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [SVProgressHUD dismiss];
-        [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
-    });
-}
-
 #pragma mark - alert view delegate method
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if(buttonIndex == 1) {  // OK button is pressed to delete a file
         AWSS3Object *s3Object = (AWSS3Object*)[self.s3BucketObjectArray objectAtIndex:self.indexPathOfRowToDelete.row];
-        [[AWSManager sharedInstance]deleteFileWithName:s3Object.key];
+        [[AWSManager sharedInstance]deleteFile:s3Object.key bucketName:self.bucketName success:^{
+            [SVProgressHUD dismiss];
+            [self.tableView reloadData];
+            [self getS3BucketObjects];
+            self.indexPathOfRowToDelete = nil;
+            [SVProgressHUD showSuccessWithStatus:kFileDeletedSuccessfully];
+            
+        } failure:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [SVProgressHUD dismiss];
+                [SVProgressHUD showErrorWithStatus:kErrorMsgFileDeletionFailed];
+                [self.tableView reloadRowsAtIndexPaths:@[self.indexPathOfRowToDelete] withRowAnimation:UITableViewRowAnimationNone];
+                self.indexPathOfRowToDelete = nil;
+            });
+        }];
         [SVProgressHUD show];
     }
 }
@@ -414,14 +532,14 @@
 #pragma mark - UIDocumentPickerDelegate
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
-    
-    [[AWSManager sharedInstance] uploadFile:url];
+    [self uploadFileAtPath:url];
 }
 
 #pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
     [picker dismissViewControllerAnimated:YES completion:^{
+        
         // define the block to call when we get the asset based on the url (below)
         NSURL *imageRefURL = [info valueForKey:UIImagePickerControllerReferenceURL];
         __block NSString *imageName;
@@ -449,7 +567,12 @@
             }
             
             [imageData writeToFile:filePath atomically:NO];
-            [[AWSManager sharedInstance] uploadFile:[NSURL fileURLWithPath:filePath]];
+            
+            //Setting groupId and encryption policy to BayunEncryptionPolicyGroup
+            [[AWSManager sharedInstance] setEncryptionPolicy:self.selectedEncryptionPolicyRow];
+            [[AWSManager sharedInstance] setGroupId:nil];
+            [self uploadFileAtPath:[NSURL fileURLWithPath:filePath]];
+            
         } failureBlock:nil];
     }];
 }
@@ -493,4 +616,67 @@
     [awsManagerInstance s3CancelAll];
 }
 
+#pragma mark - MKDropdownMenuDataSource
+
+- (NSInteger)numberOfComponentsInDropdownMenu:(MKDropdownMenu *)dropdownMenu {
+    return 1;
+}
+
+- (NSInteger)dropdownMenu:(MKDropdownMenu *)dropdownMenu numberOfRowsInComponent:(NSInteger)component {
+    return self.encryptionPolicies.count;
+}
+
+#pragma mark - MKDropdownMenuDelegate
+
+- (CGFloat)dropdownMenu:(MKDropdownMenu *)dropdownMenu rowHeightForComponent:(NSInteger)component {
+    return 0; // use default row height
+}
+
+- (CGFloat)dropdownMenu:(MKDropdownMenu *)dropdownMenu widthForComponent:(NSInteger)component {
+    return 0; // use automatic width
+}
+
+- (BOOL)dropdownMenu:(MKDropdownMenu *)dropdownMenu shouldUseFullRowWidthForComponent:(NSInteger)component {
+    return NO;
+}
+
+- (NSAttributedString *)dropdownMenu:(MKDropdownMenu *)dropdownMenu attributedTitleForComponent:(NSInteger)component {
+    NSString *encryptionPolicy = self.encryptionPolicies[self.selectedEncryptionPolicyRow];
+    self.selectedEncryptionPolicy = encryptionPolicy;
+    return [[NSAttributedString alloc] initWithString:encryptionPolicy
+                                           attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:16 weight:UIFontWeightLight],
+                                                        NSForegroundColorAttributeName: [UIColor blackColor]}];
+}
+
+- (NSAttributedString *)dropdownMenu:(MKDropdownMenu *)dropdownMenu attributedTitleForSelectedComponent:(NSInteger)component {
+    NSString *encryptionPolicy = self.encryptionPolicies[self.selectedEncryptionPolicyRow];
+    return [[NSAttributedString alloc] initWithString:encryptionPolicy
+                                           attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:16 weight:UIFontWeightRegular],
+                                                        NSForegroundColorAttributeName: [UIColor blackColor]}];
+}
+
+- (UIView *)dropdownMenu:(MKDropdownMenu *)dropdownMenu
+              viewForRow:(NSInteger)row
+            forComponent:(NSInteger)component
+             reusingView:(UIView *)view {
+    DropDownView *dropDownView = (DropDownView*) view;
+    if (dropDownView == nil || ![DropDownView isKindOfClass:[DropDownView class]]) {
+        dropDownView = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([DropDownView class]) owner:nil options:nil] firstObject];
+    }
+    
+    NSString *encryptionPolicy = self.encryptionPolicies[row];
+    dropDownView.textLabel.text = encryptionPolicy;
+    return dropDownView;
+}
+
+- (UIColor *)dropdownMenu:(MKDropdownMenu *)dropdownMenu backgroundColorForRow:(NSInteger)row forComponent:(NSInteger)component {
+    return nil;
+}
+
+- (void)dropdownMenu:(MKDropdownMenu *)dropdownMenu didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    self.selectedEncryptionPolicyRow = row;
+    [dropdownMenu reloadComponent:component];
+}
+
 @end
+

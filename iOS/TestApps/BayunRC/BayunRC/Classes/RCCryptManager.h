@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Bayun/BayunCore.h>
 
 
 @interface RCCryptManager : NSObject
@@ -19,11 +20,11 @@
 /**
  * Returns decrypted text
  */
-- (NSString*) decryptText :(NSString*) text;
+- (void) decryptText :(NSString*) text success:(void (^)(NSString*))success failure:(void (^)(BayunError))failure;
 
 /**
  * Returns encrypted text
  */
-- (NSString*) encryptText :(NSString*) text;
+-(void)encryptText:(NSString *)text success:(void (^)(NSString*))success failure:(void (^)(BayunError))failure;
 
 @end
