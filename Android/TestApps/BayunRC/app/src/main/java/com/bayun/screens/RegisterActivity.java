@@ -5,16 +5,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ScrollView;
-import android.widget.Toast;
 
 import com.bayun.R;
 import com.bayun.app.BayunApplication;
-import com.bayun.http.RingCentralAPIManager;
+import com.bayun.http.RCAPIManager;
 import com.bayun.util.Constants;
 import com.bayun.util.Utility;
-import com.bayun_module.constants.BayunError;
 import com.bayun_module.credentials.BasicBayunCredentials;
 
 
@@ -23,77 +22,61 @@ public class RegisterActivity extends AbstractActivity {
     private EditText phoneEditText, extensionEditText, passwordEditText;
     private Long userName = 0L, extension = 0L;
     private String password;
-    private Handler.Callback ringcentralCallback, responseCallback, passcodeCallback;
+    private CheckBox sandboxCheckbox;
+
+    // Callback to authenticate user with Bayun - Success.
+    private Handler.Callback responseSuccessCallback = message -> {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_LOGGED_IN, Constants.SHARED_PREFERENCES_REGISTER);
+        Intent intent = new Intent(RegisterActivity.this, ListMessagesActivity.class);
+        startActivity(intent);
+        finish();
+
+        return false;
+    };
+
+    // Callback to authenticate user with RingCentral.
+    private Handler.Callback ringcentralCallback = new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message message) {
+            if (message.what == Constants.CALLBACK_SUCCESS) {
+                String appId = getResources().getString(R.string.app_id);
+                BasicBayunCredentials basicBayunCredentials = new BasicBayunCredentials(appId,
+                        userName.toString(), extension.toString(), password);
+                BayunApplication.bayunCore.authenticateWithCredentials(RegisterActivity.this,
+                        basicBayunCredentials, null, responseSuccessCallback,
+                        Utility.getDefaultFailureCallback(progressDialog));
+            } else {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            }
+            return false;
+
+        }
+    };
+
+    // Validate passcode.
+    private Handler.Callback passcodeCallback = message -> {
+
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        String response = message.getData().getString(Constants.AUTH_RESPONSE, "");
+        if (response.equalsIgnoreCase(Constants.PASSCODE_REQUIRED)) {
+            // Developer will add Custom UI for passcode.
+        }
+        return false;
+
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         setUpView();
-        // Callback to authenticate user with RingCentral.
-        ringcentralCallback = new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                if (message.what == Constants.CALLBACK_SUCCESS) {
-                    String appId = getString(R.string.app_id);
-                    BasicBayunCredentials basicBayunCredentials = new BasicBayunCredentials(appId, userName.toString(), extension.toString(), password);
-                    BayunApplication.bayunCore.authenticateWithCredentials(RegisterActivity.this, basicBayunCredentials, null, responseCallback);
-                } else {
-                    if (progressDialog != null && progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
-                }
-                return false;
-
-            }
-        };
-
-        // Callback to authenticate user with Bayun.
-        responseCallback = new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-                String response = message.getData().getString(Constants.AUTH_RESPONSE, "");
-                if (response.equalsIgnoreCase(Constants.AUTH_SUCCESS)) {
-                    BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_LOGGED_IN, Constants.SHARED_PREFERENCES_REGISTER);
-                    Intent intent = new Intent(RegisterActivity.this, ListMessagesActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else if (response.equalsIgnoreCase(BayunError.ERROR_USER_NOT_ACTIVE)) {
-                    Utility.displayToast(Constants.ERROR_MESSAGE_USER_INACTIVE, Toast.LENGTH_SHORT);
-                } else if (response.equalsIgnoreCase(BayunError.ERROR_INVALID_PASSCODE)) {
-                    Utility.displayToast(Constants.ERROR_MESSAGE_PASSCODE, Toast.LENGTH_SHORT);
-                } else if (response.equalsIgnoreCase(BayunError.ERROR_INVALID_CREDENTIALS)) {
-                    Utility.displayToast(Constants.ERROR_MESSAGE_INVALID_CREDENTIALS, Toast.LENGTH_SHORT);
-                } else if (response.equalsIgnoreCase(BayunError.ERROR_AUTHENTICATION_FAILED)) {
-                    Utility.displayToast(Constants.ERROR_AUTHENTICATION_FAILED, Toast.LENGTH_SHORT);
-                } else if (response.equalsIgnoreCase(BayunError.ERROR_APP_NOT_LINKED)) {
-                    Utility.displayToast(Constants.ERROR_APP_NOT_LINKED, Toast.LENGTH_SHORT);
-                }
-                return false;
-            }
-        };
-
-        // Validate passcode.
-        passcodeCallback = new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-                String response = message.getData().getString(Constants.AUTH_RESPONSE, "");
-                if (response.equalsIgnoreCase(Constants.PASSCODE_REQUIRED)) {
-                    // Developer will add Custom UI for passcode.
-                }
-                return false;
-
-            }
-        };
-
-
     }
 
     /**
@@ -106,7 +89,10 @@ public class RegisterActivity extends AbstractActivity {
             Utility.hideKeyboard(view);
             if (validateLoginData()) {
                 progressDialog.show();
-                RingCentralAPIManager.getInstance(BayunApplication.appContext).authenticate(userName, extension, password, ringcentralCallback);
+                BayunApplication.tinyDB.putBoolean(Constants.SHARED_PREFERENCES_IS_SANDBOX_LOGIN,
+                        sandboxCheckbox.isChecked());
+                RCAPIManager.getInstance(BayunApplication.appContext).authenticate(userName,
+                        extension, password, ringcentralCallback);
             }
         } else {
             Utility.messageAlertForCertainDuration(this, Constants.ERROR_INTERNET_OFFLINE);
@@ -121,6 +107,7 @@ public class RegisterActivity extends AbstractActivity {
         extensionEditText = (EditText) findViewById(R.id.extension);
         passwordEditText = (EditText) findViewById(R.id.passcode);
         progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
+        sandboxCheckbox = (CheckBox) findViewById(R.id.sandbox_server_checkbox);
         ScrollView scrollView = (ScrollView) findViewById(R.id.login_activity_scrollview);
         scrollView.setVerticalScrollBarEnabled(false);
         String userLoggedIn = BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_LOGGED_IN);

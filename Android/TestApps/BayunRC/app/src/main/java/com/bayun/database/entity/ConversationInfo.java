@@ -5,9 +5,7 @@ import java.util.Date;
 /**
  * Created by Gagan on 14/07/15.
  */
-
 public class ConversationInfo implements Comparable<ConversationInfo> {
-
     private Date creationTime;
     private String direction;
     private String extensionNumber;

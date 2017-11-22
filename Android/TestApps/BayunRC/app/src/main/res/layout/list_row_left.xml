@@ -6,10 +6,6 @@
     android:paddingBottom="1dp"
     android:paddingTop="2dp">
 
-
-
-
-
         <RelativeLayout
             android:id="@+id/chat_text_View_layout"
             android:layout_width="wrap_content"
@@ -21,14 +17,12 @@
             android:paddingRight="13dp"
             android:paddingTop="6dp">
 
-
             <TextView
                 android:id="@+id/chat_layout_conversation_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:autoLink="all"
-
                 android:textColor="@android:color/primary_text_light"
                 android:textSize="17sp" />
 
@@ -40,10 +34,5 @@
                 android:textColor="@color/light_gray_color"
                 android:textSize="13sp" />
         </RelativeLayout>
-
-
-
-
-
 
 </RelativeLayout>

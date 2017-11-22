@@ -2,6 +2,10 @@ package com.bayun.http;
 
 
 import com.bayun.http.model.*;
+import com.bayun.http.model.ExtensionListInfo;
+import com.bayun.http.model.LoginInfo;
+import com.bayun.http.model.MessageInfo;
+import com.bayun.http.model.MessageListInfo;
 
 import retrofit.Callback;
 import retrofit.http.Body;
@@ -9,13 +13,13 @@ import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.Path;
 import retrofit.http.Query;
 
 /**
  * Created by Gagan on 04/06/15.
  */
-
-interface RestClient {
+ interface RestClient {
 
     @FormUrlEncoded
     @POST("/restapi/oauth/token")
@@ -24,7 +28,6 @@ interface RestClient {
                       @Field("password") String password,
                       @Field("grant_type") String grant_type,
                       Callback<LoginInfo> callback);
-
     @FormUrlEncoded
     @POST("/restapi/oauth/token")
     LoginInfo getAccessToken(@Field("grant_type") String grant_type,
@@ -39,6 +42,11 @@ interface RestClient {
 
     @POST("/restapi/v1.0/account/~/extension/~/company-pager")
     void sendMessage(@Body Extension extension, Callback<MessageInfo> callback);
+
+
+    @GET("/restapi/v1.0/account/~/extension/~/message-store/{messageId}")
+    void getMessageById(@Path("messageId") Long messageId,
+                        Callback<MessageInfo> callback);
 
 }
 

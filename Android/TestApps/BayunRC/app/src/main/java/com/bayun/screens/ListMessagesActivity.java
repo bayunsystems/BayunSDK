@@ -18,7 +18,7 @@ import com.bayun.app.BayunApplication;
 import com.bayun.database.ActivityDBOperations;
 import com.bayun.database.entity.ConversationInfo;
 import com.bayun.database.entity.MessageInfo;
-import com.bayun.http.RingCentralAPIManager;
+import com.bayun.http.RCAPIManager;
 import com.bayun.screens.adapter.MessagesAdapter;
 import com.bayun.screens.helper.DividerItemDecoration;
 import com.bayun.util.Constants;
@@ -33,7 +33,7 @@ import java.util.Date;
 public class ListMessagesActivity extends AbstractActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter messagesAdapter;
+    private MessagesAdapter messagesAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView emptyView;
     private ActivityDBOperations activityDBOperations;
@@ -46,17 +46,14 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
         setContentView(R.layout.activity_list_messages);
         setUpView();
         // Callback for handling the message list.
-        callback = new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                if (message.what == Constants.CALLBACK_SUCCESS) {
-                    swipeRefreshLayout.setRefreshing(false);
-                    setListView();
-                } else {
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-                return false;
+        callback = message -> {
+            if (message.what == Constants.CALLBACK_SUCCESS) {
+                swipeRefreshLayout.setRefreshing(false);
+                setListView();
+            } else {
+                swipeRefreshLayout.setRefreshing(false);
             }
+            return false;
         };
         getMessageList();
     }
@@ -99,19 +96,16 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
      * Shows the Alert Dialogue for create a new file or logout.
      */
     private void showAlertDialogue() {
-        final CharSequence sequences[] = new CharSequence[]{"Create", "Logout"};
+        final CharSequence sequences[] = new CharSequence[]{"New message", "Logout"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
-        builder.setItems(sequences, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (sequences[which].equals("Create")) {
-                    Intent intent = new Intent(ListMessagesActivity.this, ListExtensionActivity.class);
-                    startActivity(intent);
-                } else {
-                    logout();
-                }
-
+        builder.setItems(sequences, (dialog, which) -> {
+            if (sequences[which].equals("New message")) {
+                Intent intent = new Intent(ListMessagesActivity.this, ListExtensionActivity.class);
+                startActivity(intent);
+            } else {
+                logout();
             }
+
         });
         builder.show();
     }
@@ -138,24 +132,18 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
         emptyView.setVisibility(View.GONE);
         conversationInfoArrayList = activityDBOperations.getAllConversations();
         Collections.sort(conversationInfoArrayList);
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                messagesAdapter.notifyDataSetChanged();
-
-            }
-        });
+        new Handler(Looper.getMainLooper()).post(() -> messagesAdapter.notifyDataSetChanged());
 
     }
 
     /**
      * Gets Message using last modified date.
      *
-     * @param lastMessageDate last message time stamp.
+     * @param lastMessageDate
      */
     private void getMessage(String lastMessageDate) {
         if (Utility.isNetworkAvailable()) {
-            RingCentralAPIManager.getInstance(BayunApplication.appContext).getMessageList(lastMessageDate, callback);
+            RCAPIManager.getInstance(BayunApplication.appContext).getMessageList(lastMessageDate, callback);
         } else {
             Utility.messageAlertForCertainDuration(ListMessagesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
         }
@@ -184,6 +172,14 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
         return lastModifiedDate;
     }
 
+    /*@Override
+    protected void onResume() {
+        super.onResume();
+        if (BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_ACTIVITY).equalsIgnoreCase(Constants.SHARED_PREFERENCES_ACTIVITY_STATUS)) {
+            getMessage(getLastModifiedTime());
+        }
+    }*/
+
     private void logout() {
         BayunApplication.tinyDB.clear();
         activityDBOperations.deleteAll();
@@ -197,11 +193,15 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
     public void onClickCalled(int position) {
         if (Utility.isNetworkAvailable()) {
             Intent intent = new Intent(ListMessagesActivity.this, ConversationViewActivity.class);
-            BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER, ListMessagesActivity.conversationInfoArrayList.get(position).getExtensionNumber());
-            intent.putExtra(Constants.MESSAGE_NAME, ListMessagesActivity.conversationInfoArrayList.get(position).getName());
+            BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER,
+                    ListMessagesActivity.conversationInfoArrayList.get(position).getExtensionNumber());
+            intent.putExtra(Constants.MESSAGE_NAME, ListMessagesActivity.conversationInfoArrayList
+                    .get(position).getName());
             startActivityForResult(intent, 1);
-        } else {
-            Utility.messageAlertForCertainDuration(ListMessagesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
+        }
+        else {
+            Utility.messageAlertForCertainDuration(ListMessagesActivity.this,
+                    Constants.ERROR_INTERNET_OFFLINE);
         }
 
     }
@@ -213,7 +213,12 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
             if (resultCode == RESULT_OK) {
                 getMessage(getLastModifiedTime());
             }
-
         }
+    }
+
+    @Override
+    protected void onResume() {
+        getMessageList();
+        super.onResume();
     }
 }

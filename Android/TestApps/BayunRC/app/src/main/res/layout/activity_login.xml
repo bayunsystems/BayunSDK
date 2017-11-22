@@ -17,8 +17,7 @@
         android:id="@+id/activity_login_main_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical" >
         <ImageView
             android:id="@+id/activity_login_icon"
             android:layout_width="160dp"
@@ -33,11 +32,10 @@
             android:padding="5dp"
             android:hint="@string/phoneNumber"
             android:layout_marginTop="15dp"
-            android:singleLine="true"
             android:textColor="@color/light_black"
             android:textSize="22sp"
             android:inputType="phone"
-            />
+            android:maxLines="1" />
         <EditText
 
             android:layout_width="match_parent"
@@ -47,24 +45,22 @@
             android:padding="5dp"
             android:hint="@string/string_extension"
             android:layout_marginTop="15dp"
-            android:singleLine="true"
             android:textColor="@color/light_black"
             android:textSize="22sp"
             android:inputType="number"
-            />
+            android:maxLines="1" />
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:id="@+id/passcode"
             android:background="@drawable/rounded_corner_edit_text"
             android:padding="5dp"
-            android:hint="@string/passWord"
+            android:hint="@string/password"
             android:layout_marginTop="15dp"
-            android:singleLine="true"
             android:textColor="@color/light_black"
             android:textSize="22sp"
             android:inputType="textPassword"
-            />
+            android:maxLines="1" />
 
         <Button
             android:layout_width="match_parent"
@@ -79,6 +75,17 @@
             android:layout_marginTop="10dp"
             android:textSize="22sp"
             />
+
+        <CheckBox
+            android:id="@+id/sandbox_server_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:buttonTint="@color/white"
+            android:text="@string/point_to_sandbox"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_gravity="start|left"/>
     </LinearLayout>
 </ScrollView>
 

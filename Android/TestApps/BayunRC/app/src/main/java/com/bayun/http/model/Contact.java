@@ -3,9 +3,7 @@ package com.bayun.http.model;
 /**
  * Created by gagan on 21/06/16.
  */
-
 public class Contact {
-
     private String firstName;
     private String lastName;
 

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/activity_view_file_navigation_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="44dp"
+        android:padding="5dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:onClick="backButtonImageClick"
+            android:src="@drawable/ic_ab_back_holo_dark_am" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical">
+
+        <com.github.siyamed.shapeimageview.CircularImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/app_icon"
+            app:borderColor="@color/background"
+            app:borderWidth="0dp" />
+
+        <TextView
+            android:id="@+id/grid_code_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:text="@string/passcode"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+
+    </LinearLayout>
+
+    <RelativeLayout
+
+        android:id="@+id/security_pin_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp">
+
+
+        <EditText
+            android:id="@+id/pinBox1"
+            style="@style/PinBox"
+            android:background="@drawable/border_edit_text"
+            android:cursorVisible="false" />
+
+        <EditText
+            android:id="@+id/pinBox2"
+            style="@style/PinBox"
+            android:layout_toRightOf="@+id/pinBox1"
+            android:background="@drawable/border_edit_text"
+            android:cursorVisible="false" />
+
+        <EditText
+            android:id="@+id/pinBox3"
+            style="@style/PinBox"
+            android:layout_toRightOf="@+id/pinBox2"
+            android:background="@drawable/border_edit_text"
+            android:cursorVisible="false" />
+
+        <EditText
+            android:id="@+id/pinBox4"
+            style="@style/PinBox"
+            android:layout_marginRight="0dp"
+            android:layout_toRightOf="@+id/pinBox3"
+            android:background="@drawable/border_edit_text"
+            android:cursorVisible="false"
+
+            />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/start_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/security_pin_layout"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="30dp">
+
+        <TextView
+            android:id="@+id/skip_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:background="@android:color/transparent"
+            android:text="@string/skip_label"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
+
+        <TextView
+            android:id="@+id/continue_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:onClick="continueClick"
+            android:text="@string/continue_label"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/hidden_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/security_pin_layout"
+        android:layout_alignTop="@+id/security_pin_layout"
+        android:background="@android:color/transparent"
+        android:cursorVisible="false"
+        android:focusable="true"
+        android:inputType="number"
+        android:maxLength="4"
+        android:textColor="@android:color/transparent" />
+
+</RelativeLayout>

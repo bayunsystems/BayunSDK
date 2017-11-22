@@ -6,11 +6,14 @@
         android:id="@+id/activity_view_file_navigation_bar"
         android:layout_width="fill_parent"
         android:layout_height="44dp"
-        android:background="@color/background"
-        android:padding="5dp">
+        android:background="@color/background">
 
         <ImageView
             android:id="@+id/activity_create_view_file_back_image_view"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -29,16 +32,27 @@
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 
+        <TextView
+            android:id="@+id/activity_view_file_edit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:onClick="editClick"
+            android:text="@string/edit_file"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
-    <TextView
+    <EditText
         android:id="@+id/activity_view_file_edit_text_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/activity_view_file_navigation_bar"
         android:layout_margin="10dp"
-        android:scrollbars = "vertical"
         android:background="@drawable/rounded_corner_edit_text"
         android:gravity="start"
         android:padding="5dp"

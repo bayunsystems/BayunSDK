@@ -21,7 +21,7 @@ public class NotificationCenter {
     public static final int ACCESS_DENIED = 55;
     public static final int TRANSFER_FAILED = 56;
     public static final int S3_BUCKET_EXIST = 57;
-    public static final int S3_EXCEPTION = 58;
+    public static final int S3_BUCKET_NOT_EXIST = 58;
 
 
     static final private HashMap<Integer, ArrayList<Object>> observers = new HashMap<Integer, ArrayList<Object>>();

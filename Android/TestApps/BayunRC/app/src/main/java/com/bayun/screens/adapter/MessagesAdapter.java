@@ -1,6 +1,7 @@
 package com.bayun.screens.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.bayun.R;
 import com.bayun.app.BayunApplication;
+import com.bayun.screens.ConversationViewActivity;
 import com.bayun.screens.ListMessagesActivity;
 import com.bayun.util.Constants;
 

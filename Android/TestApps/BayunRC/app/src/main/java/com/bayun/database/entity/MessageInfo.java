@@ -5,9 +5,7 @@ import java.util.Date;
 /**
  * Created by Gagan on 14/07/15.
  */
-
 public class MessageInfo implements Comparable<MessageInfo> {
-
     private String type;
     private Date creationTime;
     private String readStatus;

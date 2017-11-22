@@ -5,12 +5,14 @@ import retrofit.RestAdapter;
 /**
  * Created by gagan on 01-06-2015.
  */
-
 public class Constants {
 
     public static final retrofit.RestAdapter.LogLevel RETROFIT_LOG_LEVEL = RestAdapter.LogLevel.FULL;
 
     public static final String APP_NAME = "BayunRC";
+    public static final String BASE_URL = "https://platform.ringcentral.com";
+    public static final String BASE_URL_SANDBOX = "https://platform.devtest.ringcentral.com";
+    public static final String FILE_EMPTY = "No text to be saved";
     public static final String CREATION_TIME = "creation_time";
     public static final String EMPTY_STRING = "";
     public static final String STRING_NULL = null;
@@ -24,6 +26,7 @@ public class Constants {
     public static final int CALLBACK_SUCCESS = 1;
     public static final int CALLBACK_FAILURE = 0;
     public static final String INBOUND = "Inbound";
+    public static final String ERROR = "BayunError";
 
     public static final String SHARED_PREFERENCES_ACTIVITY = "activity";
     public static final String SHARED_PREFERENCES_ACTIVITY_STATUS = "back_button";
@@ -40,8 +43,8 @@ public class Constants {
     public static final String SHARED_PREFERENCES_PASSWORD = "password";
     public static final String SHARED_PREFERENCES_ACCOUNT_ID = "account";
     public static final String SHARED_PREFERENCES_EXTENSION_NUMBER = "ext_number";
+    public static final String SHARED_PREFERENCES_IS_SANDBOX_LOGIN = "isSandboxLogin";
 
-    public static final String ERROR_APP_NOT_LINKED = "Please link this app with your company employee account via Bayun admin-panel first.";
     public static final String ERROR_AUTHENTICATION_FAILED = "Authentication Failed.";
     public static final String ERROR_MESSAGE_INVALID_CREDENTIALS = "Invalid Credentials.";
     public static final String ERROR_MESSAGE_SESSION_EXPIRE = "Session is expired.";
@@ -103,8 +106,6 @@ public class Constants {
                     LAST_MESSAGE_NAME + " TEXT, " +
                     MESSAGE_UPDATE_TIME + " DATE, " + MESSAGE_DIRECTION + " TEXT, " + EXTENSION_NUMBER + " TEXT " +
                     ");";
-
-
 }
 
 

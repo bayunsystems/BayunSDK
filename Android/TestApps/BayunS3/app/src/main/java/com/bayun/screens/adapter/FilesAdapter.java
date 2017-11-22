@@ -15,17 +15,16 @@ import com.bayun.util.Constants;
 import java.util.List;
 
 public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> {
-
-    public static List<FileInfo> fileInfoList;
+    private static List<FileInfo> fileInfoList;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public TextView fileNameTextView, fileDateTextView, fileSizeTextView;
+        TextView fileNameTextView, fileDateTextView, fileSizeTextView;
 
-        public ViewHolder(View v) {
+        ViewHolder(View v) {
             super(v);
             fileNameTextView = (TextView) v.findViewById(R.id.file_name_item);
             fileDateTextView = (TextView) v.findViewById(R.id.file_name_date_item);
@@ -46,8 +45,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_view_files, parent, false);
         // set the view's size, margins, padding and layout parameters
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        return new ViewHolder(v);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -55,7 +53,8 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        if (AWSS3Manager.getInstance().fileList().size() != 0) {
+        if(AWSS3Manager.getInstance().fileList().size()!=0)
+        {
             String fileName = fileInfoList.get(position).getFileName();
             String fileNameNew = convertStringIntoUppercase(fileName);
             if (fileNameNew.contains(Constants.FILE_EXTENSION)) {

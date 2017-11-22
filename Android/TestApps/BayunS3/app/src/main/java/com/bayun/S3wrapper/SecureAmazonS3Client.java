@@ -53,7 +53,7 @@ import static com.amazonaws.services.s3.internal.Constants.MB;
  * </p>
  */
 
-public class SecureAmazonS3Client extends AmazonS3Client {
+public class  SecureAmazonS3Client extends AmazonS3Client {
 
     private final BayunCore bayunCore;
     /**
@@ -171,11 +171,17 @@ public class SecureAmazonS3Client extends AmazonS3Client {
      * @param file       The file to upload.
      * @return A PutObjectResult is result of uploaded file.
      */
-    public PutObjectResult putObject(String bucketName, String key, File file) throws AmazonClientException {
+    public PutObjectResult putObject(String bucketName, String key, File file, int encryptionPolicy,
+                                     String groupId) throws AmazonClientException {
         PutObjectResult putObjectResult = null;
         CompleteMultipartUploadResult completeMultipartUploadResult = null;
-        try {
+        if (encryptionPolicy == BayunCore.ENCRYPTION_POLICY_DEFAULT) {
             bayunCore.lockFile(file.getAbsolutePath());
+        }
+        else {
+            bayunCore.lockFile(file.getAbsolutePath(), encryptionPolicy, groupId);
+        }
+        try {
             if (shouldUploadInMultipart(file)) {
                 completeMultipartUploadResult = multipartUpload(bucketName, key, file);
                 putObjectResult = new PutObjectResult();
@@ -207,7 +213,7 @@ public class SecureAmazonS3Client extends AmazonS3Client {
     public S3Object getObject(String bucketName, String key) throws AmazonClientException {
         S3Object s3Object = super.getObject(bucketName, key);
         S3ObjectInputStream objectContent = s3Object.getObjectContent();
-        byte fileData[];
+        byte fileData[] = null;
         try {
             byte[] encryptedData = IOUtils.toByteArray(objectContent);
             fileData = bayunCore.lockData(encryptedData);

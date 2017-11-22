@@ -17,4 +17,5 @@
 
     <color name="line_background">#C3C3C3</color>
     <color name="border">#FFFFFF</color>
+    <color name="white">#ffffff</color>
 </resources>

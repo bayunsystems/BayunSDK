@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.bayun.R;
 import com.bayun.app.BayunApplication;
-import com.bayun.http.RingCentralAPIManager;
+import com.bayun.http.RCAPIManager;
 import com.bayun.http.model.ExtensionInfo;
 import com.bayun.screens.adapter.ExtensionListAdapter;
 import com.bayun.screens.helper.DividerItemDecoration;
@@ -105,7 +105,7 @@ public class ListExtensionActivity extends AbstractActivity {
         if (Utility.isNetworkAvailable()) {
             if (!isFinishing())
                 progressDialog.show();
-            RingCentralAPIManager.getInstance(BayunApplication.appContext).getExtensionList(callback);
+            RCAPIManager.getInstance(BayunApplication.appContext).getExtensionList(callback);
 
         }
     }

@@ -22,7 +22,6 @@ import java.util.Date;
 /**
  * Created by Gagan on 01/07/2015.
  */
-
 public class ActivityDBOperations {
 
     final private SQLiteOpenHelper dbHelper;
@@ -282,7 +281,6 @@ public class ActivityDBOperations {
         return conversationId;
     }
 
-    // Check message record exist or not.
     public Boolean isRecordExist(String messageId) {
         SQLiteDatabase sqldb = DatabaseManager.getInstance().openDatabase();
         String Query = "Select * from " + Constants.TABLE_MESSAGE_DETAIL + " where " + Constants.ID + " = " + messageId;

@@ -12,12 +12,12 @@
 
 6. In order to have access to the RingCentral's APIs, developer needs to register the app with RingCentral, and use the ApplicationKey and ApplicationSecret provided by RingCentral in the BayunRC sample app.
 
-   **Sandbox Environment Build :** Select the devDebug or devRelease build variant and replace application_key and application_secret in strings.xml file with your Sandbox Application Key and Application Secret Key.
+   **Sandbox Environment Build :** Select the devDebug or devRelease build variant and replace application_key_sandbox and application_secret_key_sandbox in strings.xml file with your Sandbox Application Key and Application Secret Key.
 
    **Production Environment Build :**
-   Select the prodDebug or prodRelease build variant and replace application_key and application_secret in strings.xml file with your Production Application Key and Application Secret Key.
+   Select the prodDebug or prodRelease build variant and replace application_key_prod and application_key_secret_prod in strings.xml file with your Production Application Key and Application Secret Key.
 
-7. You are provided with an appId when your app is registered with Bayun, see  [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_ios/before_you_begin.html).
+7. You are provided with an appId when your app is registered with Bayun, see  [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_android/getting_started.html).
      In the strings.xml file, replace value of "app_id" with your Bayun AppId.
 
 8. Build and Run the project. You will need an active RingCentral account to login.

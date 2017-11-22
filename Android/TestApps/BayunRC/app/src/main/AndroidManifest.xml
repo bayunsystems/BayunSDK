@@ -3,14 +3,15 @@
     package="com.bayun">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:label="@string/app_name"
         android:name=".app.BayunApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity android:name=".screens.RegisterActivity">
             <intent-filter>
@@ -18,11 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".screens.ListMessagesActivity"></activity>
-        <activity android:name=".screens.ListExtensionActivity"></activity>
+        <activity android:name=".screens.ListMessagesActivity" />
+        <activity android:name=".screens.ListExtensionActivity" />
         <activity
             android:name=".screens.ConversationViewActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <service android:name="com.bayun_module.BayunBackgroundService"/>
     </application>
 
 </manifest>

@@ -8,6 +8,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
@@ -18,12 +19,11 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.bayun.R;
 import com.bayun.S3wrapper.SecureAmazonS3Client;
-import com.bayun.S3wrapper.SecureTransferObserver;
 import com.bayun.S3wrapper.SecureTransferUtility;
 import com.bayun.app.BayunApplication;
 import com.bayun.app.NotificationCenter;
 import com.bayun.aws.model.FileInfo;
-import com.bayun.screens.ListFilesActivity;
+import com.bayun.screens.activity.ListFilesActivity;
 import com.bayun.util.Constants;
 import com.bayun.util.Utility;
 import com.bayun_module.util.BayunException;
@@ -42,7 +42,6 @@ import java.util.List;
 /**
  * Created by Gagan on 01/06/15.
  */
-
 public class AWSS3Manager {
 
     private List<FileInfo> fileInfoList;
@@ -133,6 +132,7 @@ public class AWSS3Manager {
      */
     public void Exists(String key) {
         new fileExistAsyncTask().execute(key);
+
     }
 
     /**
@@ -152,78 +152,72 @@ public class AWSS3Manager {
         @Override
         protected String doInBackground(File... params) {
             final File file = params[0];
-            SecureTransferObserver observer = null;
+            TransferObserver observer = null;
+            //[OPTIONAL] The following error handling conditions are optional and client app may apply checks against the SecureAWSS3TransferUtilityErrorType according per its requirement.
+            // TransferListener is an interface that provide the state of file like completed,failed etc.
+            // if we implement this then we can track progress of file.
+            TransferListener transferListener = new TransferListener() {
+
+                @Override
+                public void onStateChanged(int id, TransferState state) {
+                    // do something
+                    if (state.equals(TransferState.COMPLETED)) {
+
+                        Utility.RunOnUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                NotificationCenter.getInstance().postNotificationName(NotificationCenter.AWS_UPLOAD_COMPLETE);
+                            }
+                        });
+
+
+                    } else if (state.equals(TransferState.FAILED)) {
+
+                        Utility.RunOnUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                Utility.displayToast(Constants.ERROR_UPLOAD_FAILED, Toast.LENGTH_SHORT);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                    float percentage = (((float) bytesCurrent / (float) bytesTotal) * Constants.FILE_PERCENTAGE);
+                    ListFilesActivity.showProgress((int) percentage);
+                }
+
+                @Override
+                public void onError(int id, final Exception exception) {
+                    Utility.RunOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Utility.showErrorMessage(exception.getMessage());
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.TRANSFER_FAILED);
+                        }
+                    });
+                }
+
+            };
 
             try {
-                observer = secureTransferUtility.upload(getBucketName(), file.getName(), file);
+                observer = secureTransferUtility.secureUpload(getBucketName(), file.getName(), file, transferListener);
             } catch (final BayunException exception) {
                 // in case of user is not active
                 Utility.RunOnUIThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (exception.getMessage().equalsIgnoreCase(Constants.USER_INACTIVE)) {
-                            Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_LONG);
-                        }
+                        Utility.showErrorMessage(exception.getMessage());
                         NotificationCenter.getInstance().postNotificationName(NotificationCenter.TRANSFER_FAILED);
                     }
                 });
             }
 
             if (observer != null) {
-                //[OPTIONAL] The following error handling conditions are optional and client app may apply checks against the SecureAWSS3TransferUtilityErrorType according per its requirement.
-                // TransferListener is an interface that provide the state of file like completed,failed etc.
-                // if we implement this then we can track progress of file.
-                observer.setTransferListener(new TransferListener() {
 
-                    @Override
-                    public void onStateChanged(int id, TransferState state) {
-                        // do something
-                        if (state.equals(TransferState.COMPLETED)) {
-
-                            Utility.RunOnUIThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.AWS_UPLOAD_COMPLETE);
-                                }
-                            });
-
-
-                        } else if (state.equals(TransferState.FAILED)) {
-
-                            Utility.RunOnUIThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    Utility.displayToast(Constants.ERROR_UPLOAD_FAILED, Toast.LENGTH_SHORT);
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                        float percentage = (((float) bytesCurrent / (float) bytesTotal) * Constants.FILE_PERCENTEGE);
-                        ListFilesActivity.showProgress((int) percentage);
-                    }
-
-                    @Override
-                    public void onError(int id, final Exception exception) {
-                        Utility.RunOnUIThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (exception.getMessage().equalsIgnoreCase(BayunApplication.appContext.getString(R.string.something_went_wrong)))
-                                    Utility.displayToast(Constants.ERROR_SOMETHING_WENT_WRONG, Toast.LENGTH_LONG);
-                                    //[OPTIONAL] The following error handling conditions are optional
-                                else if (exception.getMessage().equalsIgnoreCase(Constants.USER_INACTIVE)) {
-                                    Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_LONG);
-                                }
-                                NotificationCenter.getInstance().postNotificationName(NotificationCenter.TRANSFER_FAILED);
-                            }
-                        });
-                    }
-
-                });
             }
             return "";
         }
@@ -239,8 +233,7 @@ public class AWSS3Manager {
             File file = null;
             file = new File(BayunApplication.appContext.getExternalFilesDir(
                     Environment.DIRECTORY_PICTURES), fileName);
-            SecureTransferObserver transferObserver = secureTransferUtility.download(getBucketName(), fileName, file);
-            transferObserver.setTransferListener(new TransferListener() {
+            TransferListener transferListener = new TransferListener() {
                 @Override
                 public void onStateChanged(int id, TransferState state) {
                     if (state.equals(TransferState.COMPLETED)) {
@@ -259,19 +252,14 @@ public class AWSS3Manager {
                     Utility.RunOnUIThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (exception.getMessage().equalsIgnoreCase(BayunApplication.appContext.getString(R.string.something_went_wrong)))
-                                Utility.displayToast(Constants.ERROR_SOMETHING_WENT_WRONG, Toast.LENGTH_LONG);
-
-                                //[OPTIONAL] The following error handling conditions are optional
-                            else if (exception.getMessage().equalsIgnoreCase(Constants.USER_INACTIVE)) {
-                                Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_LONG);
-                            }
+                            Utility.showErrorMessage(exception.getMessage());
                             NotificationCenter.getInstance().postNotificationName(NotificationCenter.TRANSFER_FAILED);
                         }
                     });
 
                 }
-            });
+            };
+            secureTransferUtility.secureDownload(getBucketName(), fileName, file, transferListener);
             return "";
         }
     }
@@ -318,6 +306,7 @@ public class AWSS3Manager {
                     secureAWSS3Client.setRegion(Region.getRegion(Regions.US_WEST_2));
                     secureAWSS3Client.createBucket(new CreateBucketRequest(
                             bucketName));
+                    isExist = true;
                 } else {
                     isExist = true;
                 }
@@ -379,7 +368,7 @@ public class AWSS3Manager {
                     listObjectsRequest.setMarker(objectListing.getNextMarker());
                 } while (objectListing.isTruncated());
             } catch (AmazonS3Exception e) {
-                Toast.makeText(BayunApplication.appContext, e.getErrorMessage(), Toast.LENGTH_SHORT).show();
+
             }
 
             Collections.sort(AWSS3Manager.getInstance().fileInfoList, Collections.reverseOrder());
@@ -396,44 +385,36 @@ public class AWSS3Manager {
     /**
      * Check file exist using asynchronous task.
      */
-    private class fileExistAsyncTask extends AsyncTask<String, String, String> {
+    private class fileExistAsyncTask extends AsyncTask<String, String, Boolean> {
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Boolean doInBackground(String... params) throws AmazonClientException {
             final String key = params[0];
-            String fileExist = "exist";
-
+            boolean isValidFile = true;
             try {
                 secureAWSS3Client.getObjectMetadata(getBucketName(), key);
             } catch (AmazonS3Exception s3e) {
                 if (s3e.getStatusCode() == 404) {
                     // i.e. 404: NoSuchKey - The specified key does not exist
-                    fileExist = "not exist";
+                    isValidFile = false;
                 } else {
-                    fileExist = "error";
+                    throw s3e;    // rethrow all S3 exceptions other than 404
                 }
             }
-            return fileExist;
+            return isValidFile;
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if (s.equalsIgnoreCase("exist")) {
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (aBoolean) {
                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.S3_BUCKET_FILE_EXIST);
-            } else if (s.equalsIgnoreCase("not exist")) {
-                NotificationCenter.getInstance().postNotificationName(NotificationCenter.S3_BUCKET_FILE_NOT_EXIST);
             } else {
-                NotificationCenter.getInstance().postNotificationName(NotificationCenter.S3_EXCEPTION);
+                NotificationCenter.getInstance().postNotificationName(NotificationCenter.S3_BUCKET_FILE_NOT_EXIST);
             }
         }
     }
 
-    /**
-     * Get BUcket Name.
-     *
-     * @return bucket name.
-     */
     private String getBucketName() {
         String bucketName = BayunApplication.tinyDB.getString(Constants.S3_BUCKET_NAME);
         return bucketName;
@@ -462,7 +443,7 @@ public class AWSS3Manager {
      * Convert last modified date into time format.
      *
      * @param startDate
-     * @return last modified date.
+     * @return
      */
     public String getLastModifiedTime(Date startDate) {
         String time = "";
@@ -487,6 +468,30 @@ public class AWSS3Manager {
             time = Constants.LAST_MODIFIED_TIME_SECOND;
         }
         return time;
+    }
+
+    /**
+     * Gets the encryption policy saved on device
+     *
+     * @return encryption policy saved on device
+     */
+    public int getEncryptionPolicyOnDevice() {
+        return SecureTransferUtility.getEncryptionPolicyOnDevice();
+    }
+
+    /**
+     * Sets the encryption policy saved on device
+     *
+     * @param encryptionPolicyOnDevice encryption policy save don device
+     */
+    public void setEncryptionPolicyOnDevice(int encryptionPolicyOnDevice) {
+        SecureTransferUtility.setEncryptionPolicyOnDevice(encryptionPolicyOnDevice);
+    }
+
+
+    public void resetEncryptionPolicyOnDevice() {
+        // policy 1 = default encryption policy
+        SecureTransferUtility.setEncryptionPolicyOnDevice(1);
     }
 }
 

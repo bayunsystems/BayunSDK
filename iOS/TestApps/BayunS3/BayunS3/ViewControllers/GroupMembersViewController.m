@@ -84,7 +84,7 @@
     
     cell.imageView.image = [UIImage imageNamed:@"Member"];
     
-   
+    
     return cell;
 }
 
@@ -92,14 +92,58 @@
     return 50;
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
 }
-*/
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        
+        NSDictionary *member = [self.groupMembers objectAtIndex:indexPath.row];
+        NSString *memberId = [member valueForKey:@"companyEmployeeId"];
+        NSString *companyName = [member valueForKey:@"companyName"];
+        
+        UIAlertController * alert = [UIAlertController
+                                     alertControllerWithTitle:@""
+                                     message:[NSString stringWithFormat:@"Remove %@ from Members?",memberId]
+                                     preferredStyle:UIAlertControllerStyleAlert];
+        
+        //Add Buttons
+        UIAlertAction* yesButton = [UIAlertAction
+                                    actionWithTitle:@"Yes"
+                                    style:UIAlertActionStyleDefault
+                                    handler:^(UIAlertAction * action) {
+                                        
+                                        NSDictionary *parameters = @{@"companyName" : companyName,
+                                                                     @"companyEmployeeId" : memberId,
+                                                                     @"groupId" : self.groupId};
+                                        
+                                        [[BayunCore sharedInstance] removeGroupMember:parameters success:^{
+                                            [self getGroupDetails];
+                                            [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@ removed from Members",memberId]];
+                                            
+                                            
+                                        } failure:^(BayunError error) {
+                                            [SVProgressHUD showErrorWithStatus:@"Something Went Wrong"];
+                                        }];
+                                        
+                                        
+                                    }];
+        
+        UIAlertAction* noButton = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleDefault
+                                   handler:nil];
+        
+        
+        [alert addAction:yesButton];
+        [alert addAction:noButton];
+        
+        [self presentViewController:alert animated:YES completion:nil];
+        
+    }
+}
 
 @end
+
+

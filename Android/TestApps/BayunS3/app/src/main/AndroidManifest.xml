@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bayun">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:name=".app.BayunApplication"
@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".screens.RegisterActivity">
+        <activity android:name=".screens.activity.RegisterActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,16 +23,33 @@
             </intent-filter>
         </activity>
         <!-- Hockey app update activity -->
+        <activity android:name="net.hockeyapp.android.UpdateActivity" />
         <activity
-            android:name=".screens.CreateNewFileActivity"
-            android:windowSoftInputMode="stateVisible"></activity>
+            android:name=".screens.activity.CreateNewFileActivity"
+            android:windowSoftInputMode="stateVisible" />
         <activity
-            android:name=".screens.ListFilesActivity"
-            android:exported="true"></activity>
-        <activity android:name=".screens.ViewFileActivity"></activity>
+            android:name=".screens.activity.ListFilesActivity"
+            android:exported="true" />
+        <activity android:name=".screens.activity.ViewFileActivity" />
+        <activity
+            android:name=".screens.activity.PassphraseActivity"
+            android:windowSoftInputMode="stateAlwaysVisible" />
+
         <service
             android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
             android:enabled="true" />
+
+        <activity
+            android:name=".screens.activity.GroupsListActivity"
+            android:label="@string/title_activity_group_view"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".screens.activity.ViewGroupActivity" />
+        <activity android:name=".screens.activity.GroupMembersActivity" />
+
+        <service android:name="com.bayun_module.BayunBackgroundService" />
+
+        <activity android:name=".screens.activity.CognitoRegisterUserActivity" />
+        <activity android:name=".screens.activity.SignUpConfirmActivity"></activity>
     </application>
 
 </manifest>

@@ -1,14 +1,16 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId 'com.bayun.bayuns3'
-        minSdkVersion 15
+        minSdkVersion 23
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -18,10 +20,21 @@ android {
     }
     productFlavors {
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
+    configurations {
+        all*.exclude group: 'com.google.code.gson', module: 'gson'
+    }
     compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.github.siyamed:android-shape-imageview:0.9.1'
     compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.amazonaws:aws-android-sdk-s3:2.2.8'
+    compile 'com.amazonaws:aws-android-sdk-s3:2.6.5'
+    compile 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.3.2'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }

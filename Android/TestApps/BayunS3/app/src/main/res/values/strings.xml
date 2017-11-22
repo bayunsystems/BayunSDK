@@ -1,54 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
+    <!-- app name -->
     <string name="app_name">BayunS3</string>
 
-    // Aws Credentials.
-    <string name="aws_access_key">YOUR AWS ACCESS KEY</string>
-    <string name="aws_secret_key">YOUR AWS SECRET KEY</string>
+    <!-- AWS keys -->
+    <string name="aws_access_key">enter_your_aws_access_key_here</string>
+    <string name="aws_secret_key">enter_your_aws_secret_key_here</string>
 
-    // App Id
-    <string name="app_id">YOUR APP ID</string>
+    <!-- app id -->
+    <string name="app_id">enter_your_app_id_here</string>
 
-    // login activity values
+    <!-- login activity values -->
     <string name="company_name">Company</string>
     <string name="employee_id">Employee</string>
     <string name="password">Password</string>
-    <string name="passcode">Enter Your Passcode</string>
-    <string name="register">Login/Register</string>
+    <string name="passcode">Enter Your Passphrase</string>
+    <string name="login_register">Login/Register</string>
 
-    // list view file activity values
+    <!-- list view file activity values -->
     <string name="files">Files</string>
-    <string name="more_options">More</string>
-
+    <string name="create_new_file">More</string>
     <string name="list_view_list_empty">No File Found.</string>
+    <string name="dialog_delete_title">Delete File?</string>
 
-    // create new file activity values
+    <!-- create new file activity values -->
     <string name="new_files">Untitled</string>
     <string name="save_file">Save</string>
     <string name="edit_file">Edit</string>
     <string name="file_text_hint">Enter Text Here.\n\nFor this demo, text entered here is encrypted and saved as text file on S3 server.\nOnly employees from same company can view decrypted text.</string>
+    <string name="enter_file_name">Enter File Name</string>
+    <string name="dialog_title">Do you want to save the changes?</string>
 
+    <!-- file details -->
+    <string name="internal_storage">Internal storage</string>
+    <string name="size">Size :</string>
+    <string name="modified_date">Last Modified :</string>
+    <string name="title_activity_group_view">GroupViewActivity</string>
+
+    <!-- others -->
     <string name="ok">OK</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
-    <string name="enter_file_name">Enter File Name</string>
-    <string name="dialog_title">Do you want to save the changes?</string>
-    <string name="dialog_delete_title">Delete File?</string>
-
-    <string name="please_wait">Please wait...</string>
+    <string name="please_wait">Please wait…</string>
     <string name="incomplete_fields_error_message">Please complete all fields below.</string>
-
-    <string name="action_done_label"><b>Done</b></string>
-    <string name="skip_lable">SKIP</string>
+    <string name="skip_label">SKIP</string>
     <string name="continue_label">CONTINUE</string>
+    <string name="set_encryption_policy">Set Encryption Policy</string>
+    <string name="cancel">Cancel</string>
 
-    <string name="internal_storage">Internal storage</string>
-    <string name="something_went_wrong">BayunErrorSomethingWentWrong</string>
-    <string name="size">Size :</string>
-    <string name="modified_date">Last Modified :</string>
-    <string name="title_activity_demo">Demo</string>
-    <string name="action_settings">Action Settings</string>
+    <!-- group/group members values -->
+    <string name="members">Members</string>
+    <string name="no_members_msg">No Members Found.</string>
+    <string name="groups">Groups</string>
+    <string name="no_groups_msg">No Group Found.</string>
+
+    <!-- cognito login -->
+    <string name="app_main_screen">Sign in</string>
+    <string name="app_main_screen_title">Cognito Identity</string>
+    <string name="app_main_desc">A sample app to showcase Cognito Identity and the SDK for Android.</string>
+    <string name="nav_drawer_open">Open navigation drawer</string>
+    <string name="nav_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_user">UserActivity</string>
+    <string name="Username">Username</string>
+    <string name="Password">Password</string>
+    <string name="Menu">Menu</string>
+    <string name="title_activity_about_app">AboutApp</string>
+    <string name="about">Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.\n\nLicensed under the Amazon Software License (the "License").\nYou may not use this file except in compliance with the License.\nA copy of the License is located at\n\nhttp://aws.amazon.com/asl/
+\n\nor in the "license" file accompanying this app. This app is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</string>
+    <string name="more_info">This is a sample app to showcase Cognito Identity and the SDK for Android.</string>
+    <string name="title_activity_sign_up_confirm">SignUpConfirm</string>
+    <string name="title_activity_mfa">MFAActivity</string>
+    <string name="title_activity_forgot_password">ForgotPasswordActivity</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_change_password">ChangePasswordActivity</string>
+    <string name="title_activity_verify">VerifyActivity</string>
+    <string name="title_activity_add_attribute">AddAttributeActivity</string>
+    <string name="title_activity_device_settings">DeviceSettings</string>
+    <string name="title_activity_new_password">NewPassword</string>
 
 </resources>

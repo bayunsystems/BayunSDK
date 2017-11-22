@@ -8,11 +8,10 @@ import com.bayun_module.util.BayunException;
 /**
  * Created by gagan on 25/06/16.
  */
-
 public class RCCryptManager {
 
     /*
-    Returns encrypted text
+     * Returns encrypted text
      */
     public String decryptText(String text) {
         String decryptedText;

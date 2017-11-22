@@ -19,7 +19,7 @@ import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.database.ActivityDBOperations;
 import com.bayun.database.entity.MessageInfo;
-import com.bayun.http.RingCentralAPIManager;
+import com.bayun.http.RCAPIManager;
 import com.bayun.http.model.CallerInfo;
 import com.bayun.http.model.Extension;
 import com.bayun.screens.adapter.ConversationViewAdapter;
@@ -33,16 +33,15 @@ import java.util.TimerTask;
 
 
 public class ConversationViewActivity extends AbstractActivity {
-
     private RecyclerView recyclerView;
     private RecyclerView.Adapter conversationAdapter;
-    private TextView emptyView;
+    private TextView emptyView, senderName;
     private EditText messageEditText;
     private Button sendButton;
     private ActivityDBOperations activityDBOperations;
     private Handler.Callback callback, messageCallback;
     public static ArrayList<MessageInfo> messageInfoArrayList = new ArrayList<>();
-    private String messageId, extensionNumber;
+    private String messageId, extensionNumber, name;
     private Extension extension;
     private static Handler handler = new Handler();
     int flag = 0;
@@ -107,7 +106,7 @@ public class ConversationViewActivity extends AbstractActivity {
      */
     private void setUpView() {
         progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
-        TextView senderName = (TextView) findViewById(R.id.sender_name);
+        senderName = (TextView) findViewById(R.id.sender_name);
         sendButton = (Button) findViewById(R.id.send);
         recyclerView = (RecyclerView) findViewById(R.id.list_files_recycler_view);
         messageEditText = (EditText) findViewById(R.id.editText1);
@@ -121,11 +120,14 @@ public class ConversationViewActivity extends AbstractActivity {
         activityDBOperations = new ActivityDBOperations(ConversationViewActivity.this);
         Intent intent = getIntent();
         extensionNumber = BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_EXTENSION_NUMBER);
-        String name = intent.getExtras().getString(Constants.MESSAGE_NAME, Constants.EMPTY_STRING);
+        name = intent.getExtras().getString(Constants.MESSAGE_NAME, Constants.EMPTY_STRING);
         messageId = activityDBOperations.getConversationId(extensionNumber);
         senderName.setText(name);
         if (Utility.isNetworkAvailable()) {
             handler.post(runnable);
+
+           /* timer = new Timer();
+            timer.schedule(new RefreshView(), 0, 10000);*/
         }
 
     }
@@ -149,7 +151,7 @@ public class ConversationViewActivity extends AbstractActivity {
      */
     private void getMessage(String lastMessageDate) {
         if (Utility.isNetworkAvailable()) {
-            RingCentralAPIManager.getInstance(BayunApplication.appContext).getMessageList(lastMessageDate, callback);
+            RCAPIManager.getInstance(BayunApplication.appContext).getMessageList(lastMessageDate, callback);
         } else {
             Utility.displayToast(Constants.ERROR_INTERNET_OFFLINE, Toast.LENGTH_SHORT);
         }
@@ -162,19 +164,20 @@ public class ConversationViewActivity extends AbstractActivity {
      */
     public void backButtonImageClick(View view) {
         stopTimer();
-        BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_ACTIVITY, Constants.SHARED_PREFERENCES_ACTIVITY_STATUS);
+        BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_ACTIVITY,
+                Constants.SHARED_PREFERENCES_ACTIVITY_STATUS);
         finish();
     }
 
     /**
      * Handles User Send Button Click.
      *
-     * @param view send button view.
+     * @param view
      */
     public void sendClick(View view) {
         String message = messageEditText.getText().toString();
         if (message.equalsIgnoreCase(Constants.EMPTY_STRING)) {
-            //Utility.displayToast(Constants.FILE_EMPTY, Toast.LENGTH_SHORT);
+            Utility.displayToast(Constants.FILE_EMPTY, Toast.LENGTH_SHORT);
         } else {
             String encryptedText = BayunApplication.rcCryptManager.encryptText(message);
             if (encryptedText.isEmpty()) {
@@ -194,7 +197,7 @@ public class ConversationViewActivity extends AbstractActivity {
     private void sendNewMessage() {
         if (Utility.isNetworkAvailable()) {
             if (!isFinishing())
-                RingCentralAPIManager.getInstance(BayunApplication.appContext).sendMessage(extension, messageCallback);
+                RCAPIManager.getInstance(BayunApplication.appContext).sendMessage(extension, messageCallback);
         } else {
             Utility.displayToast(Constants.ERROR_INTERNET_OFFLINE, Toast.LENGTH_SHORT);
         }
@@ -277,11 +280,14 @@ public class ConversationViewActivity extends AbstractActivity {
 
     @Override
     public void onBackPressed() {
+        // super.onBackPressed();
         stopTimer();
         Intent intent = new Intent();
-        if (flag == 1) {
+        if(flag==1)
+        {
             setResult(RESULT_OK, intent);
-        } else {
+        }else
+        {
             setResult(RESULT_CANCELED, intent);
         }
 

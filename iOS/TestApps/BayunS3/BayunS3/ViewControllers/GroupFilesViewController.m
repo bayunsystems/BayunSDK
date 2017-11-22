@@ -34,7 +34,6 @@
 @property (nonatomic, strong) NSIndexPath *selectedIndexPath;
 @property (nonatomic, strong) UITextField *companyNameTextField;
 @property (nonatomic, strong) UITextField *companyEmpIdTextField;
-
 @property (strong, nonatomic) NSString *bucketName;
 
 @end
@@ -45,13 +44,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    
     self.title = [self.group valueForKey:@"name"];
-    
     self.navigationController.navigationBar.hidden = NO;
     
     self.s3BucketObjectArray = [[NSMutableArray alloc] init];
-    
     self.bucketName = [NSString stringWithFormat:@"bayun-group-%@",[self.group valueForKey:@"id"]];
     
     self.tableView.delegate = self;
@@ -94,7 +90,6 @@
 }
 
 - (void)createS3Bucket {
-    
     AWSManager *awsManagerInstance = [AWSManager sharedInstance];
     awsManagerInstance.delegate = self;
     [awsManagerInstance createS3BucketWithName:[self.bucketName lowercaseString] success:^{
@@ -129,8 +124,8 @@
     }
 }
 
--(void) uploadFileAtPath:(NSURL*)filePath {
-    [[AWSManager sharedInstance] uploadFile:filePath bucketName:self.bucketName success:^{
+-(void)uploadFileAtPath:(NSURL*)url {
+    [[AWSManager sharedInstance] uploadFile:url bucketName:self.bucketName success:^{
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
@@ -147,7 +142,6 @@
 }
 
 -(void)renderFiles:(AWSS3ListObjectsOutput*)bucketObjectsList {
-    
     
     [self endRefreshing];
     
@@ -192,29 +186,32 @@
     }
 }
 
-- (void)showAddOrRemoveMemberalertView:(NSString*)title{
+- (void)showAddOrRemoveMemberAlertView:(NSString*)title{
     
     DLAVAlertView *alertView = [[DLAVAlertView alloc] initWithTitle:title
                                                             message:nil
                                                            delegate:nil
                                                   cancelButtonTitle:@"Cancel"
                                                   otherButtonTitles:@"Ok", nil];
+    
     alertView.alertViewStyle = DLAVAlertViewStyleDefault;
     
     UIView *contentView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 200.0, 80.0)];
-    
     
     CGRect companyNameTextFieldFrame = CGRectMake(0.0, 0.0, 200.0, 40.0);
     self.companyNameTextField = [[UITextField alloc] initWithFrame:companyNameTextFieldFrame];
     self.companyNameTextField.delegate = self;
     self.companyNameTextField.placeholder = @"Company Name";
     
-    
     CGRect companyEmpIdTextFieldFrame = CGRectMake(0.0, 40.0, 200.0, 40.0);
     self.companyEmpIdTextField = [[UITextField alloc] initWithFrame:companyEmpIdTextFieldFrame];
     self.companyEmpIdTextField.placeholder = @"Member EmployeeId";
     self.companyEmpIdTextField.delegate = self;
     self.companyEmpIdTextField.returnKeyType = UIReturnKeyDone;
+    
+    //set default company name in the company textfield
+    NSString *defaultCompany = [[NSUserDefaults standardUserDefaults] valueForKey:kCompany];
+    self.companyNameTextField.text = defaultCompany;
     
     [contentView addSubview:self.companyNameTextField];
     [contentView addSubview:self.companyEmpIdTextField];
@@ -273,9 +270,7 @@
     UIAlertAction* yesButton = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
         
         [[BayunCore sharedInstance] leaveGroup:[self.group valueForKey:@"id"] success:^{
-            
             [self.navigationController popViewControllerAnimated:true];
-            
         } failure:^(BayunError error) {
             [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
         }];
@@ -295,7 +290,7 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-- (void) showMessagForError:(BayunError) error {
+- (void)showMessagForError:(BayunError)error {
     if (error == BayunErrorMemberAlreadyExistsInGroup){
         [SVProgressHUD showErrorWithStatus:kMemberAlreadyExists];
     } else if (error == BayunErrorMemberDoesNotExistsInGroup){
@@ -309,7 +304,7 @@
     }
 }
 
-- (void) showMessageForAWSError :(SecureAWSS3TransferManagerErrorType) errorType {
+- (void)showMessageForAWSError:(SecureAWSS3TransferManagerErrorType) errorType {
     if (errorType == SecureAWSS3TransferManagerErrorUserInactive) {
         [SVProgressHUD showErrorWithStatus:kErrorMsgUserInActive];
     } else if (errorType == SecureAWSS3TransferManagerErrorAccessDenied) {
@@ -412,7 +407,6 @@
     
     // start previewing the document at the current section index
     self.previewController.currentPreviewItemIndex = indexPath.row;
-    
     [[self navigationController] pushViewController:self.previewController animated:NO];
 }
 
@@ -477,7 +471,6 @@
 #pragma mark - UIDocumentPickerDelegate
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
-    
     [self uploadFileAtPath:url];
 }
 
@@ -578,9 +571,9 @@
         [self performSegueWithIdentifier:@"groupMembers" sender:nil];
         
     } else if (buttonIndex == 2) {
-        [self showAddOrRemoveMemberalertView:@"Add Member"];
+        [self showAddOrRemoveMemberAlertView:@"Add Member"];
     } else if (buttonIndex == 3) {
-        [self showAddOrRemoveMemberalertView:@"Remove Member"];
+        [self showAddOrRemoveMemberAlertView:@"Remove Member"];
     } else if (buttonIndex == 4) {
         [self showAlertViewToLeaveGroup];
     }
@@ -646,9 +639,12 @@
         return NO;
     } else if (textField == self.companyEmpIdTextField) {
         [self.companyEmpIdTextField resignFirstResponder];
+        //[self hideKeyboard];
         return NO;
     }
     return YES;
 }
 
 @end
+
+

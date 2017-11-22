@@ -7,7 +7,6 @@ import java.util.Date;
 /**
  * Created by Gagan on 08/06/15.
  */
-
 public class FileInfo implements Comparable<FileInfo> {
 
     private String fileName;

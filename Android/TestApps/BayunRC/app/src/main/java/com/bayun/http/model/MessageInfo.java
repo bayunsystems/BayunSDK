@@ -5,7 +5,6 @@ import java.util.ArrayList;
 /**
  * Created by Gagan on 07/13/2015.
  */
-
 public class MessageInfo {
 
     private String type;

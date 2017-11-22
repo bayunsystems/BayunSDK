@@ -11,15 +11,20 @@
 5. Navigate to the jar file in the Android Studio navigator, right click and select “Add As A Library".
 
 6. You will need your AWSS3 access key and secret key.
-      Place the access key and secret key in the strings.xml file.
+Place the access key and secret key in the strings.xml file.
 
-7. You are provided with an appId when your app is registered with Bayun, see  [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_ios/before_you_begin.html).
-     In the strings.xml file, replace value of "app_id" with your Bayun AppId.
+7. You are provided with an appId when your app is registered with Bayun, see  [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_android/getting_started.html).
+In the strings.xml file, replace value of "app_id" with your Bayun AppId.
 
-8. Build and Run the project.
+8. You will need your CognitoIdentityUserPoolRegion, CognitoIdentityUserPoolId, CognitoIdentityUserPoolAppClientId, CognitoIdentityUserPoolAppClientSecret, CognitoIdentityPoolId.
+Place them under the defined variables in class "CognitoHelper".
 
-9. Enter your company in the Company field, your employee id in Employee field,
-      and your password in Password field and hit Login/Register button.
+9. Add application context and app id to "SecureAuthentication" instance using setters.
 
-10. After authenticating with the Bayun Lock Management Server, a bucket with name 'bayun-test-YourCompanyName'
-       is created. You should be able to upload and download files from the bucket.
+10. Build and Run the project.
+
+11. You need to first signUp using Amazon Cognito User Pools .
+Enter your username, password, phone number and set your company name. Hit Register button.
+You will receive a confirmation code on your email address. Enter the confirmation code in the confirm signUp screen  and complete your signup process.
+
+12. After signup you can signIn the app. Provide your username and password to signIn. A bucket with name 'bayun-test-yourCompanyName' is created. You should be able to upload and download files from the bucket.

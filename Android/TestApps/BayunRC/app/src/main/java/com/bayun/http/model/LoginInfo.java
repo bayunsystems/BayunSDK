@@ -3,7 +3,6 @@ package com.bayun.http.model;
 /**
  * Created by Gagan on 29/06/15.
  */
-
 public class LoginInfo {
 
     private String access_token;
