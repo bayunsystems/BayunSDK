@@ -1,3 +1,7 @@
+## BayunS3
+
+BayunS3 is a sample application that uses overridden methods from AWSS3 SDK for secure storage onto AWS S3. For details, see [Documentation](https://gagan.gitbooks.io/bayun-awss3-wrapper-ios-programming-guide/content/bayuns3.html).
+
 ## Instructions for use
 
 1. Check out the latest code for BayunS3 sample application, along-with Bayun SDK,
