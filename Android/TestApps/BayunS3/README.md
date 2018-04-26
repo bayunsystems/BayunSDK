@@ -16,10 +16,9 @@ Place the access key and secret key in the strings.xml file.
 7. You are provided with an appId when your app is registered with Bayun, see  [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_android/getting_started.html).
 In the strings.xml file, replace value of "app_id" with your Bayun AppId.
 
-8. You will need your CognitoIdentityUserPoolRegion, CognitoIdentityUserPoolId, CognitoIdentityUserPoolAppClientId, CognitoIdentityUserPoolAppClientSecret, CognitoIdentityPoolId.
-Place them under the defined variables in class "CognitoHelper".
+8. You will need your userPoolId, clientId, clientSecret, cognitoRegion. Place them under the defined variables in class "CognitoHelper".
 
-9. Add application context and app id to "SecureAuthentication" instance using setters.
+9. Application context and app id needs to be added to "SecureAuthentication" instance using setters. In this demo app this is done in "BayunApplication.java" class.
 
 10. Build and Run the project.
 
