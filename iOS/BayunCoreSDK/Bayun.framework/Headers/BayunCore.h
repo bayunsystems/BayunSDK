@@ -242,36 +242,6 @@ encryptionPolicy:(BayunEncryptionPolicy)policy
          success:(void (^)(NSData*))success
          failure:(void (^)(BayunError))failure;
 
-
-/*!
- Locks values of defined keys in Json.
- @param json NSDictionary to be locked. Values of keys are locked.
- @param keysFormatDictionary NSDictionary determines the format of the keys for locking. Format of keys need to be defined here e.g. @{@"keyName" : @"keyFormat"}. The format can be String, Number, Email.
- @param success Success block to be executed after json is successfully locked, returns json having locked values.
- @param failure Failure block to be executed if locking fails, returns BayunError.
- 
- @see BayunError
- */
-- (void)encryptJson:(NSDictionary*)json
-         keysFormat:(NSDictionary*)keysFormatDictionary
-            success:(void (^)(NSDictionary*))success
-            failure:(void (^)(BayunError))failure;
-
-
-/*!
- Unlocks values of defined keys in Json.
- @param json NSDictionary to be unlocked. Values of keys are unlocked.
- @param keysFormatDictionary NSDictionary determines the format of the keys for unlocking. Format of keys need to be defined here e.g. @{@"keyName" : @"keyFormat"}.
-        The format can be String, Number, Email.
- @param success Success block to be executed after json is successfully unlocked, returns json having unlocked values.
- @param failure Failure block to be executed if unlocking fails, returns BayunError.
- 
- @see BayunError
- */
-- (void)decryptJson:(NSDictionary*)json
-         keysFormat:(NSDictionary*)keysFormatDictionary
-            success:(void (^)(NSDictionary*))success
-            failure:(void (^)(BayunError))failure;
 /*!
  Locks NSData.
  @param data NSData to be unlocked.
