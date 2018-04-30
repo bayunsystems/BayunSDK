@@ -50,8 +50,6 @@ typedef NS_ENUM(NSUInteger, BayunEncryptionPolicy){
     BayunEncryptionPolicyCompany,
     /**Encryption policy is Employee, encryption/decryption is performed using employee key.*/
     BayunEncryptionPolicyEmployee,
-    /**Encryption policy is Conversation, encryption/decryption is performed using conversation key.*/
-    BayunEncryptionPolicyConversation,
     /**Encryption policy is Group, encryption/decryption is performed using group key.*/
     BayunEncryptionPolicyGroup
 };

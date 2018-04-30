@@ -520,7 +520,6 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         encryptionPolicies.add("Default");
         encryptionPolicies.add("Company");
         encryptionPolicies.add("Employee");
-        encryptionPolicies.add("Conversation");
         return encryptionPolicies;
     }
 
