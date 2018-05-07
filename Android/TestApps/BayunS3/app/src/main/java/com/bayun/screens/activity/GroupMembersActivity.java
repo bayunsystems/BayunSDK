@@ -153,8 +153,14 @@ public class GroupMembersActivity extends AppCompatActivity implements RecyclerI
                     };
 
                     progressDialog.show();
-                    BayunApplication.bayunCore.removeGroupMember(employeeId, companyName, groupId,
-                            removeMemberSuccessCallback, Utility.getDefaultFailureCallback(progressDialog));
+
+                    HashMap<String, String> parameters = new HashMap<>();
+                    parameters.put("companyEmployeeId", employeeId);
+                    parameters.put("companyName", companyName);
+                    parameters.put("groupId", groupId);
+
+                    BayunApplication.bayunCore.removeGroupMember(parameters, removeMemberSuccessCallback,
+                            Utility.getDefaultFailureCallback(progressDialog));
                     //update recyclerview
                     dialog.cancel();
                 },

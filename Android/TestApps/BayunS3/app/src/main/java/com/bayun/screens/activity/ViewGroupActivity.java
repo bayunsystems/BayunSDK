@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -283,8 +284,14 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
             String companyName = ((EditText)dialog.findViewById(R.id.dialog_group_name)).getText()
                     .toString();
             progressDialog.show();
-            BayunApplication.bayunCore.addGroupMember(companyEmployeeId, companyName, groupId,
-                    addGroupMemberSuccessCallback, Utility.getDefaultFailureCallback(progressDialog));
+
+            HashMap<String, String> parameters = new HashMap<>();
+            parameters.put("companyEmployeeId", companyEmployeeId);
+            parameters.put("companyName", companyName);
+            parameters.put("groupId", groupId);
+
+            BayunApplication.bayunCore.addGroupMember(parameters, addGroupMemberSuccessCallback,
+                    Utility.getDefaultFailureCallback(progressDialog));
             dialog.dismiss();
         });
         dialog.show();
@@ -313,8 +320,14 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
             String companyName = ((EditText)dialog.findViewById(R.id.dialog_group_name)).getText()
                     .toString();
             progressDialog.show();
-            BayunApplication.bayunCore.removeGroupMember(companyEmployeeId, companyName, groupId,
-                    removeMemberSuccessCallback, Utility.getDefaultFailureCallback(progressDialog));
+
+            HashMap<String, String> parameters = new HashMap<>();
+            parameters.put("companyEmployeeId", companyEmployeeId);
+            parameters.put("companyName", companyName);
+            parameters.put("groupId", groupId);
+
+            BayunApplication.bayunCore.removeGroupMember(parameters, removeMemberSuccessCallback,
+                    Utility.getDefaultFailureCallback(progressDialog));
             dialog.dismiss();
 
         });
