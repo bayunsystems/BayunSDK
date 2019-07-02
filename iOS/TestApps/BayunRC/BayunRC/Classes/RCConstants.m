@@ -33,11 +33,14 @@ NSString *const kErrorIncorrectPasscode = @"Incorrect Passphrase.";
 NSString *const kErrorInvalidCredentials = @"Invalid Credentials.";
 NSString *const kErrorAccountIsLocked = @"The account is locked out due to multiple unsuccessful logon attempts. Please use Single Sign-on way to authenticate.";
 NSString *const kErrorUserInActive = @"Please contact your Admin to activate your account.";
+NSString *const kErrorBayunAuthenticationIsNeeded = @"Bayun Authentication is Needed.";
 NSString *const kErrorSessionIsExpired = @"Session is expired.";
 NSString *const kErrorCompleteAllFields = @"Complete all fields";
 NSString *const kErrorMessageCouldNotBeSent = @"Message could not be sent.";
 NSString *const kErrorMsgAuthenticationFailed = @"Authentication Failed.";
 NSString *const kErrorMsgAppNotLinked = @"Please link this app with your company employee account via Bayun admin-panel first";
-
+NSString *const kErrorMsgPasscodeAuthenticationFailed = @"Passcode Authentication Canceled By User.";
+NSString *const kErrorMsgDevicePasscodeNotSet = @"Device Passcode Is Not Set";
+NSString *const kErrorMsgAdminRegistrationIncomplete = @"Please contact your Admin to complete his Bayun registration.";
 
 @end

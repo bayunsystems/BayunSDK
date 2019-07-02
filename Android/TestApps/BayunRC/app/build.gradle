@@ -1,14 +1,13 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
+//apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 28
 
     defaultConfig {
-        applicationId "com.bayun"
+        applicationId "com.bayun.prod"
         minSdkVersion 23
-        targetSdkVersion 23
+        targetSdkVersion 28
         versionCode 1
         versionName "1.2"
         multiDexEnabled true
@@ -26,7 +25,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.squareup.okhttp:okhttp:2.7.2'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
+    api 'androidx.appcompat:appcompat:1.0.2'
+    api 'com.squareup.okhttp:okhttp:2.7.2'
+    api 'androidx.recyclerview:recyclerview:1.0.0'
 }

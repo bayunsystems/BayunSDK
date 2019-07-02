@@ -47,9 +47,10 @@
         <activity android:name=".screens.activity.GroupMembersActivity" />
 
         <service android:name="com.bayun_module.BayunBackgroundService" />
+        <activity android:name="com.bayun_module.EmptyActivity"/>
 
         <activity android:name=".screens.activity.CognitoRegisterUserActivity" />
-        <activity android:name=".screens.activity.SignUpConfirmActivity"></activity>
+        <activity android:name=".screens.activity.SignUpConfirmActivity" />
     </application>
 
 </manifest>

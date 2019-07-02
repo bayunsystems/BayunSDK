@@ -224,5 +224,4 @@
         android:layout_below="@id/space_about_2"
         android:background="@drawable/button_selector" />
 
-
 </RelativeLayout>

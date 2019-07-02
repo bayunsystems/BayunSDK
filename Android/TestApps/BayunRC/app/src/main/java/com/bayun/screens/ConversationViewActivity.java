@@ -1,17 +1,17 @@
 package com.bayun.screens;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +29,6 @@ import com.bayun.util.Utility;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TimerTask;
 
 
 public class ConversationViewActivity extends AbstractActivity {
@@ -44,6 +43,8 @@ public class ConversationViewActivity extends AbstractActivity {
     private String messageId, extensionNumber, name;
     private Extension extension;
     private static Handler handler = new Handler();
+    private RelativeLayout progressBar;
+    private static boolean isActivityInFocus = false;
     int flag = 0;
 
     @Override
@@ -51,29 +52,28 @@ public class ConversationViewActivity extends AbstractActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_conversation);
         setUpView();
+
+        progressBar.setVisibility(View.VISIBLE);
+
         // Callback for handling the message list.
-        callback = new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                if (message.what == Constants.CALLBACK_SUCCESS) {
-                    if (messageId.equalsIgnoreCase(Constants.EMPTY_STRING))
-                        messageId = activityDBOperations.getConversationId(extensionNumber);
-                    getConversationList(messageId);
-                }
-                return false;
+        callback = message -> {
+            if (message.what == Constants.CALLBACK_SUCCESS) {
+                if (messageId.equalsIgnoreCase(Constants.EMPTY_STRING))
+                    messageId = activityDBOperations.getConversationId(extensionNumber);
+                getConversationList(messageId);
             }
+            return false;
         };
+
         // Callback for handling the send message.
-        messageCallback = new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                if (message.what == Constants.CALLBACK_SUCCESS) {
-                    messageEditText.setText(Constants.EMPTY_STRING);
-                    getMessage(getLastModifiedTime());
-                }
-                return false;
+        messageCallback = message -> {
+            if (message.what == Constants.CALLBACK_SUCCESS) {
+                messageEditText.setText(Constants.EMPTY_STRING);
+                getMessage(getLastModifiedTime());
             }
+            return false;
         };
+
         messageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -83,7 +83,6 @@ public class ConversationViewActivity extends AbstractActivity {
                 } else {
                     sendButton.setEnabled(true);
                     sendButton.setTextColor(getResources().getColor(R.color.background));
-
                 }
             }
 
@@ -97,15 +96,23 @@ public class ConversationViewActivity extends AbstractActivity {
             }
         });
 
-        getConversationList(messageId);
+        //getConversationList(messageId);
 
+    }
+
+    /**
+     * Shows empty view
+     */
+    private void setUpEmptyView() {
+        recyclerView.setVisibility(View.GONE);
+        emptyView.setVisibility(View.VISIBLE);
     }
 
     /**
      * Sets up Views.
      */
     private void setUpView() {
-        progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
+        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
         senderName = (TextView) findViewById(R.id.sender_name);
         sendButton = (Button) findViewById(R.id.send);
         recyclerView = (RecyclerView) findViewById(R.id.list_files_recycler_view);
@@ -115,6 +122,8 @@ public class ConversationViewActivity extends AbstractActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         messageInfoArrayList.clear();
+        // reset the variable that stores if error was already shown
+        Utility.isErrorShown = false;
         conversationAdapter = new ConversationViewAdapter(ConversationViewActivity.this);
         recyclerView.setAdapter(conversationAdapter);
         activityDBOperations = new ActivityDBOperations(ConversationViewActivity.this);
@@ -123,6 +132,7 @@ public class ConversationViewActivity extends AbstractActivity {
         name = intent.getExtras().getString(Constants.MESSAGE_NAME, Constants.EMPTY_STRING);
         messageId = activityDBOperations.getConversationId(extensionNumber);
         senderName.setText(name);
+
         if (Utility.isNetworkAvailable()) {
             handler.post(runnable);
 
@@ -140,7 +150,11 @@ public class ConversationViewActivity extends AbstractActivity {
     private void getConversationList(String id) {
         messageInfoArrayList = activityDBOperations.getAllMessagesById(id);
         if (null != messageInfoArrayList && messageInfoArrayList.size() > 0) {
-            setListView();
+            new SetListViewAsyncTask().execute();
+        }
+        else {
+            progressBar.setVisibility(View.GONE);
+            setUpEmptyView();
         }
     }
 
@@ -179,14 +193,21 @@ public class ConversationViewActivity extends AbstractActivity {
         if (message.equalsIgnoreCase(Constants.EMPTY_STRING)) {
             Utility.displayToast(Constants.FILE_EMPTY, Toast.LENGTH_SHORT);
         } else {
-            String encryptedText = BayunApplication.rcCryptManager.encryptText(message);
-            if (encryptedText.isEmpty()) {
-                Utility.displayToast("Message could not be sent.", Toast.LENGTH_SHORT);
-            } else {
-                flag = 1;
-                message(encryptedText);
-                sendNewMessage();
-            }
+            Handler.Callback callback = msg -> {
+                String encryptedText = msg.getData().getString(Constants.ENCRYPTED_TEXT);
+
+                if (msg.getData().getBoolean(Constants.WAS_AUTHENTICATION_CANCELLED) || encryptedText.isEmpty()) {
+                    Utility.displayToast("Message could not be sent.", Toast.LENGTH_SHORT);
+                } else {
+                    flag = 1;
+                    message(encryptedText);
+                    sendNewMessage();
+                }
+
+                return false;
+            };
+            BayunApplication.rcCryptManager.encryptText(message, callback);
+
             Utility.hideKeyboard(view);
         }
     }
@@ -223,19 +244,87 @@ public class ConversationViewActivity extends AbstractActivity {
     }
 
     /**
-     * Sets recycler view when data is available.
+     * Sets recycler view when data is available, using an Async task.
      */
-    private void setListView() {
-        recyclerView.setVisibility(View.VISIBLE);
-        emptyView.setVisibility(View.GONE);
-        recyclerView.scrollToPosition(messageInfoArrayList.size() - 1);
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                conversationAdapter.notifyDataSetChanged();
+    private class SetListViewAsyncTask extends AsyncTask<String, String, String> {
 
-            }
-        });
+        @Override
+        protected String doInBackground(String... strings) {
+            runOnUiThread(() -> {
+                recyclerView.setVisibility(View.VISIBLE);
+                emptyView.setVisibility(View.GONE);
+            });
+
+            ArrayList<String> displayTexts = new ArrayList<>();
+            final int[] count = {messageInfoArrayList.size()};
+            final int[] msgIndex = {0};
+            final Handler.Callback[] decryptConvoSubjects = {message -> false};
+
+            Handler.Callback setUpRecyclerViewWhenSuccess = message -> {
+                // update convo list with the display texts
+                for (int i = 0; i < messageInfoArrayList.size(); i++) {
+                    messageInfoArrayList.get(i).setSubject(displayTexts.get(i));
+                }
+
+                runOnUiThread(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    // set recycler view with the list received
+                    recyclerView.scrollToPosition(messageInfoArrayList.size() - 1);
+                    conversationAdapter.notifyDataSetChanged();
+                    handler.postDelayed(runnable, 10000);
+                });
+                return false;
+            };
+
+            Handler.Callback setUpRecyclerViewWhenFailure = message -> {
+                runOnUiThread(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    // set recycler view with the list received
+                    recyclerView.scrollToPosition(messageInfoArrayList.size() - 1);
+                    conversationAdapter.notifyDataSetChanged();
+                });
+                return false;
+            };
+
+            Handler.Callback decryptTextCallback = message -> {
+                // if failure was called, don't continue with the list
+                if (message.getData().getBoolean(Constants.WAS_AUTHENTICATION_CANCELLED)) {
+                    setUpRecyclerViewWhenFailure.handleMessage(null);
+                }
+                // text decryption was successful
+                else {
+                    String decryptedText = message.getData().getString(Constants.DECRYPTED_TEXT);
+                    if (decryptedText == null || decryptedText.isEmpty()) {
+                        displayTexts.add(messageInfoArrayList.get(msgIndex[0]).getSubject());
+                    }
+                    else {
+                        displayTexts.add(decryptedText);
+                    }
+                    count[0]--;
+                    msgIndex[0]++;
+
+                    // if all messages have been decrypted
+                    if (count[0] == 0) {
+                        setUpRecyclerViewWhenSuccess.handleMessage(null);
+                    } else {
+                        decryptConvoSubjects[0].handleMessage(null);
+                    }
+                }
+
+                return false;
+            };
+
+            // decrypt the conversation subjects
+            decryptConvoSubjects[0] = message -> {
+                BayunApplication.rcCryptManager.decryptText(messageInfoArrayList.get(msgIndex[0])
+                        .getSubject(), decryptTextCallback);
+                return false;
+            };
+
+            decryptConvoSubjects[0].handleMessage(null);
+
+            return null;
+        }
     }
 
     /**
@@ -260,21 +349,22 @@ public class ConversationViewActivity extends AbstractActivity {
         return lastModifiedDate;
     }
 
-    private class RefreshView extends TimerTask {
+    /*private class RefreshView extends TimerTask {
         public void run() {
             if (Utility.isNetworkAvailable()) {
                 getMessage(getLastModifiedTime());
             }
         }
-    }
+    }*/
 
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if (Utility.isNetworkAvailable()) {
+            if (Utility.isNetworkAvailable() && isActivityInFocus) {
                 getMessage(getLastModifiedTime());
             }
-            handler.postDelayed(this, 10000);
+
+            //handler.postDelayed(this, 20000);
         }
     };
 
@@ -283,14 +373,11 @@ public class ConversationViewActivity extends AbstractActivity {
         // super.onBackPressed();
         stopTimer();
         Intent intent = new Intent();
-        if(flag==1)
-        {
+        if(flag==1) {
             setResult(RESULT_OK, intent);
-        }else
-        {
+        } else {
             setResult(RESULT_CANCELED, intent);
         }
-
 
         finish();
     }
@@ -302,7 +389,26 @@ public class ConversationViewActivity extends AbstractActivity {
 
     @Override
     protected void onDestroy() {
+        isActivityInFocus = false;
         super.onDestroy();
         stopTimer();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isActivityInFocus = true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isActivityInFocus = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isActivityInFocus = true;
     }
 }

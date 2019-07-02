@@ -35,7 +35,7 @@ This integrates the Bayun framework into the app.
 7. You will need your CognitoIdentityUserPoolRegion, CognitoIdentityUserPoolId, CognitoIdentityUserPoolAppClientId, CognitoIdentityUserPoolAppClientSecret, CognitoIdentityPoolId. Place the respective values in the Constants.m file.
 
 8. You are provided with an appId when your app is registered with Bayun, see [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_ios/before_you_begin.html).  
-    In the Constants.m file, replace value of "BayunAppId" with your Bayun AppId.
+    In the Constants.m file, replace value of "kBayunAppId" and "kBayunAppSecret" with your Bayun AppId and Bayun AppSecret.
 
 9. Build and Run the project.
 

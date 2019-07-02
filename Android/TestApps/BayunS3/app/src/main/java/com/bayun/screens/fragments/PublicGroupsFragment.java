@@ -3,12 +3,13 @@ package com.bayun.screens.fragments;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bayun.R;
@@ -35,11 +36,12 @@ public class PublicGroupsFragment extends BaseFragment implements RecyclerItemCl
     private RecyclerView recyclerView;
     private ArrayList<GroupInfo> unJoinedPublicGroups;
     private ArrayList<HashMap<String, String>> unJoinedPublicGroupsArray;
+    private RelativeLayout progressBar;
 
     public Handler.Callback getUnjoinedPublicGroupsSuccessCallback = message -> {
         unJoinedPublicGroupsArray = (ArrayList<HashMap<String, String>>) message.getData().
                 getSerializable(Constants.UNJOINED_GROUPS_ARRAY);
-        dismissProgressDialog();
+        getActivity().runOnUiThread(() -> progressBar.setVisibility(View.GONE));
 
         unJoinedPublicGroups = new ArrayList<>();
         for (HashMap<String, String> groupMap: unJoinedPublicGroupsArray) {
@@ -74,7 +76,7 @@ public class PublicGroupsFragment extends BaseFragment implements RecyclerItemCl
     };
 
     private Handler.Callback joinPublicGroupSuccessCallback = message -> {
-        dismissProgressDialog();
+        getActivity().runOnUiThread(() -> progressBar.setVisibility(View.GONE));
         Utility.displayToast("Group Joined.", Toast.LENGTH_LONG);
         updateRecyclerView();
 
@@ -111,9 +113,9 @@ public class PublicGroupsFragment extends BaseFragment implements RecyclerItemCl
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_tab_layout, container, false);
+        progressBar = (RelativeLayout) view.findViewById(R.id.progressBar);
         recyclerView = (RecyclerView) view.findViewById(R.id.fragment_tab_layout_recycler_view);
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), this));
-        updateRecyclerView();
         return view;
     }
 
@@ -128,9 +130,9 @@ public class PublicGroupsFragment extends BaseFragment implements RecyclerItemCl
      * gets unjoined public groups through BayunCore
      */
     public void getUnjoinedPublicGroups() {
-        showProgressDialog();
+        getActivity().runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
         BayunApplication.bayunCore.getUnjoinedPublicGroups(getUnjoinedPublicGroupsSuccessCallback,
-                Utility.getDefaultFailureCallback(progressDialog));
+                Utility.getDefaultFailureCallback(getActivity(), progressBar));
     }
 
     @Override
@@ -138,10 +140,10 @@ public class PublicGroupsFragment extends BaseFragment implements RecyclerItemCl
         Utility.decisionAlert(getActivity(), "Join group", "Do you want to join this group?",
                 getString(R.string.yes), getString(R.string.no),
         (dialog, which) -> {
-            showProgressDialog();
+            getActivity().runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
             String groupId = unJoinedPublicGroups.get(position).getId();
             BayunApplication.bayunCore.joinPublicGroup(groupId, joinPublicGroupSuccessCallback,
-                    Utility.getDefaultFailureCallback(progressDialog));
+                    Utility.getDefaultFailureCallback(getActivity(), progressBar));
             dialog.cancel();
         }, (dialog, which) -> dialog.cancel());
     }

@@ -11,9 +11,25 @@
         android:visibility="gone"
         android:text="@string/no_groups_msg"/>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/fragment_tab_layout_recycler_view"
         android:scrollbars="vertical"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progressBar"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@color/progress_bar_bg"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
 </RelativeLayout>

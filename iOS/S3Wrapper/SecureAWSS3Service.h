@@ -26,10 +26,15 @@ typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
     SecureAWSS3ServiceErrorUnlockingFailed,
     SecureAWSS3ServiceErrorInternetConnection,
     SecureAWSS3ServiceErrorSomethingWentWrong,
+    SecureAWSS3ServiceErrorInvalidAppSecret,
+    SecureAWSS3ServiceErrorPasscodeAuthenticationCanceledByUser,
+    SecureAWSS3ServiceErrorReAuthenticationNeeded,
     SecureAWSS3ServiceErrorNoInternetConnection
 };
 
-
+/**
+ 
+ */
 @interface SecureAWSS3 :AWSS3
 
 @property (strong, nonatomic) NSString *groupId;
@@ -39,6 +44,12 @@ typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
  Default encryption policy is BayunEncryptionPolicyDefault.
  */
 @property (nonatomic, assign) BayunEncryptionPolicy encryptionPolicy;
+
+/**
+ Key Generation Policy determines what policy is used for Data Encryption Key.
+ Default encryption policy is BayunKeyGenerationPolicyStatic.
+ */
+@property (nonatomic, assign) BayunKeyGenerationPolicy keyGenerationPolicy;
 
 
 /**

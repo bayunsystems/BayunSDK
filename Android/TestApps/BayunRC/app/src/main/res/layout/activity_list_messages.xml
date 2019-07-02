@@ -1,6 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
      android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
+
+
 
     <RelativeLayout
         android:id="@+id/activity_list_extensions_navigation_bar"
@@ -26,27 +29,28 @@
             android:layout_centerVertical="true"
             android:text="@string/more_options"
             android:clickable="true"
+            android:padding="5dp"
             android:onClick="moreOptionsClick"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 
     </RelativeLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
           android:layout_below="@+id/activity_list_extensions_navigation_bar">
 
         <!-- A RecyclerView with some commonly used attributes -->
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_files_recycler_view"
             android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
           />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
      <TextView
          android:id="@+id/empty_view"
@@ -55,6 +59,22 @@
          android:gravity="center"
          android:visibility="gone"
         android:text="@string/list_view_message_list_empty"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progressBar"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@color/progress_bar_bg"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
 
 
 </RelativeLayout>

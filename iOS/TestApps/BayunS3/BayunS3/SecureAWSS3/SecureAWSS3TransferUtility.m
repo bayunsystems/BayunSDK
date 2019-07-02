@@ -212,6 +212,7 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
     
     [[BayunCore sharedInstance] lockFile:fileURL
                         encryptionPolicy:self.encryptionPolicy
+                     keyGenerationPolicy:self.keyGenerationPolicy 
                                  groupId:self.groupId
                                  success:^{
         

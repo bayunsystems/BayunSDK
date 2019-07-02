@@ -24,6 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BayunEncryptionPolicy encryptionPolicy;
 
 /**
+ Key Generation Policy determines what policy is used for Data Encryption Key.
+ Default encryption policy is BayunKeyGenerationPolicyStatic.
+ */
+@property (nonatomic, assign) BayunKeyGenerationPolicy keyGenerationPolicy;
+
+/**
  Returns the singleton service client. If the singleton object does not exist, the SDK instantiates the default service client with `defaultServiceConfiguration` from `[AWSServiceManager defaultServiceManager]`. The reference to this object is maintained by the SDK, and you do not need to retain it manually.
  
  For example, set the default service configuration in `- application:didFinishLaunchingWithOptions:`
@@ -48,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @return The default service client.
  */
-+ (nullable instancetype)defaultS3TransferUtility;
++ (instancetype)defaultS3TransferUtility;
 
 
 /**
@@ -106,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @return An instance of the service client.
  */
-+ (nullable instancetype)S3TransferUtilityForKey:(NSString *)key;
++ (instancetype)S3TransferUtilityForKey:(NSString *)key;
 
 /**
  Removes the service client associated with the key and release it.

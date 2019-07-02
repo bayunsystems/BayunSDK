@@ -15,6 +15,7 @@
 #import "GroupFilesViewController.h"
 
 
+
 @interface GroupsViewController () <UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate,UITextFieldDelegate,MKDropdownMenuDataSource, MKDropdownMenuDelegate>
 
 @property (strong,nonatomic) UILabel *createGroupLabel;
@@ -64,15 +65,13 @@
 }
 
 - (void) setUpView {
-    
     NSArray *groups;
-    
     if (self.segmentControl.selectedSegmentIndex == 0) {
         groups =  self.userGroups;
     } else {
         groups = self.publicGroups;
     }
-    
+
     if(groups.count > 0) {
         self.noItemsView.hidden = true;
         self.tableView.hidden = false;
@@ -106,9 +105,22 @@
     }];
 }
 
-- (void) showMessageForError:(BayunError) error {
+- (void)showMessageForError:(BayunError) error {
     if (error == BayunErrorUserInActive) {
         [SVProgressHUD showErrorWithStatus:kErrorMsgUserInActive];
+    } else if (error == BayunErrorReAuthenticationNeeded ||
+               error == BayunErrorInvalidAppSecret ||
+               error == BayunErrorPasscodeAuthenticationCanceledByUser) {
+        
+        if (error == BayunErrorInvalidAppSecret) {
+            [SVProgressHUD showErrorWithStatus:kErrorMsgInvalidAppSecret];
+        } else if (error == BayunErrorReAuthenticationNeeded){
+            [SVProgressHUD showErrorWithStatus:kErrorMsgBayunReauthenticationNeeded];
+        } else if (error == BayunErrorPasscodeAuthenticationCanceledByUser){
+            [SVProgressHUD showErrorWithStatus:kErrorMsgPasscodeAuthenticationFailed];
+        }
+            
+        [Utilities logoutUser:self.user];
     } else {
         [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
     }
@@ -169,7 +181,7 @@
             GroupType groupType = self.selectedGroupTypeRow;
             
             [SVProgressHUD show];
-            [[BayunCore sharedInstance] createGroupWithName:groupName groupType:groupType success:^{
+            [[BayunCore sharedInstance] createGroup:groupName groupType:groupType success:^(NSString *groupId){
                 
                 [SVProgressHUD dismiss];
                 if (self.segmentControl.selectedSegmentIndex == 0) {
@@ -178,11 +190,8 @@
                 
             } failure:^(BayunError bayunError) {
                 
-                if (bayunError == BayunErrorUserInActive) {
-                    [SVProgressHUD showErrorWithStatus:kPermissionDenied];
-                } else {
-                    [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
-                }
+                    [self showMessageForError:bayunError];
+        
                
             }];
             
@@ -415,21 +424,17 @@
                                 handler:^(UIAlertAction * action) {
                                     
                                     [[BayunCore sharedInstance] joinPublicGroup:[self.selectedGroup valueForKey:@"id"] success:^{
-                                        
                                         [self getPublicGroups];
                                         [SVProgressHUD showSuccessWithStatus:kGroupJoined];
-                                        
                                     } failure:^(BayunError error) {
                                         [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
                                     }];
-                                    
                                 }];
     
     UIAlertAction* noButton = [UIAlertAction
                                actionWithTitle:@"Cancel"
                                style:UIAlertActionStyleDefault
                                handler:nil];
-    
     
     [alert addAction:yesButton];
     [alert addAction:noButton];
@@ -441,6 +446,7 @@
     
     if ([segue.identifier isEqualToString:@"groupFiles"]) {
         GroupFilesViewController *vc = segue.destinationViewController;
+        vc.user = self.user;
         vc.group = self.selectedGroup;
     }
 }

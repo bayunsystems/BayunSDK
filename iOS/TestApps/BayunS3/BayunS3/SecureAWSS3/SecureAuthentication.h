@@ -13,13 +13,19 @@ typedef NS_ENUM(NSInteger, SecureAuthenticationErrorType) {
     SecureAuthenticationErrorUnknown,
     SecureAuthenticationErrorFailed,
     SecureAuthenticationErrorInvalidPassword,
+    SecureAuthenticationErrorPasscodeAuthenticationCanceledByUser,
+    SecureAuthenticationErrorOneOrMoreIncorrectAnswers,
     SecureAuthenticationErrorInvalidPassphrase,
     SecureAuthenticationErrorInvalidAppId,
     SecureAuthenticationErrorInvalidCompanyName,
     SecureAuthenticationErrorInvalidCredentials,
     SecureAuthenticationErrorAccessDenied,
+    SecureAuthenticationErrorInvalidAppSecret,
     SecureAuthenticationErrorNotSupported,
     SecureAuthenticationErrorInternetConnection,
+    SecureAuthenticationErrorAppNotLinked,
+    SecureAuthenticationErrorUserInActive,
+    SecureAuthenticationErrorDevicePasscodeNotSet,
     SecureAuthenticationErrorSomethingWentWrong,
     SecureAuthenticationErrorNoInternetConnection
 };
@@ -28,26 +34,30 @@ typedef NS_ENUM(NSInteger, SecureAuthenticationErrorType) {
 
 @property (nonatomic,strong) NSString *companyName;
 @property (nonatomic,strong) NSString *appId;
+@property (nonatomic,strong) NSString *appSecret;
 
 + (instancetype)sharedInstance;
 
 - (void) signUp:(AWSCognitoIdentityUserPool*)pool
-       username: (NSString*) username
-       password: (NSString*) password
- userAttributes: (NSArray<AWSCognitoIdentityUserAttributeType *> *) userAttributes
- validationData: (NSArray<AWSCognitoIdentityUserAttributeType *> *) validationData
+       username: (NSString*)username
+       password: (NSString*)password
+ userAttributes: (NSArray<AWSCognitoIdentityUserAttributeType *> *)userAttributes
+ validationData: (NSArray<AWSCognitoIdentityUserAttributeType *> *)validationData
       withBlock:(AWSContinuationBlock)block;
 
--(void)confirmSignUpForUser:(AWSCognitoIdentityUser*)user
-           confirmationCode:(NSString *) confirmationCode
+- (void)confirmSignUpForUser:(AWSCognitoIdentityUser*)user
+           confirmationCode:(NSString *)confirmationCode
          forceAliasCreation:(BOOL)forceAliasCreation
                   withBlock:(AWSContinuationBlock)block;
 
--(void)signInPool:(AWSCognitoIdentityUserPool*)pool
+- (void)signInPool:(AWSCognitoIdentityUserPool*)pool
          username:(NSString*)username
          password:(NSString*)password
         withBlock:(AWSContinuationBlock)block;
 
-- (void)forgotPasswordWithBlock:(AWSContinuationBlock) block;
+- (void)signOut:(AWSCognitoIdentityUser*)user;
+
+- (void)forgotPasswordWithBlock:(AWSContinuationBlock)block;
+
 
 @end

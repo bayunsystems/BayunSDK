@@ -38,5 +38,8 @@ extern NSString *const kErrorCompleteAllFields;
 extern NSString *const kErrorMessageCouldNotBeSent;
 extern NSString *const kErrorMsgAuthenticationFailed;
 extern NSString *const kErrorMsgAppNotLinked ;
-
+extern NSString *const kErrorMsgDevicePasscodeNotSet;
+extern NSString *const kErrorMsgPasscodeAuthenticationFailed;
+extern NSString *const kErrorBayunAuthenticationIsNeeded;
+extern NSString *const kErrorMsgAdminRegistrationIncomplete;
 @end

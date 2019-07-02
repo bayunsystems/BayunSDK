@@ -1,23 +1,23 @@
 package com.bayun.screens.activity;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,24 +41,25 @@ public class GroupsListActivity extends AppCompatActivity {
 
     private MyGroupsFragment myGroupsFragment;
     private PublicGroupsFragment publicGroupsFragment;
-    private ProgressDialog progressDialog;
+    private RelativeLayout progressBar;
     private Dialog dialog;
     private int selectedTabIndex;
 
     //create group callback
     private Handler.Callback createGroupSuccessCallback = message -> {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
+        runOnUiThread(() -> {
+            progressBar.setVisibility(View.GONE);
+
             if (selectedTabIndex == 0) {
                 myGroupsFragment.updateRecyclerView();
             }
             else if (selectedTabIndex == 1) {
                 publicGroupsFragment.updateRecyclerView();
             }
-        }
-        dialog.dismiss();
+            dialog.dismiss();
 
-        Utility.displayToast("Group created successfully.", Toast.LENGTH_LONG);
+            Utility.displayToast("Group created successfully.", Toast.LENGTH_LONG);
+        });
 
         return false;
     };
@@ -69,6 +70,7 @@ public class GroupsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_groups_list);
         myGroupsFragment = new MyGroupsFragment();
         publicGroupsFragment = new PublicGroupsFragment();
+        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -134,8 +136,10 @@ public class GroupsListActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(GroupsListActivity.this, ListFilesActivity.class));
+        Intent intent = new Intent(GroupsListActivity.this, ListFilesActivity.class);
         super.onBackPressed();
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     /**
@@ -162,19 +166,26 @@ public class GroupsListActivity extends AppCompatActivity {
         // setting click listeners
         dialog.findViewById(R.id.cancel_action).setOnClickListener(view -> dialog.dismiss());
         dialog.findViewById(R.id.ok_action).setOnClickListener(view -> {
+            progressBar.bringToFront();
+            progressBar.setVisibility(View.VISIBLE);
+            Utility.hideKeyboard(dialog.findViewById(R.id.dialog_group_name));
+            dialog.dismiss();
+
             String selectedGroupType = spinner.getSelectedItem().toString();
             String groupName = ((EditText)dialog.findViewById(R.id.dialog_group_name)).getText().toString();
-            progressDialog = Utility.createProgressDialog(this, "Please wait...");
-            progressDialog.show();
+
             if (selectedGroupType.equalsIgnoreCase(GroupType.PUBLIC.toString())) {
-                BayunApplication.bayunCore.createGroupWithName(groupName, GroupType.PUBLIC,
-                        createGroupSuccessCallback, Utility.getDefaultFailureCallback(progressDialog));
+                BayunApplication.bayunCore.createGroup(groupName, GroupType.PUBLIC,
+                        createGroupSuccessCallback, Utility.getDefaultFailureCallback(GroupsListActivity.this,
+                                progressBar));
             }
             else {
-                BayunApplication.bayunCore.createGroupWithName(groupName, GroupType.PRIVATE,
-                        createGroupSuccessCallback, Utility.getDefaultFailureCallback(progressDialog));
+                BayunApplication.bayunCore.createGroup(groupName, GroupType.PRIVATE,
+                        createGroupSuccessCallback, Utility.getDefaultFailureCallback(GroupsListActivity.this,
+                                progressBar));
             }
         });
+
         dialog.show();
     }
 

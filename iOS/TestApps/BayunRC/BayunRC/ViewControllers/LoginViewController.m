@@ -105,18 +105,21 @@
     NSString * password = [self.passwordTextField.text
                            stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
-    if (phoneNumber.length > 0 &&   extension.length > 0 && password.length > 0) {
+    if (phoneNumber.length > 0  && password.length > 0) {
         AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication]delegate];
         if (appDelegate.isNetworkReachable) {
-            NSDictionary *credentials = @{@"grant_type":@"password",
-                                          @"username" : phoneNumber,
-                                          @"extension" : extension,
-                                          @"password" : password};
             
+            NSMutableDictionary *loginCredentials = [[NSMutableDictionary alloc] init];
+            [loginCredentials setObject:@"password" forKey:@"grant_type"];
+            [loginCredentials setObject:phoneNumber forKey:@"username"];
+            [loginCredentials setObject:password forKey:@"password"];
+            
+            if (extension) {
+                [loginCredentials setObject:extension forKey:@"extension"];
+            }
+                       
             [SVProgressHUD showWithMaskType:SVProgressHUDMaskTypeClear];
-            
-            
-            [[RCAPIManager sharedInstance] loginWithCredentials:credentials success:^{
+            [[RCAPIManager sharedInstance] loginWithCredentials:loginCredentials success:^{
                 //Delete entities for User, Receiver, Sender, Message, Conversation
                 [Message deleteAll];
                 [User deleteAll];
@@ -135,30 +138,39 @@
                 NSDictionary *credentials = @{@"companyName" : phoneNumber,
                                               @"companyEmployeeId" : extension,
                                               @"password" : password,
-                                              @"appId" : [RCUtilities appId]};
+                                              @"appId" : [RCUtilities appId],
+                                              @"appSecret" : [RCUtilities appSecret]
+                                              };
                 
-                [[BayunCore sharedInstance] authenticateWithCredentials:credentials passphrase:nil success:^{
-                    [SVProgressHUD dismiss];
-                    
-                    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:kIsUserLoggedIn];
-                    [[NSUserDefaults standardUserDefaults] synchronize];
-                    [self getExtensionsAndMessages];
-                    [self performSegueWithIdentifier:@"MessagesListSegue" sender:nil];
+                [[BayunCore sharedInstance] authenticateWithCredentials:credentials securityQuestions:nil passphrase:nil autoCreateEmployee:YES success:^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [SVProgressHUD dismiss];
+                        [[NSUserDefaults standardUserDefaults]setBool:YES forKey:kIsUserLoggedIn];
+                        [[NSUserDefaults standardUserDefaults] synchronize];
+                        [self getExtensionsAndMessages];
+                        [self performSegueWithIdentifier:@"MessagesListSegue" sender:nil];
+                    });
                 } failure:^(BayunError errorCode) {
-                    [SVProgressHUD dismiss];
-                    if (errorCode == BayunErrorUserInActive) {
-                        [SVProgressHUD showErrorWithStatus:kErrorUserInActive];
-                    } if (errorCode == BayunErrorAppNotLinked) {
-                        [SVProgressHUD showErrorWithStatus:kErrorMsgAppNotLinked];
-                    } else if (errorCode == BayunErrorInvalidCredentials){
-                        [SVProgressHUD showErrorWithStatus:kErrorInvalidCredentials];
-                    } else if (errorCode == BayunErrorInvalidPassphrase){
-                        [SVProgressHUD showErrorWithStatus:kErrorIncorrectPasscode];
-                    } else if (errorCode == BayunErrorAuthenticationFailed){
-                        [SVProgressHUD showErrorWithStatus:kErrorMsgAuthenticationFailed];
-                    }else {
-                        [SVProgressHUD showErrorWithStatus:kErrorSomethingWentWrong];
-                    }
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         [SVProgressHUD dismiss];
+                         if (errorCode == BayunErrorUserInActive) {
+                             [SVProgressHUD showErrorWithStatus:kErrorUserInActive];
+                         } if (errorCode == BayunErrorAppNotLinked) {
+                             [SVProgressHUD showErrorWithStatus:kErrorMsgAppNotLinked];
+                         } else if (errorCode == BayunErrorInvalidCredentials){
+                             [SVProgressHUD showErrorWithStatus:kErrorInvalidCredentials];
+                         } else if (errorCode == BayunErrorInvalidPassphrase){
+                             [SVProgressHUD showErrorWithStatus:kErrorIncorrectPasscode];
+                         } else if (errorCode == BayunErrorAuthenticationFailed){
+                             [SVProgressHUD showErrorWithStatus:kErrorMsgAuthenticationFailed];
+                         } else if(errorCode == BayunErrorDevicePasscodeNotSet) {
+                             [SVProgressHUD showErrorWithStatus:kErrorMsgDevicePasscodeNotSet];
+                         } else if(errorCode == BayunErrorPasscodeAuthenticationCanceledByUser) {
+                             [SVProgressHUD showErrorWithStatus:kErrorMsgPasscodeAuthenticationFailed];
+                         }  else {
+                             [SVProgressHUD showErrorWithStatus:kErrorSomethingWentWrong];
+                         }
+                     });
                 }];
             } failure:^(RCError errorCode) {
                 [SVProgressHUD dismiss];

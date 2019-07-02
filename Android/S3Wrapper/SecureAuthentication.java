@@ -34,6 +34,7 @@ public class SecureAuthentication {
     private Context context;
     private String appId;
     private String companyName;
+    private String appSecret;
 
     private String signUpPassword;
 
@@ -60,6 +61,10 @@ public class SecureAuthentication {
         this.companyName = companyName;
     }
 
+    public void setAppSecret(String appSecret) {
+        this.appSecret = appSecret;
+    }
+
     /**
      * Signin User, first through Cognito. If successful, through Bayun.
      *
@@ -79,6 +84,8 @@ public class SecureAuthentication {
 
                 // Bayun Authentication success Callback
                 Handler.Callback bayunAuthSuccess = msg -> {
+                    BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_IS_BAYUN_LOGGED_IN,
+                            Constants.YES);
                     authenticationHandler.onSuccess(userSession, newDevice);
                     return false;
                 };
@@ -86,16 +93,17 @@ public class SecureAuthentication {
                 // Bayun authentication failure Callback
                 Handler.Callback bayunAuthFailure = msg -> {
                     Exception exception = new Exception(msg.getData().getString(Constants.ERROR));
+                    user.signOut();
                     authenticationHandler.onFailure(exception);
                     return false;
                 };
 
                 // Authenticate with Bayun
                 BasicBayunCredentials basicBayunCredentials = new BasicBayunCredentials
-                        (appId, companyName, username, password);
+                        (appId, companyName, username, password, appSecret);
                 BayunApplication.bayunCore.authenticateWithCredentials
-                        (activity, basicBayunCredentials, null, bayunAuthSuccess,
-                                bayunAuthFailure);
+                        (activity, basicBayunCredentials, null, null,
+                                true,bayunAuthSuccess, bayunAuthFailure);
             }
 
             @Override
@@ -134,6 +142,9 @@ public class SecureAuthentication {
         // Sign out from Cognito Services
         // This has cleared all tokens and this user will have to go through the authentication process to get tokens.
         user.signOut();
+        // clear shared preferance variables
+        BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_LOGGED_IN, null);
+        BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_IS_BAYUN_LOGGED_IN, null);
     }
 
     /**
@@ -174,10 +185,10 @@ public class SecureAuthentication {
 
                     // Authenticate with Bayun
                     BasicBayunCredentials basicBayunCredentials = new BasicBayunCredentials
-                            (appId, companyName, user.getUserId(), signUpPassword);
+                            (appId, companyName, user.getUserId(), signUpPassword, appSecret);
                     BayunApplication.bayunCore.authenticateWithCredentials
-                            (activity, basicBayunCredentials, null, bayunAuthSuccess,
-                                    bayunAuthFailure);
+                            (activity, basicBayunCredentials, null, null,
+                                    true, bayunAuthSuccess, bayunAuthFailure);
                 }
                 // signupConfirmationState is false if used needs to be confirmed.
                 else {
@@ -226,10 +237,10 @@ public class SecureAuthentication {
 
                 // Authenticate with Bayun
                 BasicBayunCredentials basicBayunCredentials = new BasicBayunCredentials
-                        (appId, companyName, user.getUserId(), signUpPassword);
+                        (appId, companyName, user.getUserId(), signUpPassword, appSecret);
                 BayunApplication.bayunCore.authenticateWithCredentials
-                        (activity, basicBayunCredentials, null, bayunAuthSuccess,
-                                bayunAuthFailure);
+                        (activity, basicBayunCredentials, null, null,
+                                true, bayunAuthSuccess, bayunAuthFailure);
             }
 
             @Override

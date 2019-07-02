@@ -2,7 +2,7 @@
 <resources>
 
     <!-- app name -->
-    <string name="app_name">BayunS3</string>
+    <string name="app_name">BayunS3-Test</string>
 
     <!-- AWS keys -->
     <string name="aws_access_key">enter_your_aws_access_key_here</string>
@@ -10,6 +10,8 @@
 
     <!-- app id -->
     <string name="app_id">enter_your_app_id_here</string>
+    <!-- app secret -->
+    <string name="app_secret">enter_your_app_secret_here</string>
 
     <!-- login activity values -->
     <string name="company_name">Company</string>
@@ -48,6 +50,7 @@
     <string name="continue_label">CONTINUE</string>
     <string name="set_encryption_policy">Set Encryption Policy</string>
     <string name="cancel">Cancel</string>
+    <string name="s3Error">An error occurred on the AWS S3 side.</string>
 
     <!-- group/group members values -->
     <string name="members">Members</string>
@@ -78,5 +81,6 @@
     <string name="title_activity_add_attribute">AddAttributeActivity</string>
     <string name="title_activity_device_settings">DeviceSettings</string>
     <string name="title_activity_new_password">NewPassword</string>
+    <string name="signin_failed">Sign-in failed</string>
 
 </resources>

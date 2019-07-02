@@ -10,12 +10,12 @@
 
 @interface GroupsViewController : UIViewController
 
+@property (nonatomic, strong) AWSCognitoIdentityUser * user;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *noItemsView;
-
-- (IBAction)createButtonIsPressed:(id)sender;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *segmentControl;
 
+- (IBAction)createButtonIsPressed:(id)sender;
 - (IBAction)segmentIsSelected:(id)sender;
 
 @end

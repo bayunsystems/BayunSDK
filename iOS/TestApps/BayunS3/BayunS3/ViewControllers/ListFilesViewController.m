@@ -22,6 +22,8 @@
 #import "MKDropdownMenu.h"
 #import <Bayun/BayunCore.h>
 #import "SecureAWSS3TransferManager.h"
+#import "SecureAuthentication.h"
+#import "GroupsViewController.h"
 
 @interface ListFilesViewController ()<AWSManagerDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate ,UIDocumentPickerDelegate,UIDocumentMenuDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,QLPreviewControllerDataSource,QLPreviewControllerDelegate,UIDocumentInteractionControllerDelegate,MKDropdownMenuDataSource, MKDropdownMenuDelegate>
 
@@ -35,17 +37,24 @@
 @property (strong,nonatomic) UILabel *selectPolicyLabel;
 @property (strong,nonatomic) MKDropdownMenu *dropDownMenu;
 @property (strong,nonatomic) NSArray *encryptionPolicies;
+@property (strong,nonatomic) NSArray *keyGenerationPolicies;
 @property (nonatomic) NSUInteger selectedEncryptionPolicyRow;
 @property (strong,nonatomic) NSString *selectedEncryptionPolicy;
-
+@property (nonatomic) NSUInteger selectedKeyGenPolicyRow;
+@property (strong,nonatomic) NSString *selectedKeyGenPolicy;
 @property (strong, nonatomic) NSString *bucketName;
+@property (strong, nonatomic) NSString *companyName;
 
 @property (nonatomic, strong) AWSCognitoIdentityUser * user;
 @property (nonatomic,strong) AWSCognitoIdentityUserGetDetailsResponse * response;
 @property (nonatomic, strong) AWSCognitoIdentityUserPool * pool;
 
-
 @end
+
+typedef NS_ENUM(NSUInteger, DropDownMenuTag) {
+    DropDownMenuEncryptionPolicy = 0,
+    DropDownMenuKeyGenPolicy
+};
 
 /**
  Lists all the files in AWSS3 bucket
@@ -60,9 +69,10 @@
     [self.navigationController setNavigationBarHidden:NO];
     
     self.s3BucketObjectArray = [[NSMutableArray alloc] init];
-    
-    self.bucketName = [[NSString stringWithFormat:@"bayun-test-%@",[[NSUserDefaults standardUserDefaults] valueForKey:kCompany]] lowercaseString];
+    self.companyName = [[NSUserDefaults standardUserDefaults] valueForKey:kCompany];
+    self.bucketName = [[NSString stringWithFormat:@"bayun-test-%@",self.companyName] lowercaseString];
     self.encryptionPolicies = @[@"None",@"Default",@"Company",@"Employee"];
+    self.keyGenerationPolicies = @[@"Default",@"Static",@"Envelope",@"Chain"];
     
     self.dropDownMenu = (MKDropdownMenu*)[[MKDropdownMenu alloc]initWithFrame:CGRectMake(0, 40, 200, 40)];
     self.dropDownMenu.backgroundDimmingOpacity = 0.0;
@@ -117,8 +127,8 @@
     [super viewWillAppear:animated];
     
     //default encryption policy is BayunEncryptionPolicyDefault
-    self.selectedEncryptionPolicyRow = [[NSUserDefaults standardUserDefaults] integerForKey:kEncryptionPolicy];
-    
+    self.selectedEncryptionPolicyRow = [[NSUserDefaults standardUserDefaults] integerForKey:kSelectedEncryptionPolicy];
+    self.selectedKeyGenPolicyRow = [[NSUserDefaults standardUserDefaults] integerForKey:kSelectedKeyGenPolicy];
     [self.navigationItem setHidesBackButton:YES];
 }
 
@@ -143,8 +153,8 @@
                                                              delegate:self
                                                     cancelButtonTitle:@"Cancel"
                                                destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"Upload",@"Groups",@"Encryption Policy",@"Logout", nil];
-    actionSheet.destructiveButtonIndex = 3;
+                                                    otherButtonTitles:@"Upload",@"Groups",@"Encryption Policy",@"Key Generation Policy",@"Logout", nil];
+    actionSheet.destructiveButtonIndex = 4;
     [actionSheet showInView:self.view];
 }
 
@@ -153,7 +163,7 @@
     awsManagerInstance.delegate = self;
     [awsManagerInstance createS3BucketWithName:[self.bucketName lowercaseString] success:^{
         [self getS3BucketObjects];
-    } failure:^{
+    } failure:^(NSError *error){
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
             [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
@@ -162,29 +172,31 @@
 }
 
 - (void)getS3BucketObjects {
-    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-    
-    if (appDelegate.isNetworkReachable) {
-        AWSManager *awsManagerInstance = [AWSManager sharedInstance];
-        awsManagerInstance.delegate = self;
+    if (self.companyName) {
+        AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
         
-        [SVProgressHUD show];
-        [awsManagerInstance getBucketFiles:self.bucketName success:^(AWSS3ListObjectsOutput *bucketObjectsList) {
+        if (appDelegate.isNetworkReachable) {
+            AWSManager *awsManagerInstance = [AWSManager sharedInstance];
+            awsManagerInstance.delegate = self;
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [SVProgressHUD dismiss];
-            });
-            [self performSelectorOnMainThread:@selector(renderFiles:)
-                                   withObject:bucketObjectsList
-                                waitUntilDone:YES];
-        } failure:^(NSError *error){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self showMessageForAWSError:error.code];
-            });
-        }];
-    } else {
-        [self endRefreshing];
-        [SVProgressHUD showErrorWithStatus:kErrorMsgInternetConnection];
+            [SVProgressHUD show];
+            [awsManagerInstance getBucketFiles:self.bucketName success:^(AWSS3ListObjectsOutput *bucketObjectsList) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [SVProgressHUD dismiss];
+                });
+                [self performSelectorOnMainThread:@selector(renderFiles:)
+                                       withObject:bucketObjectsList
+                                    waitUntilDone:YES];
+            } failure:^(NSError *error){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self showMessageForAWSError:error.code];
+                });
+            }];
+        } else {
+            [self endRefreshing];
+            [SVProgressHUD showErrorWithStatus:kErrorMsgInternetConnection];
+        }
     }
 }
 
@@ -248,10 +260,9 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 }
 
-- (void)showEncryptionPoliciesDropdown{
+- (void)showDropdownWithTag:(DropDownMenuTag)tag{
     
     //show encryption policy to encrypt the file
-    
     DLAVAlertView *alertView = [[DLAVAlertView alloc] initWithTitle:nil
                                                             message:nil
                                                            delegate:nil
@@ -264,9 +275,15 @@
     
     CGRect frame = CGRectMake(0.0, 0.0, 200.0, 40.0);
     self.selectPolicyLabel = [[UILabel alloc] initWithFrame:frame];
-    self.selectPolicyLabel.text = @"Select Encryption Policy";
+    if (tag == DropDownMenuEncryptionPolicy) {
+        self.selectPolicyLabel.text = @"Select Encryption Policy";
+    } else {
+        self.selectPolicyLabel.text = @"Select Key Generation Policy";
+        self.selectPolicyLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightMedium];
+    }
     self.selectPolicyLabel.textAlignment = NSTextAlignmentCenter;
     
+    self.dropDownMenu.tag = tag;
     [contentView addSubview:self.selectPolicyLabel];
     [contentView addSubview:self.dropDownMenu];
     
@@ -277,21 +294,40 @@
     
     [alertView showWithCompletion:^(DLAVAlertView *alertView, NSInteger buttonIndex) {
         if (buttonIndex == 1) {
-            [[NSUserDefaults standardUserDefaults] setInteger:self.selectedEncryptionPolicyRow forKey:kEncryptionPolicy];
-            [[NSUserDefaults standardUserDefaults] synchronize];
             //Ok button is pressed
-            [[AWSManager sharedInstance] setEncryptionPolicy:self.selectedEncryptionPolicyRow];
+            if (tag == DropDownMenuEncryptionPolicy) {
+                [[NSUserDefaults standardUserDefaults] setInteger:self.selectedEncryptionPolicyRow forKey:kSelectedEncryptionPolicy];
+                [[AWSManager sharedInstance] setEncryptionPolicy:self.selectedEncryptionPolicyRow];
+            } else if(tag == DropDownMenuKeyGenPolicy) {
+                [[NSUserDefaults standardUserDefaults] setInteger:self.selectedKeyGenPolicyRow forKey:kSelectedKeyGenPolicy];
+                [[AWSManager sharedInstance] setKeyGenerationPolicy:self.selectedKeyGenPolicyRow];
+            }
+            [[NSUserDefaults standardUserDefaults] synchronize];
         }
     }];
 }
 
-- (void) showMessageForAWSError :(SecureAWSS3TransferManagerErrorType) errorType {
+- (void)showMessageForAWSError :(SecureAWSS3TransferManagerErrorType) errorType {
     if (errorType == SecureAWSS3TransferManagerErrorUserInactive) {
         [SVProgressHUD showErrorWithStatus:kErrorMsgUserInActive];
     } else if (errorType == SecureAWSS3TransferManagerErrorAccessDenied) {
         [SVProgressHUD showErrorWithStatus:kErrorMsgAccessDenied];
     } else if (errorType == SecureAWSS3TransferManagerErrorNoInternetConnection) {
         [SVProgressHUD showErrorWithStatus:kErrorMsgInternetConnection];
+    } else if (errorType == SecureAWSS3TransferManagerErrorUnlockingFailed) {
+        [SVProgressHUD showErrorWithStatus:kErrorMsgFileDecryptionFailed];
+    } else if(errorType == SecureAWSS3TransferErrorReAuthenticationNeeded ||
+              errorType == SecureAWSS3TransferErrorPasscodeAuthenticationCanceledByUser ||
+              errorType == SecureAWSS3TransferManagerErrorInvalidAppSecret) {
+       
+        if (errorType == BayunErrorInvalidAppSecret) {
+            [SVProgressHUD showErrorWithStatus:kErrorMsgInvalidAppSecret];
+        } else if (errorType == BayunErrorReAuthenticationNeeded){
+            [SVProgressHUD showErrorWithStatus:kErrorMsgBayunReauthenticationNeeded];
+        } else if (errorType == SecureAWSS3TransferErrorPasscodeAuthenticationCanceledByUser){
+            [SVProgressHUD showErrorWithStatus:kErrorMsgPasscodeAuthenticationFailed];
+        }
+        [Utilities logoutUser:self.user];
     } else  {
         [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
     }
@@ -309,15 +345,19 @@
         } else {
             [self presentDocumentPicker];
         }
-    }else if (buttonIndex == 1) {
+    }else if(buttonIndex == 1) {
         [self performSegueWithIdentifier:@"groupsListSegue" sender:nil];
-    } else if (buttonIndex == 2) {
+    } else if(buttonIndex == 2) {
         //encryption policy is opted
-        [self showEncryptionPoliciesDropdown];
+        [self showDropdownWithTag:DropDownMenuEncryptionPolicy];
         
-    } else if (buttonIndex == 3) {
+    } else if(buttonIndex == 3) {
+        //encryption policy is opted
+        [self showDropdownWithTag:DropDownMenuKeyGenPolicy];
+        
+    } else if (buttonIndex == 4) {
         //logout is opted
-        [self.user signOut];
+        [[SecureAuthentication sharedInstance] signOut:self.user];
         self.title = nil;
         self.response = nil;
         [self.tableView reloadData];
@@ -325,10 +365,12 @@
     }
 }
 
--(void) logout {
+-(void)logout {
     [[self.user getDetails] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserGetDetailsResponse *> * _Nonnull task) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if(task.error){
+                [Utilities  clearKeychainAndUserDefaults];
+                [[BayunCore sharedInstance] deauthenticate];
                 [SVProgressHUD showErrorWithStatus:task.error.userInfo[NSLocalizedDescriptionKey]];
                 [self.navigationController setToolbarHidden:YES];
             }else {
@@ -338,12 +380,11 @@
                 [self.navigationController setToolbarHidden:NO];
             }
         });
-        
         return nil;
     }];
 }
 
-- (void) presentDocumentPicker {
+- (void)presentDocumentPicker {
     UIDocumentMenuViewController *importMenu =
     [[UIDocumentMenuViewController alloc] initWithDocumentTypes:
      @[@"public.image",@"public.data",@"public.content",@"public.text",@"public.plain-text",@"public.composite-​content",@"public.audio",@"public.presentation",@"public.movie"]
@@ -382,10 +423,12 @@
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    
     if ([segue.identifier isEqualToString:@"createTextSegue"]) {
         CreateTextFileViewController *vc = segue.destinationViewController;
         vc.bucketName = self.bucketName;
+    } else if ([segue.identifier isEqualToString:@"groupsListSegue"]) {
+        GroupsViewController *vc = segue.destinationViewController;
+        vc.user = self.user;
     }
 }
 
@@ -569,6 +612,7 @@
             [imageData writeToFile:filePath atomically:NO];
             
             //Setting groupId and encryption policy to BayunEncryptionPolicyGroup
+            [[AWSManager sharedInstance] setKeyGenerationPolicy:self.selectedKeyGenPolicyRow];
             [[AWSManager sharedInstance] setEncryptionPolicy:self.selectedEncryptionPolicyRow];
             [[AWSManager sharedInstance] setGroupId:nil];
             [self uploadFileAtPath:[NSURL fileURLWithPath:filePath]];
@@ -623,7 +667,11 @@
 }
 
 - (NSInteger)dropdownMenu:(MKDropdownMenu *)dropdownMenu numberOfRowsInComponent:(NSInteger)component {
-    return self.encryptionPolicies.count;
+     if (dropdownMenu.tag == DropDownMenuEncryptionPolicy) {
+         return self.encryptionPolicies.count;
+     } else {
+         return self.keyGenerationPolicies.count;
+     }
 }
 
 #pragma mark - MKDropdownMenuDelegate
@@ -641,18 +689,37 @@
 }
 
 - (NSAttributedString *)dropdownMenu:(MKDropdownMenu *)dropdownMenu attributedTitleForComponent:(NSInteger)component {
-    NSString *encryptionPolicy = self.encryptionPolicies[self.selectedEncryptionPolicyRow];
-    self.selectedEncryptionPolicy = encryptionPolicy;
-    return [[NSAttributedString alloc] initWithString:encryptionPolicy
-                                           attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:16 weight:UIFontWeightLight],
-                                                        NSForegroundColorAttributeName: [UIColor blackColor]}];
+    
+    if (dropdownMenu.tag == DropDownMenuEncryptionPolicy) {
+        NSString *encryptionPolicy = self.encryptionPolicies[self.selectedEncryptionPolicyRow];
+        self.selectedEncryptionPolicy = encryptionPolicy;
+        return [[NSAttributedString alloc] initWithString:encryptionPolicy
+                                               attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:16 weight:UIFontWeightLight],
+                                                            NSForegroundColorAttributeName: [UIColor blackColor]}];
+    } else if (dropdownMenu.tag == DropDownMenuKeyGenPolicy) {
+        NSString *keyGenPolicy = self.keyGenerationPolicies[self.selectedKeyGenPolicyRow];
+        self.selectedKeyGenPolicy = keyGenPolicy;
+        return [[NSAttributedString alloc] initWithString:keyGenPolicy
+                                               attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:16 weight:UIFontWeightLight],
+                                                            NSForegroundColorAttributeName: [UIColor blackColor]}];
+    }
+    return nil;
 }
 
 - (NSAttributedString *)dropdownMenu:(MKDropdownMenu *)dropdownMenu attributedTitleForSelectedComponent:(NSInteger)component {
-    NSString *encryptionPolicy = self.encryptionPolicies[self.selectedEncryptionPolicyRow];
-    return [[NSAttributedString alloc] initWithString:encryptionPolicy
-                                           attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:16 weight:UIFontWeightRegular],
-                                                        NSForegroundColorAttributeName: [UIColor blackColor]}];
+    
+    if (dropdownMenu.tag == DropDownMenuEncryptionPolicy) {
+        NSString *encryptionPolicy = self.encryptionPolicies[self.selectedEncryptionPolicyRow];
+        return [[NSAttributedString alloc] initWithString:encryptionPolicy
+                                               attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:16 weight:UIFontWeightRegular],
+                                                            NSForegroundColorAttributeName: [UIColor blackColor]}];
+    } else if (dropdownMenu.tag == DropDownMenuKeyGenPolicy)  {
+        NSString *keyGenPolicy = self.keyGenerationPolicies[self.selectedKeyGenPolicyRow];
+        return [[NSAttributedString alloc] initWithString:keyGenPolicy
+                                               attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:16 weight:UIFontWeightRegular],
+                                                            NSForegroundColorAttributeName: [UIColor blackColor]}];
+    }
+    return nil;
 }
 
 - (UIView *)dropdownMenu:(MKDropdownMenu *)dropdownMenu
@@ -660,12 +727,18 @@
             forComponent:(NSInteger)component
              reusingView:(UIView *)view {
     DropDownView *dropDownView = (DropDownView*) view;
+    
     if (dropDownView == nil || ![DropDownView isKindOfClass:[DropDownView class]]) {
         dropDownView = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([DropDownView class]) owner:nil options:nil] firstObject];
     }
+    if (dropdownMenu.tag == DropDownMenuEncryptionPolicy) {
+        NSString *encryptionPolicy = self.encryptionPolicies[row];
+        dropDownView.textLabel.text = encryptionPolicy;
+    } else if (dropdownMenu.tag == DropDownMenuKeyGenPolicy) {
+        NSString *keyGenPolicy = self.keyGenerationPolicies[row];
+        dropDownView.textLabel.text = keyGenPolicy;
+    }
     
-    NSString *encryptionPolicy = self.encryptionPolicies[row];
-    dropDownView.textLabel.text = encryptionPolicy;
     return dropDownView;
 }
 
@@ -674,7 +747,11 @@
 }
 
 - (void)dropdownMenu:(MKDropdownMenu *)dropdownMenu didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    self.selectedEncryptionPolicyRow = row;
+     if (dropdownMenu.tag == DropDownMenuEncryptionPolicy) {
+         self.selectedEncryptionPolicyRow = row;
+     } else if (dropdownMenu.tag == DropDownMenuKeyGenPolicy) {
+         self.selectedKeyGenPolicyRow = row;
+     }
     [dropdownMenu reloadComponent:component];
 }
 

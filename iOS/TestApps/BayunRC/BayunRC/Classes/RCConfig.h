@@ -14,10 +14,12 @@
 #define kApplicationKeyProd             @"Your Production Application Key"
 #define kApplicationSecretKeyProd       @"Your Production Secret Key"
 #define kBayunAppId                     @"Bayun AppId"
+#define kAppSecret                      @"Bayun AppSecret"
 
 #define kRCLoginURL                     @"/restapi/oauth/token"
 #define kRCGetMessageList               @"/restapi/v1.0/account/~/extension/~/message-store?messageType=Pager"
 #define kRCSendPagerMessage             @"/restapi/v1.0/account/~/extension/~/company-pager"
 #define kRCGetExtensionsList            @"/restapi/v1.0/account/~/extension"
+
 #define kTimeToRefreshConversationView  10.0
 

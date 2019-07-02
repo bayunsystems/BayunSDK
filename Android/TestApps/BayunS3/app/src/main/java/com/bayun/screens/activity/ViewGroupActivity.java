@@ -2,7 +2,6 @@ package com.bayun.screens.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,19 +12,20 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +39,7 @@ import com.bayun.util.Constants;
 import com.bayun.util.FileUtils;
 import com.bayun.util.RecyclerItemClickListener;
 import com.bayun.util.Utility;
+import com.bayun_module.BayunCore;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,7 +64,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
     private String groupId;
     private RecyclerView recyclerView;
     private TextView emptyView;
-    private ProgressDialog progressDialog;
+    private RelativeLayout progressBar;
     private int refreshFlag = 0;
     private FilesAdapter filesAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -75,9 +76,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
     private Handler.Callback addGroupMemberSuccessCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message message) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            runOnUiThread(() -> progressBar.setVisibility(View.GONE));
             Utility.displayToast("Member Added.", Toast.LENGTH_LONG);
 
             return false;
@@ -88,9 +87,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
     private Handler.Callback removeMemberSuccessCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message message) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            runOnUiThread(() -> progressBar.setVisibility(View.GONE));
             Utility.displayToast("Member Removed.", Toast.LENGTH_LONG);
 
             return false;
@@ -101,9 +98,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
     private Handler.Callback leaveGroupSuccessCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message message) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            runOnUiThread(() -> progressBar.setVisibility(View.GONE));
             Utility.displayToast("Group Left.", Toast.LENGTH_LONG);
             startActivity(new Intent(ViewGroupActivity.this, GroupsListActivity.class));
 
@@ -175,8 +170,8 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
      * sets up views for the activity
      */
     private void setUpViews() {
-        progressDialog = Utility.createProgressDialog(this, "Please wait...");
-        progressDialog.show();
+        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         String groupName = getIntent().getStringExtra(Constants.SHARED_PREFERENCES_GROUP_NAME);
@@ -222,10 +217,12 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         SecureTransferUtility.setEncryptionPolicyOnDevice(BayunApplication.tinyDB.getInt(
                 Constants.SHARED_PREFERENCES_OLD_ENCRYPTION_POLICY_ON_DEVICE, 1));
-        startActivity(new Intent(ViewGroupActivity.this, GroupsListActivity.class));
-        super.onBackPressed();
+        Intent intent = new Intent(ViewGroupActivity.this, GroupsListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     /**
@@ -253,7 +250,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
             else if (sequences[which].equals("Leave Group")) {
                 DialogInterface.OnClickListener positiveCallBack = (dialog1, which1) -> {
                     BayunApplication.bayunCore.leaveGroup(groupId, leaveGroupSuccessCallback,
-                            Utility.getDefaultFailureCallback(progressDialog));
+                            Utility.getDefaultFailureCallback(ViewGroupActivity.this, progressBar));
                 };
                 Utility.decisionAlert(this, null, "Are you sure you want to leave the group?", "Yes",
                         "Cancel", positiveCallBack, null);
@@ -283,7 +280,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
                     .getText().toString();
             String companyName = ((EditText)dialog.findViewById(R.id.dialog_group_name)).getText()
                     .toString();
-            progressDialog.show();
+            progressBar.setVisibility(View.VISIBLE);
 
             HashMap<String, String> parameters = new HashMap<>();
             parameters.put("companyEmployeeId", companyEmployeeId);
@@ -291,7 +288,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
             parameters.put("groupId", groupId);
 
             BayunApplication.bayunCore.addGroupMember(parameters, addGroupMemberSuccessCallback,
-                    Utility.getDefaultFailureCallback(progressDialog));
+                    Utility.getDefaultFailureCallback(ViewGroupActivity.this, progressBar));
             dialog.dismiss();
         });
         dialog.show();
@@ -319,7 +316,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
                     .getText().toString();
             String companyName = ((EditText)dialog.findViewById(R.id.dialog_group_name)).getText()
                     .toString();
-            progressDialog.show();
+            progressBar.setVisibility(View.VISIBLE);
 
             HashMap<String, String> parameters = new HashMap<>();
             parameters.put("companyEmployeeId", companyEmployeeId);
@@ -327,7 +324,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
             parameters.put("groupId", groupId);
 
             BayunApplication.bayunCore.removeGroupMember(parameters, removeMemberSuccessCallback,
-                    Utility.getDefaultFailureCallback(progressDialog));
+                    Utility.getDefaultFailureCallback(ViewGroupActivity.this, progressBar));
             dialog.dismiss();
 
         });
@@ -393,7 +390,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
     public void getListFromS3Bucket() {
         runOnUiThread(() -> {
             if (Utility.isNetworkAvailable()) {
-                progressDialog.show();
+                progressBar.setVisibility(View.VISIBLE);
                 getInstance().getListOfObjects();
             } else {
                 Utility.messageAlertForCertainDuration(ViewGroupActivity.this, Constants.ERROR_INTERNET_OFFLINE);
@@ -457,9 +454,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
      * Dismiss dialog.
      */
     public void dismissDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
+        runOnUiThread(() -> progressBar.setVisibility(View.GONE));
     }
 
     /**
@@ -485,7 +480,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
     @Override
     public void onItemLongPress(View childView, int position) {
         if (Utility.isNetworkAvailable()) {
-            if (BayunApplication.bayunCore.isEmployeeActive())
+            if (BayunCore.isEmployeeActive())
                 deleteListItemDialog(position);
             else {
                 Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_LONG);
@@ -504,12 +499,12 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
         String fileName = getInstance().fileList().get(position).getFileName();
         String message = "Delete" + " " + fileName + " " + "permanently?";
         Utility.decisionAlert(ViewGroupActivity.this, getString(R.string.dialog_delete_title), message,
-                getString(R.string.yes), getString(R.string.no), (dialog, which) -> {
-                    getInstance().deleteFileFromS3(getInstance().fileList().get(position).getFileName());
-                    getInstance().fileList().remove(position);
-                    filesAdapter.notifyItemRemoved(position);
-                    dialog.cancel();
-                }, (dialog, which) -> dialog.cancel());
+            getString(R.string.yes), getString(R.string.no), (dialog, which) -> {
+                getInstance().deleteFileFromS3(getInstance().fileList().get(position).getFileName());
+                getInstance().fileList().remove(position);
+                filesAdapter.notifyItemRemoved(position);
+                dialog.cancel();
+            }, (dialog, which) -> dialog.cancel());
     }
 
     @Override
@@ -523,7 +518,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
                         try {
                             // Get the file path from the URI
                             final String path = FileUtils.getPath(this, uri);
-                            progressDialog.show();
+                            runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
                             if (!path.isEmpty()) {
                                 File file = new File(path);
                                 copyFile(path, file.getName());

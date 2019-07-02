@@ -10,7 +10,6 @@ import com.squareup.okhttp.OkHttpClient;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 
-
 class RestUtils {
 
     private static final RequestInterceptor loginRequestInterceptor = request -> {

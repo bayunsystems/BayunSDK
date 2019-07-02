@@ -1,14 +1,14 @@
 package com.bayun.screens.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,12 +25,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static java.util.ResourceBundle.clearCache;
+
 public class ViewFileActivity extends AbstractActivity implements NotificationCenter.NotificationCenterDelegate {
 
     private TextView textView;
     private String fileName = "",savedText = "";
     private EditText fileEditText;
-
+    private RelativeLayout progressbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.AWS_UPLOAD_COMPLETE);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.ACCESS_DENIED);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.TRANSFER_FAILED);
+
         viewFile();
     }
 
@@ -52,8 +55,9 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
      * Sets up Views.
      */
     private void setUpView() {
-        progressDialog = Utility.createProgressDialog(this, "Please wait...");
-        progressDialog.show();
+        progressbar = (RelativeLayout) findViewById(R.id.progressBar);
+        progressbar.setVisibility(View.VISIBLE);
+        //fileProgressDialog = Utility.createFileProgressDialog(this, "Downloading...");
         TextView fileNameText = (TextView) findViewById(R.id.activity_view_file_fileName_text);
         textView = (TextView) findViewById(R.id.activity_view_file_edit_text);
         fileEditText = (EditText) findViewById(R.id.activity_view_file_edit_text_view);
@@ -94,7 +98,7 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
      * Downloads a file from S3 to display contents of the file
      */
     public void viewFile() {
-        progressDialog.show();
+        runOnUiThread(() -> progressbar.setVisibility(View.VISIBLE));
         AWSS3Manager.getInstance().downloadFile(fileName);
     }
 
@@ -108,8 +112,8 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
         if (text.equalsIgnoreCase(getString(R.string.save_file))) {
             saveFile();
             Utility.hideKeyboard(fileEditText);
-        } else if (text.equalsIgnoreCase(getString(R.string.edit_file))) {
-
+        }
+        else if (text.equalsIgnoreCase(getString(R.string.edit_file))) {
             fileEditText.setFocusableInTouchMode(true);
             fileEditText.setCursorVisible(Boolean.TRUE);
             fileEditText.setEnabled(Boolean.TRUE);
@@ -127,10 +131,16 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
         Utility.hideKeyboard(fileEditText);
         String newText = fileEditText.getText().toString();
         if (savedText.equalsIgnoreCase(newText)) {
-            finish();
+            onBackPressed();
         } else {
             showDialog();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     /**
@@ -142,25 +152,24 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
     @Override
     public void didReceivedNotification(int id, Object... args) {
         if (id == NotificationCenter.AWS_DOWNLOAD_COMPLETE) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            dismissDialog();
             try {
-                if (isFileImage()) {
-                    finish();
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.fromFile(getFile()), "image");
-                    startActivity(intent);
-                }
-                else {
-                    String fileText = readFile();
-                    //Read data fetched from the file
-                    fileEditText.setVisibility(View.VISIBLE);
-                    fileEditText.setText(fileText);
-                    savedText = fileEditText.getText().toString();
-                }
-
+                runOnUiThread(() -> {
+                    if (isFileImage()) {
+                        finish();
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setDataAndType(Uri.fromFile(getFile()), "image");
+                        startActivity(intent);
+                    }
+                    else {
+                        String fileText = readFile();
+                        //Read data fetched from the file
+                        fileEditText.setVisibility(View.VISIBLE);
+                        fileEditText.setText(fileText);
+                        savedText = fileEditText.getText().toString();
+                    }
+                });
             } catch (Exception e) {
                 Utility.displayToast(e.getMessage(), Toast.LENGTH_SHORT);
             }
@@ -225,7 +234,7 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
         if (fileText.equalsIgnoreCase(Constants.EMPTY_STRING)) {
             Utility.messageAlertForCertainDuration(ViewFileActivity.this, Constants.FILE_EMPTY);
         } else {
-            progressDialog.show();
+            //fileProgressDialog.show();
             AWSS3Manager.getInstance().writeFile(fileEditText.getText().toString(),fileName);
 
         }
@@ -235,28 +244,19 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
      * Dismiss progress dialog
      */
     public void dismissDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
+        runOnUiThread(() -> progressbar.setVisibility(View.GONE));
     }
 
     /**
      * Show dialog on press back button.
      */
     public void showDialog() {
-        Utility.decisionAlert(ViewFileActivity.this, getString(R.string.dialog_title), "", getString(R.string.yes), getString(R.string.no), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                saveFile();
-            }
-        }, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                dialog.cancel();
-                finish();
-            }
+        Utility.decisionAlert(ViewFileActivity.this, getString(R.string.dialog_title), "", getString(R.string.yes), getString(R.string.no), (dialog, which) -> {
+            dialog.cancel();
+            saveFile();
+        }, (dialog, which) -> {
+            dialog.cancel();
+            finish();
         });
     }
 

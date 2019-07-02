@@ -166,7 +166,9 @@
         } else {
             [[AWSManager sharedInstance] setGroupId:nil];
             [[AWSManager sharedInstance] setEncryptionPolicy:
-             [[NSUserDefaults standardUserDefaults] integerForKey:kEncryptionPolicy]];
+             [[NSUserDefaults standardUserDefaults] integerForKey:kSelectedEncryptionPolicy]];
+            [[AWSManager sharedInstance] setKeyGenerationPolicy:
+             [[NSUserDefaults standardUserDefaults] integerForKey:kSelectedKeyGenPolicy]];
         }
         
         [[AWSManager sharedInstance] uploadFile:[NSURL fileURLWithPath:self.lockedFilePath] bucketName:self.bucketName success:^{

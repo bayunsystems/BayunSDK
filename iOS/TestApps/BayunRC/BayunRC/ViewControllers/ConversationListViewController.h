@@ -1,5 +1,5 @@
 //
-//  ListFilesViewController.h
+//  ConversationListViewController.h
 //  Bayun
 //
 //  Created by Preeti Gaur on 02/06/2015.

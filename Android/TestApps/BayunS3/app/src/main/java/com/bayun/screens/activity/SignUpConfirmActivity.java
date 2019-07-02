@@ -3,10 +3,10 @@ package com.bayun.screens.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -35,14 +35,14 @@ public class SignUpConfirmActivity extends AppCompatActivity {
     GenericHandler confHandler = new GenericHandler() {
         @Override
         public void onSuccess() {
-            progressBar.setVisibility(View.GONE);
+            runOnUiThread(() -> progressBar.setVisibility(View.GONE));
             showDialogMessage("Success!",userName+" has been confirmed!", true);
         }
 
         @Override
         public void onFailure(Exception exception) {
             runOnUiThread(() -> {
-                progressBar.setVisibility(View.GONE);
+                runOnUiThread(() -> progressBar.setVisibility(View.GONE));
 
                 TextView label = (TextView) findViewById(R.id.textViewConfirmUserIdMessage);
                 label.setText("Confirmation failed!");
@@ -192,7 +192,7 @@ public class SignUpConfirmActivity extends AppCompatActivity {
      */
     private void sendConfCode() {
 
-        progressBar.setVisibility(View.VISIBLE);
+        runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
         userName = username.getText().toString();
         String confirmCode = confCode.getText().toString();
 

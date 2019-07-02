@@ -54,6 +54,13 @@ typedef NS_ENUM(NSUInteger, BayunEncryptionPolicy){
     BayunEncryptionPolicyGroup
 };
 
+typedef NS_ENUM(NSUInteger, BayunKeyGenerationPolicy){
+    /** KeyGenerationPolicy is Default, Chain Encryption policy is used. */
+    BayunKeyGenerationPolicyDefault = 0,
+    BayunKeyGenerationPolicyStatic,
+    BayunKeyGenerationPolicyEnvelope,
+    BayunKeyGenerationPolicyChain,
+};
 
 /**
  Provides methods to perform encryption and decryption of texts, files, NSData.
@@ -63,7 +70,7 @@ typedef NS_ENUM(NSUInteger, BayunEncryptionPolicy){
 @interface BayunCore : NSObject
 
 /**
- Status of employee e.g. BayunEmployeeStatusAdmin, BayunEmployeeStatusRegistered, BayunEmployeeStatusApproved, 
+ Status of employee e.g. BayunEmployeeStatusAdmin, BayunEmployeeStatusRegistered, BayunEmployeeStatusApproved,
  BayunEmployeeStatusCancelled or BayunEmployeeStatusUnknown.
  */
 @property (nonatomic) BayunEmployeeStatus employeeStatus;
@@ -81,34 +88,65 @@ typedef NS_ENUM(NSUInteger, BayunEncryptionPolicy){
  */
 + (instancetype)sharedInstance;
 
+/**
+ Validates employee's companyName, companyEmployeeId and AppId
+ @param credentials NSDictionary mapping companyName, companyEmployeeId, appId.
+ @param success Success block to be executed after successful employee validation.
+ @param failure Failure block to be executed if user employee validation fails, returns BayunError.
+ 
+ @see BayunError
+ */
+- (void)validateEmployeeInfo:(NSDictionary*)credentials
+                     success:(void(^)(void))success
+                     failure:(void(^)(BayunError))failure;
+
 
 /*!
  Authenticate user with Lockbox Management Server.
  @param credentials NSDictionary mapping companyName, companyEmployeeId, password, appId.
+ @param securityQuestions Optional block if 2-FA is enabled. Provide custom UI block to take
+ user security question answers and call validateSecurityQuestions method to validate the answers.
+ If nil, default Bayun AlertView is displayed to take user answers to the security questions.
  @param passphrase Optional block if passphrase is enabled. Provide custom UI block to take
  user passphrase and call validatePassphrase method to validate the user passphrase.
  If nil, default Bayun AlertView is displayed to take user passphrase.
+ @param autoCreateEmployee Boolean Determines whether or not an employee should be created on LMS
+ if not exists in the given company.
  @param success Success block to be executed after successful user authentication.
  @param failure Failure block to be executed if user authentication fails, returns BayunError.
  
  @see BayunError
  */
 - (void)authenticateWithCredentials:(NSDictionary *)credentials
-                           passphrase:(void (^) (void))passphrase
-                            success:(void (^)(void))success
-                            failure:(void (^)(BayunError))failure;
+                  securityQuestions:(void (^) (NSArray*))securityQuestions
+                         passphrase:(void (^) (void))passphrase
+                 autoCreateEmployee:(Boolean)autoCreateEmployee
+                            success:(void (^) (void))success
+                            failure:(void (^) (BayunError))failure;
 
 /*!
  Validates user passphrase with Lockbox Management Server.
  @param passphrase User passphrase
  @param success Success block to be executed after passphrase is successfully verified.
- @param failure Failure block to be executed if set passphrase fails, returns BayunError.
+ @param failure Failure block to be executed if validate passphrase fails, returns BayunError.
  
  @see BayunError
  */
 - (void)validatePassphrase:(NSString*)passphrase
-                 success:(void (^)(void))success
-                 failure:(void (^)(BayunError))failure;
+                   success:(void (^)(void))success
+                   failure:(void (^)(BayunError))failure;
+
+/*!
+ Validates security questions with Lockbox Management Server.
+ @param parameters An array of SecurityAnswer object.
+ @param success Success block to be executed after security questions are successfully verified.
+ @param failure Failure block to be executed if validate security questions fails, returns BayunError.
+ 
+ @see BayunError
+ */
+- (void)validateSecurityQuestions:(NSArray*)parameters
+                          success:(void (^)(void))success
+                          failure:(void (^)(BayunError))failure;
 
 /*!
  Updates user password on Lockbox Management Server.
@@ -144,15 +182,15 @@ typedef NS_ENUM(NSUInteger, BayunEncryptionPolicy){
 /*!
  Locks file. The file at the given file path is overwritten with the locked file.
  @param fileURL URL of the file to be locked.
- @param policy  BayunEncryptionPolicy determines the key for locking.
+ @param encryptionPolicy  BayunEncryptionPolicy determines the key for locking.
  @param groupId GroupId is required if encryptionPolicy is BayunEncryptionPolicyGroup.
  @param success Success block to be executed after file is successfully locked.
  @param failure Failure block to be executed if locking fails, returns BayunError.
- 
  @see BayunError
  */
 - (void)lockFile:(NSURL*)fileURL
 encryptionPolicy:(BayunEncryptionPolicy)policy
+keyGenerationPolicy:(BayunKeyGenerationPolicy)keyGenerationPolicy
          groupId:(NSString*)groupId
          success:(void (^)(void))success
          failure:(void (^)(BayunError))failure;
@@ -186,7 +224,8 @@ encryptionPolicy:(BayunEncryptionPolicy)policy
 /*!
  Locks text.
  @param text Text to be locked.
- @param policy  BayunEncryptionPolicy determines the key for locking.
+ @param encryptionPolicy  BayunEncryptionPolicy determines the key for locking.
+ @param keyGenerationPolicy  BayunKeyGenerationPolicy determines the policy to generate encryption key.
  @param groupId GroupId is required if encryptionPolicy is BayunEncryptionPolicyGroup.
  @param success Success block to be executed after text is successfully locked, returns locked text.
  @param failure Failure block to be executed if locking fails, returns BayunError.
@@ -195,6 +234,7 @@ encryptionPolicy:(BayunEncryptionPolicy)policy
  */
 - (void)lockText:(NSString*)text
 encryptionPolicy:(BayunEncryptionPolicy)policy
+keyGenerationPolicy:(BayunKeyGenerationPolicy)encryptionPolicy
          groupId:(NSString*)groupId
          success:(void (^)(NSString*))success
          failure:(void (^)(BayunError))failure;
@@ -227,7 +267,7 @@ encryptionPolicy:(BayunEncryptionPolicy)policy
 /*!
  Locks NSData.
  @param data    NSData to be locked.
- @param policy  BayunEncryptionPolicy determines the key for locking.
+ @param encryptionPolicy  BayunEncryptionPolicy determines the key for locking.
  @param groupId GroupId is required if encryptionPolicy is BayunEncryptionPolicyGroup.
  @param success Success block to be executed after data is successfully locked, returns locked data.
  @param failure Failure block to be executed if locking fails, returns BayunError.
@@ -236,9 +276,11 @@ encryptionPolicy:(BayunEncryptionPolicy)policy
  */
 - (void)lockData:(NSData*)data
 encryptionPolicy:(BayunEncryptionPolicy)policy
+keyGenerationPolicy:(BayunKeyGenerationPolicy)keyGenerationPolicy
          groupId:(NSString*)groupId
          success:(void (^)(NSData*))success
          failure:(void (^)(BayunError))failure;
+
 
 /*!
  Locks NSData.
@@ -257,15 +299,15 @@ encryptionPolicy:(BayunEncryptionPolicy)policy
  Creates Group.
  @param name Group name(Optional).
  @param type Group type. Group can either Public or Private type.
- @param success Success block to be executed after group is successfully created.
+ @param success Success block to be executed after group is successfully created. Returns GroupId of the group created.
  @param failure Failure block to be executed if group creation fails, returns BayunError.
  
  @see BayunError
  */
-- (void)createGroupWithName:(NSString*)name
-                  groupType:(GroupType)type
-                    success:(void (^)(void))success
-                    failure:(void (^)(BayunError))failure;
+- (void)createGroup:(NSString*)name
+          groupType:(GroupType)type
+            success:(void (^)(NSString*))success
+            failure:(void (^)(BayunError))failure;
 
 
 
@@ -289,7 +331,7 @@ encryptionPolicy:(BayunEncryptionPolicy)policy
  @see BayunError
  */
 - (void)getMyGroups:(void (^)(NSArray*))success
-             failure:(void (^)(BayunError))failure;
+            failure:(void (^)(BayunError))failure;
 
 
 /*!
@@ -300,7 +342,7 @@ encryptionPolicy:(BayunEncryptionPolicy)policy
  @see BayunError
  */
 - (void)getUnjoinedPublicGroups:(void (^)(NSArray*))success
-                         failure:(void (^)(BayunError))failure;
+                        failure:(void (^)(BayunError))failure;
 
 
 /*!

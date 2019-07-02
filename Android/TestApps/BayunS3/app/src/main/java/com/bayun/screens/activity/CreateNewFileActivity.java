@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ public class CreateNewFileActivity extends AbstractActivity implements Notificat
     private String fileName = "";
     private TextView saveTextView;
     private EditText fileEditText;
+    private RelativeLayout progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +48,10 @@ public class CreateNewFileActivity extends AbstractActivity implements Notificat
      * Sets up Views.
      */
     private void setUpView() {
-        progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
-        fileEditText = (EditText) findViewById(R.id.activity_create_new_file_editText);
+        progressBar = findViewById(R.id.progressBar);
+        fileEditText = findViewById(R.id.activity_create_new_file_editText);
         fileEditText.requestFocus();
-        saveTextView = (TextView) findViewById(R.id.activity_create_new_file_save_text_view);
+        saveTextView = findViewById(R.id.activity_create_new_file_save_text_view);
     }
 
     /**
@@ -101,8 +103,6 @@ public class CreateNewFileActivity extends AbstractActivity implements Notificat
             } else {
                 Utility.messageAlertForCertainDuration(CreateNewFileActivity.this, Constants.ERROR_INTERNET_OFFLINE);
             }
-
-
         }
     }
 
@@ -137,26 +137,25 @@ public class CreateNewFileActivity extends AbstractActivity implements Notificat
     public void showDialog() {
         LayoutInflater li = LayoutInflater.from(BayunApplication.appContext);
         View dialogView = li.inflate(R.layout.custom_dialog, null);
-        final EditText userFileNameEditText = (EditText) dialogView
-                .findViewById(R.id.editTextDialogUserInput);
-        final EditText companyNameEditText = (EditText) dialogView.findViewById(R.id.editTextCompanyName);
-        Utility.showAlertDialog(CreateNewFileActivity.this, getString(R.string.enter_file_name), getString(R.string.ok), dialogView, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String fileName = userFileNameEditText.getText().toString();
-                if (fileName.length() > 0) {
-                    Log.d("msg", "showDialog() - companyNameEditText.getText() - " + companyNameEditText.getText().toString());
-                    CreateNewFileActivity.this.fileName = companyNameEditText.getText().toString() + fileName;
-                    CreateNewFileActivity.this.fileName = CreateNewFileActivity.this.fileName + Constants.FILE_EXTENSION;
-                    Log.d("msg", "file name - " + CreateNewFileActivity.this.fileName);
-                    AWSS3Manager.getInstance().Exists(CreateNewFileActivity.this.fileName);
-                    InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    im.hideSoftInputFromWindow(userFileNameEditText.getWindowToken(), 0);
-                    dialog.dismiss();
-                    progressDialog.show();
-                } else {
-                    Utility.displayToast(Constants.FILE_NAME_ERROR, Toast.LENGTH_SHORT);
-                }
+        final EditText userFileNameEditText = dialogView.findViewById(R.id.editTextDialogUserInput);
+        userFileNameEditText.requestFocus();
+
+        Utility.showAlertDialog(CreateNewFileActivity.this,
+                getString(R.string.enter_file_name), getString(R.string.ok), dialogView, (dialog, which) -> {
+            String fileName = userFileNameEditText.getText().toString();
+
+            if (fileName.length() > 0) {
+                CreateNewFileActivity.this.fileName = fileName;
+                CreateNewFileActivity.this.fileName = CreateNewFileActivity.this.fileName + Constants.FILE_EXTENSION;
+                Log.d("msg", "file name - " + CreateNewFileActivity.this.fileName);
+                AWSS3Manager.getInstance().Exists(CreateNewFileActivity.this.fileName);
+                InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                im.hideSoftInputFromWindow(userFileNameEditText.getWindowToken(), 0);
+                dialog.dismiss();
+                runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
+            }
+            else {
+                Utility.displayToast(Constants.FILE_NAME_ERROR, Toast.LENGTH_SHORT);
             }
         });
     }
@@ -173,29 +172,21 @@ public class CreateNewFileActivity extends AbstractActivity implements Notificat
      * Dismiss progress dialog.
      */
     public void dismissDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
+        runOnUiThread(() -> progressBar.setVisibility(View.GONE));
     }
 
     /**
      * Show dialog on press back button.
      */
     public void showDialogOnBack() {
-        Utility.decisionAlert(CreateNewFileActivity.this, "", getString(R.string.dialog_title), getString(R.string.yes), getString(R.string.no), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                dialog.cancel();
-                showDialog();
-            }
-        }, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                dialog.cancel();
-                finish();
-            }
+        Utility.decisionAlert(CreateNewFileActivity.this, "", getString(R.string.dialog_title), getString(R.string.yes), getString(R.string.no),
+                (dialog, which) -> {
+            dialog.cancel();
+            showDialog();
+        },
+                (dialog, which) -> {
+            dialog.cancel();
+            finish();
         });
     }
 

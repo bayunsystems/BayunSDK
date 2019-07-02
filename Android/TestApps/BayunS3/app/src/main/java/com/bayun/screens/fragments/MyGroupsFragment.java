@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bayun.R;
@@ -38,10 +39,11 @@ public class MyGroupsFragment extends BaseFragment implements RecyclerItemClickL
     private ArrayList<GroupInfo> myGroups;
     private RecyclerView recyclerView;
     private ArrayList<HashMap<String, String>> myGroupsArray;
+    private RelativeLayout progressBar;
 
     private Handler.Callback getMyGroupsSuccessCallback = message -> {
         myGroupsArray = (ArrayList<HashMap<String, String>>) message.getData().getSerializable(Constants.MY_GROUPS_ARRAY);
-        dismissProgressDialog();
+        getActivity().runOnUiThread(() -> progressBar.setVisibility(View.GONE));
 
         myGroups = new ArrayList<>();
         for (HashMap<String, String> groupMap: myGroupsArray) {
@@ -76,9 +78,10 @@ public class MyGroupsFragment extends BaseFragment implements RecyclerItemClickL
     };
 
     private Handler.Callback deleteGroupSuccessCallback = message -> {
-        updateRecyclerView();
-        Utility.displayToast("Group Deleted Successfully.", Toast.LENGTH_LONG);
-
+        getActivity().runOnUiThread(() -> {
+            updateRecyclerView();
+            Utility.displayToast("Group Deleted Successfully.", Toast.LENGTH_LONG);
+        });
         return false;
     };
 
@@ -96,6 +99,7 @@ public class MyGroupsFragment extends BaseFragment implements RecyclerItemClickL
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_tab_layout, container, false);
+        progressBar = (RelativeLayout) view.findViewById(R.id.progressBar);
         recyclerView = (RecyclerView) view.findViewById(R.id.fragment_tab_layout_recycler_view);
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), this));
         updateRecyclerView();
@@ -110,25 +114,29 @@ public class MyGroupsFragment extends BaseFragment implements RecyclerItemClickL
      * get joined groups through BayunCore
      */
     public void getMyGroups() {
-        showProgressDialog();
+        progressBar.setVisibility(View.VISIBLE);
         BayunApplication.bayunCore.getMyGroups(getMyGroupsSuccessCallback,
-                Utility.getDefaultFailureCallback(progressDialog));
+                Utility.getDefaultFailureCallback(getActivity(), progressBar));
     }
 
     /**
      * sets empty view
      */
     private void setUpEmptyView() {
-        view.findViewById(R.id.fragment_tab_layout_empty_view).setVisibility(View.VISIBLE);
-        view.findViewById(R.id.fragment_tab_layout_recycler_view).setVisibility(View.GONE);
+        getActivity().runOnUiThread(() -> {
+            view.findViewById(R.id.fragment_tab_layout_empty_view).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.fragment_tab_layout_recycler_view).setVisibility(View.GONE);
+        });
     }
 
     /**
      * Sets adapter data in recycler view.
      */
     private void setUpListView() {
-        view.findViewById(R.id.fragment_tab_layout_empty_view).setVisibility(View.GONE);
-        view.findViewById(R.id.fragment_tab_layout_recycler_view).setVisibility(View.VISIBLE);
+        getActivity().runOnUiThread(() -> {
+            view.findViewById(R.id.fragment_tab_layout_empty_view).setVisibility(View.GONE);
+            view.findViewById(R.id.fragment_tab_layout_recycler_view).setVisibility(View.VISIBLE);
+        });
     }
 
     @Override
@@ -168,9 +176,10 @@ public class MyGroupsFragment extends BaseFragment implements RecyclerItemClickL
         Utility.decisionAlert(getActivity(), "Delete Group?",
                 message, getString(R.string.yes), getString(R.string.no),
                 (dialog, which) -> {
-                    showProgressDialog();
+                    getActivity().runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
                     BayunApplication.bayunCore.deleteGroup(myGroups.get(position).getId(),
-                            deleteGroupSuccessCallback, Utility.getDefaultFailureCallback(progressDialog));
+                            deleteGroupSuccessCallback, Utility.getDefaultFailureCallback(getActivity(),
+                                    progressBar));
                     dialog.cancel();
                 }, (dialog, which) -> dialog.cancel());
     }

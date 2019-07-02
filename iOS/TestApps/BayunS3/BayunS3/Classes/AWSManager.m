@@ -28,6 +28,10 @@
     [SecureAWSS3TransferManager defaultS3TransferManager].encryptionPolicy = policy;
 }
 
+- (void) setKeyGenerationPolicy:(BayunKeyGenerationPolicy)policy {
+    [SecureAWSS3TransferManager defaultS3TransferManager].keyGenerationPolicy = policy;
+}
+
 - (void) setGroupId:(NSString*)groupId {
     [SecureAWSS3TransferManager defaultS3TransferManager].groupId = groupId;
 }
@@ -62,11 +66,16 @@
     
     // call the SecureAWSS3TransferManager upload method with the uploadRequest , AWSExecutor (responsible for determining how the continuation block will be run) and the completion block (taking the executor and the completion block as parameters to have synchronous secure upload request)
     [transferManager upload:uploadRequest continueWithExecutor:[AWSExecutor mainThreadExecutor]  withBlock:^id(AWSTask *task) {
+        
         if (task.error) {
-            if(task.error.code != SecureAWSS3TransferManagerErrorCancelled &&
-               task.error.code != SecureAWSS3TransferManagerErrorPaused) {
+            
+            if ([[task.error.userInfo valueForKey:@"Message"] isEqualToString:@"The specified bucket does not exist"]) {
+                [self createS3BucketWithName:bucketName success:^{
+                    [self uploadFile:fileURL bucketName:bucketName success:success failure:failure];
+                } failure:failure];
+            } else {
                 //Upload Failed
-                //[OPTIONAL] The following error handling conditions are optional and client app may apply checks against the SecureAWSS3TransferManagerErrorType according per its requirement
+                //[OPTIONAL] The following error handling conditions are optional and client app may apply checks against the SecureAWSS3TransferManagerErrorType according to its requirement
                 
                 if (failure) {
                     failure(task.error);
@@ -137,7 +146,7 @@
                success:(void (^)(AWSS3ListObjectsOutput*))success
                failure:(void (^)(NSError*))failure {
     AWSS3ListObjectsRequest *listObjectReq = [AWSS3ListObjectsRequest new];
-    listObjectReq.bucket = bucketName;
+    listObjectReq.bucket = [bucketName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
     SecureAWSS3 *s3 = [SecureAWSS3 defaultS3];
     
@@ -163,7 +172,7 @@
  */
 - (void)createS3BucketWithName:(NSString*)bucketName
                        success:(void (^)(void))success
-                       failure:(void (^)(void))failure {
+                       failure:(void (^)(NSError*))failure {
     SecureAWSS3 *s3 = [SecureAWSS3 defaultS3];
     
     AWSS3CreateBucketRequest *createBucketRequest = [AWSS3CreateBucketRequest new];
@@ -186,7 +195,7 @@
                 //bucket creation failed
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (failure) {
-                        failure();
+                        failure(task.error);
                     }
                 });
             }

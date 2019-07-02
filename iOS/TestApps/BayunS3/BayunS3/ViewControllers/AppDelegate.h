@@ -27,8 +27,5 @@
 @property(nonatomic,strong) SignInViewController* signInViewController;
 @property (nonatomic, assign) BOOL isNetworkReachable;
 
-- (void)showLoginScreen;
-
-
 @end
 

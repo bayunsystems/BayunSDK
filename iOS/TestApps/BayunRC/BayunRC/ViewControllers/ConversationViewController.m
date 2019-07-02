@@ -16,11 +16,13 @@
 #import <AVFoundation/AVFoundation.h>
 #import "RCCryptManager.h"
 
+
 @interface ConversationViewController ()<UITextViewDelegate>
 
 @property (strong,nonatomic) NSMutableArray *messages;
 @property (strong,nonatomic) Message *lastMessage;
 @property (strong,nonatomic) NSTimer *timerToRefreshMessages;
+@property (nonatomic,assign) BOOL isRefreshingMessages;
 @end
 
 /**
@@ -42,6 +44,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.isRefreshingMessages = NO;
+    
     [SVProgressHUD showWithMaskType:SVProgressHUDMaskTypeClear];
     
     self.messages = [[NSMutableArray alloc] init];
@@ -49,6 +53,7 @@
     self.senderId = [RCUtilities appUser].extension;
     
     self.collectionView.collectionViewLayout.messageBubbleFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:17.0f];
+    
     self.inputToolbar.contentView.textView.placeHolder = @"Your Message...";
     
     
@@ -79,16 +84,22 @@
     if (self.conversation) {
         self.lastMessage = self.conversation.lastMessage;
     }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateMessageRefreshTimer) name:UIApplicationDidEnterBackgroundNotification object:nil];
     
-    self.timerToRefreshMessages = [NSTimer timerWithTimeInterval:kTimeToRefreshConversationView
-                                                          target:self
-                                                        selector:@selector(getNewMessages)
-                                                        userInfo:nil
-                                                         repeats:YES];
     
-    [[NSRunLoop mainRunLoop] addTimer:self.timerToRefreshMessages
-                              forMode:NSDefaultRunLoopMode];
+    [self performSelector:@selector(startRefreshMessagesTimer) withObject:nil afterDelay:10];
 
+}
+
+- (void) getConversation {
+    Conversation *conversation = [[Conversation findWithPredicate:
+                                   [NSPredicate predicateWithFormat:@"conversationId=%@",self.conversation.conversationId]] lastObject];
+    if (conversation) {
+        self.conversation = conversation;
+    } else {
+        conversation = [[Conversation findWithPredicate:[NSPredicate predicateWithFormat:@"lastMessage.from.extension=%@ OR ANY lastMessage.to.extension= [cd]%@",self.chatParticipant.extension,self.chatParticipant.extension]] lastObject];
+        self.conversation = conversation;
+    }
 }
 
 
@@ -103,10 +114,20 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     self.collectionView.collectionViewLayout.springinessEnabled = NO;
-    [self sortMessages];
+    [self displaySortedMessages];
     
 }
 
+- (void) startRefreshMessagesTimer {
+    self.timerToRefreshMessages = [NSTimer timerWithTimeInterval:kTimeToRefreshConversationView
+                                                          target:self
+                                                        selector:@selector(getNewMessages)
+                                                        userInfo:nil
+                                                         repeats:YES];
+    
+    [[NSRunLoop mainRunLoop] addTimer:self.timerToRefreshMessages
+                              forMode:NSDefaultRunLoopMode];
+}
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
@@ -139,9 +160,8 @@
  */
 - (void)sendMessage:(NSDictionary*)parameters {
     [[RCAPIManager sharedInstance]sendMessage:parameters success:^{
+        [self addNewMessagesToConversation];
         [self doneSendingMessage];
-        [self refreshMessages];
-        [self scrollToBottomAnimated:YES];
     } failure:^(RCError errorCode) {
         if (errorCode == RCErrorInternetConnection) {
             [SVProgressHUD showErrorWithStatus:kErrorInternetConnection];
@@ -156,35 +176,87 @@
     }];
 }
 
+- (void)addNewMessagesToConversation{
+    
+    [self getConversation];
+    
+    NSMutableArray *allFetchedMessages = [[NSMutableArray alloc] initWithArray:[self.conversation.messages allObjects]];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"creationTime" ascending:YES];
+    [allFetchedMessages sortUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+    
+    if (self.messages.count != allFetchedMessages.count) {
+        
+        // Create the indexes with a loop
+        NSMutableArray *indexes = [NSMutableArray array];
+        NSMutableArray *newMessagesArray = [[NSMutableArray alloc] init];
+        int index = self.messages.count;
+        for (int i = index; i < allFetchedMessages.count; i++) {
+            [indexes addObject:[NSIndexPath indexPathForItem:i inSection:0]];
+            [newMessagesArray addObject:[allFetchedMessages objectAtIndex:i]];
+        }
+        
+        // Perform the updates
+        [self.collectionView performBatchUpdates:^{
+            
+            //Insert the new data to your current data
+            [self.messages addObjectsFromArray:newMessagesArray];
+            
+            //Inser the new cells
+            [self.collectionView insertItemsAtIndexPaths:indexes];
+            
+        } completion:^(BOOL finished) {
+            [self scrollToBottomAnimated:YES];
+        }];
+    }
+}
+
 /*
  * Fetches new pager messages
  */
 - (void)getNewMessages {
-    [[RCAPIManager sharedInstance]getMessageList:^{
-        [self refreshMessages];
-    } failure:^(RCError errorCode) {
-        if (errorCode == RCErrorInvalidToken) {
-            AppDelegate  *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-            [appDelegate logoutWithMessage:kErrorSessionIsExpired];
-        } else if(errorCode == RCErrorSomethingWentWrong) {
-            [self invalidateMessageRefreshTimer];
-        }
-    }];
+  
+    if (!self.isRefreshingMessages && [[NSUserDefaults standardUserDefaults] boolForKey:kIsUserLoggedIn]) {
+        self.isRefreshingMessages = YES;
+        [[RCAPIManager sharedInstance]getMessageList:^{
+            self.isRefreshingMessages = NO;
+            [self addNewMessagesToConversation];
+        } failure:^(RCError errorCode) {
+            self.isRefreshingMessages = NO;
+            [self doneSendingMessage];
+            if (errorCode == RCErrorInvalidToken) {
+                AppDelegate  *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                [appDelegate logoutWithMessage:kErrorSessionIsExpired];
+            } else if(errorCode == RCErrorSomethingWentWrong) {
+                [self invalidateMessageRefreshTimer];
+            }
+        }];
+    }
 }
 
 /*
  * Invalidates the messages refresh timer
  */
 -(void) invalidateMessageRefreshTimer {
-    [self.timerToRefreshMessages invalidate];
-    self.timerToRefreshMessages = nil;
+    NSLog(@"invalidateMessageRefreshTimer");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [self.timerToRefreshMessages invalidate];
+        self.timerToRefreshMessages = nil;
+        
+    });
 }
 
 #pragma mark - Methods for Sort and Refresh Pager Messages
 
-- (void)sortMessages {
+- (void)refreshMessages {
     
-    [SVProgressHUD dismiss];
+    [self getConversation];
+    if ((self.lastMessage && ![self.lastMessage isEqual:self.conversation.lastMessage]) || self.lastMessage == nil) {
+        [self displaySortedMessages];
+    }
+}
+
+- (void)displaySortedMessages {
     if (self.conversation) {
         self.lastMessage = self.conversation.lastMessage;
         
@@ -195,28 +267,19 @@
         }
         NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"creationTime" ascending:YES];
         [self.messages sortUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-        [self.collectionView reloadData];
-        [self scrollToBottomAnimated:YES];
-    }
-    
-}
-
-- (void)refreshMessages {
-    Conversation *conversation = [[Conversation findWithPredicate:
-                                   [NSPredicate predicateWithFormat:@"conversationId=%@",self.conversation.conversationId]] lastObject];
-   
-    if (conversation) {
-        self.conversation = conversation;
+        
+        // Update UI
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.collectionView reloadData];
+            [self scrollToBottomAnimated:YES];
+            [SVProgressHUD dismiss];
+        });
     } else {
-        conversation = [[Conversation findWithPredicate:[NSPredicate predicateWithFormat:@"lastMessage.from.extension=%@ OR ANY lastMessage.to.extension= [cd]%@",self.chatParticipant.extension,self.chatParticipant.extension]] lastObject];
-        self.conversation = conversation;
+        [SVProgressHUD dismiss];
     }
-    
-    if ((self.lastMessage && ![self.lastMessage isEqual:self.conversation.lastMessage]) || self.lastMessage == nil) {
-        [self sortMessages];
-    }
-
 }
+
+
 
 #pragma mark - Messages view data source: REQUIRED
 
@@ -224,13 +287,14 @@
     self.inputToolbar.contentView.rightBarButtonItem.enabled = NO;
     self.inputToolbar.contentView.textView.placeHolder = @"";
     self.inputToolbar.contentView.textView.text = @"";
+    [self.inputToolbar.contentView.textView setEditable:NO];
 }
 
 - (void)doneSendingMessage {
+    [self.inputToolbar.contentView.textView setEditable:YES];
     self.inputToolbar.contentView.textView.text = @"";
     [self performSelector:@selector(setPlaceholderText) withObject:nil afterDelay:0.3];
     [JSQSystemSoundPlayer jsq_playMessageSentSound];
-   
 }
 
 - (void) setPlaceholderText {
@@ -268,9 +332,19 @@
        [self sendMessage:parameters];
        
    } failure:^(BayunError error) {
-       [SVProgressHUD showErrorWithStatus:kErrorMessageCouldNotBeSent];
+       
+       if(error == BayunErrorDevicePasscodeNotSet) {
+           [SVProgressHUD showErrorWithStatus:kErrorMsgDevicePasscodeNotSet];
+       } else if(error == BayunErrorPasscodeAuthenticationCanceledByUser) {
+           [SVProgressHUD showErrorWithStatus:kErrorMsgPasscodeAuthenticationFailed];
+       }  else if(error == BayunErrorReAuthenticationNeeded) {
+           AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+           [appDelegate logoutWithMessage:kErrorBayunAuthenticationIsNeeded];
+       } else {
+           [SVProgressHUD showErrorWithStatus:kErrorMessageCouldNotBeSent];
+       }
+       
    }];
-    
 }
 
 - (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView messageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -313,6 +387,7 @@ attributedTextForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath {
 
 - (UICollectionViewCell *)collectionView:(JSQMessagesCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
+    NSLog(@"cellForItemAtIndexPath %ld",(long)indexPath.row);
     /**
      *  Override point for customizing cells
      */
@@ -343,6 +418,7 @@ attributedTextForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath {
     
     cell.textView.linkTextAttributes = @{NSForegroundColorAttributeName : [RCUtilities colorFromHexString:@"#0072bc"],
                                          NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
+    
     
     return cell;
 }
@@ -381,6 +457,7 @@ attributedTextForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 
+
 #pragma mark - Messages view delegate: OPTIONAL
 
 - (BOOL)shouldDisplayTimestampForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -401,6 +478,8 @@ attributedTextForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath {
 - (BOOL)allowsPanToDismissKeyboard {
     return YES;
 }
+
+
 
 
 @end

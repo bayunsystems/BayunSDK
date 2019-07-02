@@ -94,7 +94,7 @@
     awsManagerInstance.delegate = self;
     [awsManagerInstance createS3BucketWithName:[self.bucketName lowercaseString] success:^{
         [self getS3BucketObjects];
-    } failure:^{
+    } failure:^(NSError *error){
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
             [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
@@ -125,6 +125,10 @@
 }
 
 -(void)uploadFileAtPath:(NSURL*)url {
+    //Setting groupId and encryption policy to BayunEncryptionPolicyGroup
+    [[AWSManager sharedInstance] setEncryptionPolicy:BayunEncryptionPolicyGroup];
+    [[AWSManager sharedInstance] setGroupId:[self.group valueForKey:@"id"]];
+    
     [[AWSManager sharedInstance] uploadFile:url bucketName:self.bucketName success:^{
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -297,8 +301,11 @@
         [SVProgressHUD showErrorWithStatus:kMemberDoesNotExists];
     } else if (error == BayunErrorEmployeeDoesNotExists) {
         [SVProgressHUD showErrorWithStatus:kEmployeeDoesNotExist];
-    } else if (error == BayunErrorInvalidCompanyName) {
+    } else if (error ==  BayunErrorCompanyDoesNotExists) {
         [SVProgressHUD showErrorWithStatus:kInvalidCompany];
+    } else if (error == BayunErrorReAuthenticationNeeded) {
+        [SVProgressHUD dismiss];
+        [Utilities logoutUser:self.user];
     } else {
         [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
     }
@@ -311,6 +318,11 @@
         [SVProgressHUD showErrorWithStatus:kErrorMsgAccessDenied];
     } else if (errorType == SecureAWSS3TransferManagerErrorNoInternetConnection) {
         [SVProgressHUD showErrorWithStatus:kErrorMsgInternetConnection];
+    } else if(errorType == SecureAWSS3TransferErrorReAuthenticationNeeded ||
+              errorType == SecureAWSS3TransferErrorPasscodeAuthenticationCanceledByUser ||
+              errorType == SecureAWSS3TransferManagerErrorInvalidAppSecret) {
+        [Utilities logoutUser:self.user];
+        [SVProgressHUD dismiss];
     } else {
         [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
     }
@@ -507,10 +519,6 @@
             
             [imageData writeToFile:filePath atomically:NO];
             
-            //Setting groupId and encryption policy to BayunEncryptionPolicyGroup
-            [[AWSManager sharedInstance] setEncryptionPolicy:BayunEncryptionPolicyGroup];
-            [[AWSManager sharedInstance] setGroupId:[self.group valueForKey:@"id"]];
-            
             [self uploadFileAtPath:[NSURL fileURLWithPath:filePath]];
             
         } failureBlock:nil];
@@ -625,9 +633,7 @@
         vc.bucketName = self.bucketName;
     } else if ([segue.identifier isEqualToString:@"groupMembers"]) {
         GroupMembersViewController *vc = segue.destinationViewController;
-        // if ([self.group valueForKey:@"groupMembers"]) {
         vc.groupId = [self.group valueForKey:@"id"];
-        //}
     }
 }
 
@@ -639,12 +645,10 @@
         return NO;
     } else if (textField == self.companyEmpIdTextField) {
         [self.companyEmpIdTextField resignFirstResponder];
-        //[self hideKeyboard];
         return NO;
     }
     return YES;
 }
 
 @end
-
 

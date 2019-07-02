@@ -26,7 +26,7 @@
             "Copy items if needed" and "Create groups". Click on "Finish". 
             This integrates the Bayun framework into the app.
 
-7. Enter the values of the constants kApplicationKeySandbox, kApplicationSecretKeySandbox, kApplicationKeyProd, kApplicationSecretKeyProd, kBayunAppId in RCConfig.h file.
+7. Enter the values of the constants kApplicationKeySandbox, kApplicationSecretKeySandbox, kApplicationKeyProd, kApplicationSecretKeyProd, kBayunAppId, kAppSecret in RCConfig.h file.
 
 8. Build and Run the project. You will need an active RingCentral account to login.
 

@@ -1,5 +1,5 @@
 //
-//  ListFilesViewController.m
+//  ConversationListViewController.m
 //  Bayun
 //
 //  Created by Preeti Gaur on 02/06/2015.
@@ -26,6 +26,7 @@
 @property (strong,nonatomic) NSArray *s3BucketObjectsArray;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, retain) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic) BOOL isUserAuthenticated;
 
 @end
 
@@ -36,6 +37,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.isUserAuthenticated =  YES;
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     
@@ -63,10 +66,7 @@
 
 - (void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    NSError *error=nil;
-    if ([[self fetchedResultsController] performFetch:&error]) {
-         [self.tableView reloadData];
-    }
+    
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -127,7 +127,7 @@
             } else if (errorCode == RCErrorRequestTimeOut) {
                 [SVProgressHUD showErrorWithStatus:kErrorCouldNotConnectToServer];
             } else {
-
+                
                 [SVProgressHUD showErrorWithStatus:kErrorSomethingWentWrong];
             }
         }];
@@ -141,8 +141,8 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {
-            ExtensionListViewController *viewController = [[ExtensionListViewController alloc]init];
-            [self.navigationController pushViewController:viewController animated:YES];
+        ExtensionListViewController *viewController = [[ExtensionListViewController alloc]init];
+        [self.navigationController pushViewController:viewController animated:YES];
     } else if(buttonIndex==1) {
         AppDelegate  *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         [appDelegate logoutWithMessage:nil];
@@ -178,7 +178,7 @@
 
 
 - (void)controller:(NSFetchedResultsController *)controller
-    didChangeObject:(id)anObject
+   didChangeObject:(id)anObject
        atIndexPath:(NSIndexPath *)indexPath
      forChangeType:(NSFetchedResultsChangeType)type
       newIndexPath:(NSIndexPath *)newIndexPath {
@@ -238,47 +238,62 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    
     static NSString *cellIdentifier = @"ConversationListCell";
     
     ConversationListCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
     if (cell == nil) {
         cell = [[ConversationListCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"ConversationListCell" owner:cell options:nil];
         cell = [topLevelObjects objectAtIndex:0];
     }
-
-    Conversation *conversation = [[_fetchedResultsController fetchedObjects]  objectAtIndex:indexPath.row];
-    NSString *peerExtension;
-   
-    if ([conversation.lastMessage.direction isEqualToString:@"Outbound"]) {
-        [cell.imageView setImage:[UIImage imageNamed:@"outBound"]];
-        Receiver *receiver = [conversation.lastMessage.to lastObject];
-        if (receiver.name) {
-            [cell.senderNameLabel setText:receiver.name];
+    
+    if (self.isUserAuthenticated) {
+        Conversation *conversation = [[_fetchedResultsController fetchedObjects]  objectAtIndex:indexPath.row];
+        NSString *peerExtension;
+        if ([conversation.lastMessage.direction isEqualToString:@"Outbound"]) {
+            [cell.imageView setImage:[UIImage imageNamed:@"outBound"]];
+            Receiver *receiver = [conversation.lastMessage.to lastObject];
+            if (receiver.name) {
+                [cell.senderNameLabel setText:receiver.name];
+            } else {
+                [cell.senderNameLabel setText:receiver.extension];
+            }
+            peerExtension = receiver.extension;
         } else {
-            [cell.senderNameLabel setText:receiver.extension];
+            [cell.imageView setImage:[UIImage imageNamed:@"inBound"]];
+            
+            Sender *sender = conversation.lastMessage.from;
+            if (sender.name) {
+                [cell.senderNameLabel setText:sender.name];
+            } else {
+                [cell.senderNameLabel setText:sender.extension];
+            }
+            
+            peerExtension = sender.extension;
         }
-        peerExtension = receiver.extension;
-    } else {
-        [cell.imageView setImage:[UIImage imageNamed:@"inBound"]];
         
-        Sender *sender = conversation.lastMessage.from;
-        if (sender.name) {
-            [cell.senderNameLabel setText:sender.name];
-        } else {
-            [cell.senderNameLabel setText:sender.extension];
-        }
+        [cell.timeStampLabel setText:[RCUtilities getCurrentTimeStampDateString:conversation.lastMessage.creationTime]];
         
-        peerExtension = sender.extension;
+        [[RCCryptManager sharedInstance] decryptText :conversation.lastMessage.subject success:^(NSString *decryptedText) {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [cell.messageLabel setText:decryptedText];
+            });
+        } failure:^(BayunError bayunError) {
+          __block BayunError error =  bayunError;
+          if (error == BayunErrorReAuthenticationNeeded ||
+              error == BayunErrorPasscodeAuthenticationCanceledByUser ||
+              error == BayunErrorInvalidAppSecret) {
+            self.isUserAuthenticated = NO;
+            AppDelegate  *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            [appDelegate logoutWithMessage:kErrorBayunAuthenticationIsNeeded];
+          } else {
+            [cell.messageLabel setText:conversation.lastMessage.subject];
+          }
+        }];
     }
-    
-    [[RCCryptManager sharedInstance] decryptText :conversation.lastMessage.subject success:^(NSString *decryptedText) {
-       [cell.messageLabel setText:decryptedText];
-    } failure:^(BayunError error) {
-        [cell.messageLabel setText:conversation.lastMessage.subject];
-    }];
-    
-    [cell.timeStampLabel setText:[RCUtilities getCurrentTimeStampDateString:conversation.lastMessage.creationTime]];
     return cell;
 }
 

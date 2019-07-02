@@ -8,6 +8,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ public class PassphraseActivity extends AbstractActivity {
 
     private EditText editBox1, editBox2, editBox3, editBox4, hiddenEditBox;
     private TextView continueButton;
+    private RelativeLayout progressBar;
     private Handler.Callback successCallback, failureCallback;
 
 
@@ -29,7 +31,7 @@ public class PassphraseActivity extends AbstractActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_passcode);
-        progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
+        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
         editBox1 = (EditText) findViewById(R.id.pinBox1);
         editBox2 = (EditText) findViewById(R.id.pinBox2);
         editBox3 = (EditText) findViewById(R.id.pinBox3);
@@ -41,14 +43,12 @@ public class PassphraseActivity extends AbstractActivity {
 
         // Success callback for passphrase validation.
         successCallback = message -> {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            runOnUiThread(() -> progressBar.setVisibility(View.GONE));
             Utility.hideKeyboard(hiddenEditBox);
             Intent intent1 = new Intent(PassphraseActivity.this, ListFilesActivity.class);
             startActivity(intent1);
             finish();
-            BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_LOGGED_IN, Constants.SHARED_PREFERENCES_REGISTER);
+            BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_LOGGED_IN, Constants.YES);
 
             return false;
         };

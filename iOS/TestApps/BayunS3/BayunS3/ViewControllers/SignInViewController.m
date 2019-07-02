@@ -35,25 +35,27 @@
 
 @implementation SignInViewController
 
-- (void)viewDidLoad {
+-(void)viewDidLoad {
+
     [super viewDidLoad];
+    [Utilities clearKeychainAndUserDefaults];
     self.isKeyboardVisible = NO;
     self.username.delegate = self;
     self.password.delegate = self;
-    
-    self.defaultCompanyName = @"BayunS3Pool";
+    self.defaultCompanyName = kDefaultCompanyName;
     [[NSUserDefaults standardUserDefaults] setValue:self.defaultCompanyName forKey:kCompany];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+-(void)viewWillAppear:(BOOL)animated {
     
     self.password.text = nil;
     self.username.text = self.usernameText;
     
     [self.navigationController setNavigationBarHidden:YES];
     
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(hideKeyboard) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(viewEndEditing) name:UIApplicationWillEnterForegroundNotification object:nil];
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyBoardDidShow:)
@@ -68,11 +70,11 @@
 
 - (void)keyBoardDidShow:(NSNotification*)notification {
     NSDictionary* keyboardInfo = [notification userInfo];
-    NSValue* keyboardFrameBegin = [keyboardInfo valueForKey:UIKeyboardFrameBeginUserInfoKey];
+    NSValue* keyboardFrameBegin = [keyboardInfo valueForKey:UIKeyboardFrameEndUserInfoKey];
     CGRect keyboardFrameBeginRect = [keyboardFrameBegin CGRectValue];
-    self.keyBoardHeight = keyboardFrameBeginRect.size.height;
     
     if(!self.isKeyboardVisible) {
+        self.keyBoardHeight = keyboardFrameBeginRect.size.height;
         self.isKeyboardVisible = YES;
         [self slideViewBy:-self.keyBoardHeight];
     }
@@ -92,6 +94,10 @@
     [self hideKeyboard];
 }
 
+- (void)viewEndEditing {
+    [self.view endEditing:YES];
+}
+
 - (void)hideKeyboard {
     if(self.isKeyboardVisible) {
         self.isKeyboardVisible = NO;
@@ -108,15 +114,24 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
             NSError *error = task.error;
-            
             if(error){
-                [[[UIAlertView alloc] initWithTitle:error.userInfo[@"__type"]
-                                            message:error.userInfo[@"message"]
-                                           delegate:nil
-                                  cancelButtonTitle:nil
-                                  otherButtonTitles:@"Retry", nil] show];
+                [SVProgressHUD dismiss];
+                if ([[error.userInfo valueForKey:@"NSLocalizedDescription"] isEqualToString:kErrorMsgDevicePasscodeNotSet]) {
+                    [self showErrorMessage:kErrorMsgDevicePasscodeNotSet];
+                } else  if ([[error.userInfo valueForKey:@"NSLocalizedDescription"] isEqualToString:kErrorMsgInvalidAnswers]) {
+                    [self showErrorMessage:kErrorMsgInvalidAnswers];
+                } else  if ([error.userInfo valueForKey:@"message"] != nil) {
+                    [self showErrorMessage:[error.userInfo valueForKey:@"message"]];
+                }  else {
+                    [self showErrorMessage:[error.userInfo valueForKey:@"NSLocalizedDescription"]];
+                }
             } else {
                 self.usernameText = nil;
+            
+                //Set Encryption Policy to Default in the default value of Dropdown Menu
+                [[NSUserDefaults standardUserDefaults] setInteger:BayunEncryptionPolicyDefault forKey:kSelectedEncryptionPolicy];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                
                 [self performSegueWithIdentifier:@"ListFilesSegue" sender:nil];
             }
         });
@@ -124,11 +139,21 @@
     }];
 }
 
+- (void) showErrorMessage:(NSString*)errorMessage {
+    [[[UIAlertView alloc] initWithTitle:@""
+                                message:errorMessage
+                               delegate:nil
+                      cancelButtonTitle:nil
+                      otherButtonTitles:@"OK", nil] show];
+}
+
 - (IBAction)changeCompanyButtonIsPressed:(id)sender {
     [self showCompanyAlertViewWithDefaultCompanyName:self.defaultCompanyName];
 }
 
 - (void)showCompanyAlertViewWithDefaultCompanyName :(NSString*)companyName {
+    [self.username resignFirstResponder];
+    [self.password resignFirstResponder];
     DLAVAlertView *alertView = [[DLAVAlertView alloc] initWithTitle:nil
                                                             message:nil
                                                            delegate:nil
@@ -165,7 +190,7 @@
         if (companyNameTextfield.text && ![companyNameTextfield.text isEqualToString:@""]) {
             NSLog(@"company name : %@",companyNameTextfield.text);
             self.defaultCompanyName = companyNameTextfield.text;
-            [[NSUserDefaults standardUserDefaults] setValue:companyNameTextfield.text forKey:kCompany];
+            [[NSUserDefaults standardUserDefaults] setValue:[companyNameTextfield.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] forKey:kCompany];
             [[NSUserDefaults standardUserDefaults] synchronize];
             [[SecureAuthentication sharedInstance] setCompanyName:companyNameTextfield.text];
         } else {

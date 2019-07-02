@@ -26,7 +26,6 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[self alloc] init];
-        
     });
     return sharedInstance;
 }
@@ -35,15 +34,12 @@
  * Returns decrypted text
  */
 - (void) decryptText :(NSString*) text success:(void (^)(NSString*))success failure:(void (^)(BayunError))failure{
-
-    self.decryptedText = text;
+  
     //Decrypt text using Bayun Library
     [[BayunCore sharedInstance] unlockText:text success:^(NSString *decryptedTextResponse) {
-        self.decryptedText = decryptedTextResponse;
         if (success) {
             success(decryptedTextResponse);
         }
-        
     } failure:^(BayunError errorCode) {
         //errorCode might be BayunErrorUserInActive (if user is not active or cancelled by admin),
         //BayunErrorDecryptionFailed (if decryption fails)
@@ -62,12 +58,9 @@
     
     //Encrypt text using Bayun Library
     [[BayunCore sharedInstance] lockText:text success:^(NSString *responseText) {
-        self.encryptedText = responseText;
-        
         if (success) {
             success(responseText);
         }
-        
     } failure:^(BayunError errorCode) {
         //errorCode might be BayunErrorUserInActive (if user is not active or cancelled by admin),
         //BayunErrorEncryptionFailed (if encryption fails)
@@ -78,7 +71,7 @@
             failure(errorCode);
         }
     }];
-   
+    
 }
 
 

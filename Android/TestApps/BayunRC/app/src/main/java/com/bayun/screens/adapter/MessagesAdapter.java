@@ -1,8 +1,8 @@
 package com.bayun.screens.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bayun.R;
-import com.bayun.app.BayunApplication;
-import com.bayun.screens.ConversationViewActivity;
 import com.bayun.screens.ListMessagesActivity;
 import com.bayun.util.Constants;
 
@@ -73,8 +71,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         messageSenderOrReceiver = messageSenderOrReceiver.toUpperCase();
         String messageSubject = ListMessagesActivity.conversationInfoArrayList.get(position).getSubject();
         String lastModifiedTime = getLastModifiedTime(ListMessagesActivity.conversationInfoArrayList.get(position).getCreationTime());
-        String decryptedText = BayunApplication.rcCryptManager.decryptText(messageSubject);
-        holder.messageSubject.setText(decryptedText);
+        holder.messageSubject.setText(messageSubject);
         holder.messageCreationTime.setText(lastModifiedTime);
         holder.messageSenderOrReceiver.setText(messageSenderOrReceiver);
     }

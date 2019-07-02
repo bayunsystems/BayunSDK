@@ -2,9 +2,9 @@ package com.bayun.util;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
@@ -14,11 +14,17 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bayun.S3wrapper.SecureAuthentication;
 import com.bayun.app.BayunApplication;
+import com.bayun.aws.AWSS3Manager;
+import com.bayun.screens.activity.RegisterActivity;
 import com.bayun_module.constants.BayunError;
+
+import static com.bayun.aws.AWSS3Manager.getInstance;
 
 /**
  * Created by Gagan on 01-06-2015.
@@ -31,14 +37,11 @@ public class Utility {
     /**
      * get common failure callback for api calls
      *
-     * @param progressDialog    progress dialog specific for the activity
      * @return failure callback, dismissing the progress dialog and showing error message
      */
-    public static Handler.Callback getDefaultFailureCallback(ProgressDialog progressDialog) {
+    public static Handler.Callback getDefaultFailureCallback(Activity activity, RelativeLayout progressBar) {
         return message -> {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            new Handler(Looper.getMainLooper()).post(() -> progressBar.setVisibility(View.GONE));
             String response = message.getData().getString(Constants.ERROR, "");
             showErrorMessage(response);
             return false;
@@ -76,60 +79,29 @@ public class Utility {
     }
 
     /**
-     * Create Progress dialog.
-     *
-     * @param context Context.
-     * @param message Message.
-     * @return progressDialog object.
-     */
-    public static ProgressDialog createProgressDialog(Context context, String message) {
-        ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage(message);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
-        return progressDialog;
-    }
-
-    /**
-     * Create Progress dialog.
-     *
-     * @param context Context.
-     * @param message Message.
-     * @return progressDialog object.
-     */
-    public static ProgressDialog createFileProgressDialog(Context context, String message) {
-        ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage(message);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setProgress(0);
-        progressDialog.setMax(100);
-        return progressDialog;
-    }
-
-    /**
      * Show message alert for certain duration.
      *
      * @param context
      * @param message
      */
     public static void messageAlertForCertainDuration(Context context, String message) {
-        alertDialog = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_LIGHT).create();
-        alertDialog.setMessage(message);
-        alertDialog.show();
-        TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
-        messageText.setGravity(Gravity.CENTER);
-        // Hide after some seconds
-        final Handler handler = new Handler();
-        final Runnable runnable = () -> {
-            if (alertDialog != null) {
-                if (alertDialog.isShowing()) {
-                    alertDialog.dismiss();
+        new Handler(Looper.getMainLooper()).post(() -> {
+            alertDialog = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_LIGHT).create();
+            alertDialog.setMessage(message);
+            alertDialog.show();
+            TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
+            messageText.setGravity(Gravity.CENTER);
+            // Hide after some seconds
+            final Handler handler = new Handler();
+            final Runnable runnable = () -> {
+                if (alertDialog != null) {
+                    if (alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
                 }
-            }
-        };
-        handler.postDelayed(runnable, 5000);
+            };
+            handler.postDelayed(runnable, 5000);
+        });
     }
 
     public static void RunOnUIThread(Runnable runnable) {
@@ -142,9 +114,11 @@ public class Utility {
      * @param editText View.
      */
     public static void hideKeyboard(View editText) {
-        InputMethodManager imm = (InputMethodManager) BayunApplication.appContext.getSystemService(
-                Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+        new Handler(Looper.getMainLooper()).post(() -> {
+            InputMethodManager imm = (InputMethodManager) BayunApplication.appContext.getSystemService(
+                    Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+        });
     }
 
     /**
@@ -153,8 +127,10 @@ public class Utility {
      * @param editText
      */
     public static void showKeyboard(EditText editText) {
-        InputMethodManager inputMethodManager = (InputMethodManager) BayunApplication.appContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInputFromWindow(editText.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
+        new Handler(Looper.getMainLooper()).post(() -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) BayunApplication.appContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.toggleSoftInputFromWindow(editText.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
+        });
     }
 
     /**
@@ -168,15 +144,17 @@ public class Utility {
      */
     public static void showAlertDialog(Activity activity, String message, String positiveString, View view,
                                        DialogInterface.OnClickListener onClickListener) {
-        builder = new AlertDialog.Builder(activity, AlertDialog.THEME_HOLO_LIGHT);
-        builder.setMessage(message);
-        builder.setPositiveButton(positiveString, onClickListener);
-        builder.setView(view);
-        alertDialog = builder.create();
-        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        alertDialog.show();
-        TextView messageView = (TextView) alertDialog.findViewById(android.R.id.message);
-        messageView.setGravity(Gravity.CENTER);
+        new Handler(Looper.getMainLooper()).post(() -> {
+            builder = new AlertDialog.Builder(activity, AlertDialog.THEME_HOLO_LIGHT);
+            builder.setMessage(message);
+            builder.setPositiveButton(positiveString, onClickListener);
+            builder.setView(view);
+            alertDialog = builder.create();
+            alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            alertDialog.show();
+            TextView messageView = alertDialog.findViewById(android.R.id.message);
+            messageView.setGravity(Gravity.CENTER);
+        });
     }
 
     /**
@@ -191,22 +169,25 @@ public class Utility {
      * @param negCallback
      */
     public static void decisionAlert(Activity activity, String title, String message, String positiveString,
-                                     String negativeString, DialogInterface.OnClickListener posCallback, DialogInterface.OnClickListener negCallback) {
-        builder = new AlertDialog.Builder(activity, AlertDialog.THEME_HOLO_LIGHT);
-        if (title != null && !Constants.EMPTY_STRING.equals(title)) {
-            builder.setTitle(title);
-        }
-        builder.setMessage(message);
-        builder.setPositiveButton(positiveString, posCallback);
-        builder.setNegativeButton(negativeString, negCallback);
+                                     String negativeString, DialogInterface.OnClickListener posCallback,
+                                     DialogInterface.OnClickListener negCallback) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            builder = new AlertDialog.Builder(activity, AlertDialog.THEME_HOLO_LIGHT);
+            if (title != null && !Constants.EMPTY_STRING.equals(title)) {
+                builder.setTitle(title);
+            }
+            builder.setMessage(message);
+            builder.setPositiveButton(positiveString, posCallback);
+            builder.setNegativeButton(negativeString, negCallback);
 
-        alertDialog = builder.create();
-        alertDialog.show();
-        TextView titleView = (TextView) alertDialog.findViewById(alertDialog.getContext().getResources()
-                .getIdentifier("alertTitle", "id", "android"));
-        if (titleView != null) {
-            titleView.setGravity(Gravity.CENTER);
-        }
+            alertDialog = builder.create();
+            alertDialog.show();
+            TextView titleView = (TextView) alertDialog.findViewById(alertDialog.getContext().getResources()
+                    .getIdentifier("alertTitle", "id", "android"));
+            if (titleView != null) {
+                titleView.setGravity(Gravity.CENTER);
+            }
+        });
     }
 
     /**
@@ -215,84 +196,156 @@ public class Utility {
      * @param error the response string obtained from api callback.
      */
     public static void showErrorMessage(String error) {
-        String returnMessage = null;
+        String errorMessage = null;
         if (error != null) {
             if (error.equalsIgnoreCase(BayunError.ERROR_INVALID_CREDENTIALS)) {
-                returnMessage = "Invalid credentials";
+                errorMessage = "Invalid credentials";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_INVALID_PASSWORD)) {
-                returnMessage = "Incorrect password";
+                errorMessage = "Incorrect password";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_INVALID_PASSPHRASE)) {
-                returnMessage = "Incorrect passphrase";
+                errorMessage = "Incorrect passphrase";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_USER_INACTIVE)) {
-                returnMessage = Constants.ERROR_USER_INACTIVE;
+                errorMessage = Constants.ERROR_USER_INACTIVE;
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_APP_NOT_LINKED)) {
-                returnMessage = "App not linked with Employee account. Please link the app through " +
+                errorMessage = "App not linked with Employee account. Please link the app through " +
                         "admin panel.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_INVALID_APP_ID)) {
-                returnMessage = "App doesn't exist for given App Id.";
+                errorMessage = "App doesn't exist for given App Id.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_INVALID_COMPANY_NAME)) {
-                returnMessage = "Company doesn't exist for given Company Name.";
+                errorMessage = "Company doesn't exist for given Company Name.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_INVALID_GROUP_ID)) {
-                returnMessage = "Group does not exist for the given group id.";
+                errorMessage = "Group does not exist for the given group id.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_EMPLOYEE_DOESNT_EXIST)) {
-                returnMessage = "Employee does not exists for given company employee id and/or " +
+                errorMessage = "Employee does not exists for given company employee id and/or " +
                         "company name.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_EMPLOYEE_DOESNT_BELONG_TO_GROUP)) {
-                returnMessage = "Employee is not linked with the given group.";
+                errorMessage = "Employee is not linked with the given group.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_MEMBER_EXISTS_IN_GROUP)) {
-                returnMessage = "Given employee id already exist in the group.";
+                errorMessage = "Given employee id already exist in the group.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_CANNOT_JOIN_PRIVATE_GROUP)) {
-                returnMessage = "Given group is not public group. You cannot join this group.";
+                errorMessage = "Given group is not public group. You cannot join this group.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_INTERNET_CONNECTION)) {
-                returnMessage = Constants.ERROR_INTERNET_OFFLINE;
+                errorMessage = Constants.ERROR_INTERNET_OFFLINE;
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_REQUEST_TIMEOUT)) {
-                returnMessage = "Request timed out. Please try again.";
+                errorMessage = "Request timed out. Please try again.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_ACCESS_DENIED)) {
-                returnMessage = "Access denied.";
+                errorMessage = "Access denied.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_COULD_NOT_CONNECT_TO_SERVER)) {
-                returnMessage = "Could not connect to server.";
+                errorMessage = "Could not connect to server.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_AUTHENTICATION_FAILED)) {
-                returnMessage = "Authentication failed.";
+                errorMessage = "Authentication failed.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_PASSPHRASE_CANNOT_BE_NULL)) {
-                returnMessage = "Passphrase cannot be null";
+                errorMessage = "Please enter passphrase.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_CREDENTIALS_CANNOT_BE_NULL)) {
-                returnMessage = "Credentials cannot be null";
+                errorMessage = "Credentials cannot be null";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_COMPANY_EMPLOYEE_ID_CANNOT_BE_NULL)) {
-                returnMessage = "Employee Id cannot be null";
+                errorMessage = "Employee Id cannot be null";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_COMPANY_CANNOT_BE_NULL)) {
-                returnMessage = "Company name cannot be null";
+                errorMessage = "Company name cannot be null";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_GROUP_ID_CANNOT_BE_NULL)) {
-                returnMessage = "Group Id cannot be null";
+                errorMessage = "Group Id cannot be null";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_GROUP_TYPE_CANNOT_BE_NULL)) {
-                returnMessage = "Group type cannot be null";
+                errorMessage = "Group type cannot be null";
+            }
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_DEVICE_PASSCODE_NOT_SET))) {
+                errorMessage = "Device Passcode Is Not Set.";
+            }
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_ENCRYPTION_FAILED))) {
+                errorMessage = "File could not be created.";
+            }
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_DECRYPTION_FAILED))) {
+                errorMessage = "File could not be opened.";
+            }
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_REAUTHENTICATION_NEEDED))) {
+                errorMessage = "Please login again to continue.";
+
+                // logout the user
+                Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                BayunApplication.appContext.startActivity(intent);
+                BayunApplication.tinyDB.clear();
+                AWSS3Manager.getInstance().resetPoliciesOnDevice();
+                SecureAuthentication.getInstance().signOut(CognitoHelper.getPool().getUser(CognitoHelper.getUserId()));
+                if (getInstance().fileList() != null && getInstance().fileList().size() != 0)
+                    getInstance().fileList().clear();
+            }
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_DEVICE_AUTHENTICATION_REQUIRED))) {
+                if (BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_IS_BAYUN_LOGGED_IN)
+                        .equalsIgnoreCase(Constants.YES)) {
+                    errorMessage = "Passcode Authentication Canceled By User. Please login again to continue.";
+
+                    // logout the user
+                    Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    BayunApplication.appContext.startActivity(intent);
+                    BayunApplication.tinyDB.clear();
+                    AWSS3Manager.getInstance().resetPoliciesOnDevice();
+                    SecureAuthentication.getInstance().signOut(CognitoHelper.getPool().getUser(CognitoHelper.getUserId()));
+                    if (getInstance().fileList() != null && getInstance().fileList().size() != 0)
+                        getInstance().fileList().clear();
+                }
+                else {
+                    errorMessage = "Passcode Authentication Canceled By User.";
+                }
+            }
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_AT_LEAST_THREE_ANSWERS_REQUIRED))) {
+                errorMessage = "Please answer at least 3 questions.";
+            }
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_INCORRECT_ANSWERS))) {
+                errorMessage = "One or more wrong answers entered.";
+            }
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_COMBINING_PARTS))) {
+                errorMessage = "Error occurred while combining user private key parts.";
+            }
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_DUPLICATE_ENTRY_CREATED))) {
+                errorMessage = "Tried to create duplicate entry.";
+            }
+            else if((error.equalsIgnoreCase(BayunError.ERROR_INVALID_APP_SECRET))) {
+                if (BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_IS_BAYUN_LOGGED_IN)
+                        .equalsIgnoreCase(Constants.YES)) {
+                    errorMessage = "Please login again to continue.";
+
+                    // logout the user
+                    Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    BayunApplication.appContext.startActivity(intent);
+                    BayunApplication.tinyDB.clear();
+                    AWSS3Manager.getInstance().resetPoliciesOnDevice();
+                    SecureAuthentication.getInstance().signOut(CognitoHelper.getPool().getUser(CognitoHelper.getUserId()));
+                    if (getInstance().fileList() != null && getInstance().fileList().size() != 0)
+                        getInstance().fileList().clear();
+                }
+                else {
+                    errorMessage = "Invalid credentials entered.";
+                }
             }
             else {
-                returnMessage = Constants.ERROR_SOMETHING_WENT_WRONG;
+                errorMessage = Constants.ERROR_SOMETHING_WENT_WRONG;
             }
         }
-        displayToast(returnMessage, Toast.LENGTH_LONG);
+        displayToast(errorMessage, Toast.LENGTH_SHORT);
     }
 }
 

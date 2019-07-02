@@ -86,6 +86,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
         _defaultS3TransferManager = [[SecureAWSS3TransferManager alloc] initWithConfiguration:serviceConfiguration
                                                                               cacheName:SecureAWSS3TransferManagerCacheName];
         _defaultS3TransferManager.encryptionPolicy = BayunEncryptionPolicyDefault;
+        _defaultS3TransferManager.keyGenerationPolicy = BayunKeyGenerationPolicyStatic;
     });
     
     return _defaultS3TransferManager;
@@ -273,6 +274,7 @@ continueWithExecutor:(AWSExecutor *)executor
     __weak SecureAWSS3TransferManager *weakSelf = self;
     
     weakSelf.s3.encryptionPolicy = weakSelf.encryptionPolicy;
+    weakSelf.s3.keyGenerationPolicy = weakSelf.keyGenerationPolicy;
     weakSelf.s3.groupId = weakSelf.groupId;
     AWSTask *uploadTask = [[weakSelf.s3 putObject:putObjectRequest] continueWithBlock:^id(AWSTask *task) {
         
@@ -364,6 +366,20 @@ continueWithExecutor:(AWSExecutor *)executor
                 return [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3TransferManagerErrorDomain
                                                                   code:SecureAWSS3TransferManagerErrorCancelled
                                                               userInfo:error.userInfo]];
+            case SecureAWSS3ServiceErrorPasscodeAuthenticationCanceledByUser:
+                return [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3TransferManagerErrorDomain
+                                                                  code:SecureAWSS3TransferErrorPasscodeAuthenticationCanceledByUser
+                                                              userInfo:error.userInfo]];
+                
+            case SecureAWSS3ServiceErrorReAuthenticationNeeded:
+                return [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3TransferManagerErrorDomain
+                                                                  code:SecureAWSS3TransferErrorReAuthenticationNeeded
+                                                              userInfo:error.userInfo]];
+            case SecureAWSS3ServiceErrorInvalidAppSecret:
+                return [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3TransferManagerErrorDomain
+                                                                  code:SecureAWSS3TransferManagerErrorInvalidAppSecret
+                                                              userInfo:error.userInfo]];
+
             case SecureAWSS3ServiceErrorPaused:
                 return [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3TransferManagerErrorDomain
                                                                   code:SecureAWSS3TransferManagerErrorPaused
@@ -376,6 +392,11 @@ continueWithExecutor:(AWSExecutor *)executor
                 return [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3TransferManagerErrorDomain
                                                                   code:SecureAWSS3TransferManagerErrorUserInactive
                                                               userInfo:error.userInfo]];
+            case SecureAWSS3ServiceErrorUnlockingFailed:
+                return [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3TransferManagerErrorDomain
+                                                                  code:SecureAWSS3TransferManagerErrorUnlockingFailed
+                                                              userInfo:error.userInfo]];
+                
             case SecureAWSS3ServiceErrorSomethingWentWrong:
                 return [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3TransferManagerErrorDomain
                                                                   code:SecureAWSS3TransferManagerErrorSomethingWentWrong

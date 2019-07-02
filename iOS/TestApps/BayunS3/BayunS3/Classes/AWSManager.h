@@ -45,6 +45,11 @@
 - (void)setEncryptionPolicy:(BayunEncryptionPolicy)policy;
 
 /**
+ Sets type of Key Generation policy
+ */
+- (void) setKeyGenerationPolicy:(BayunKeyGenerationPolicy)policy;
+
+/**
  Sets Group Id
  */
 - (void)setGroupId:(NSString*)groupId;
@@ -80,7 +85,7 @@
  */
 - (void)createS3BucketWithName:(NSString*)bucketName
                        success:(void (^)(void))success
-                       failure:(void (^)(void))failure;
+                       failure:(void (^)(NSError*))failure;
 
 /**
  Checks if the file with given key exists in Amazon S3 bucket.

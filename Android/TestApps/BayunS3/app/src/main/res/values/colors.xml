@@ -27,4 +27,5 @@
     <color name="grey_500">#404142</color>
     <color name="grey_600">#303232</color>
     <color name="grey_700">#1D1E1E</color>
+    <color name="progress_bar_bg">#80FFFFFF</color>
 </resources>

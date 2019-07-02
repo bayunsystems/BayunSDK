@@ -11,25 +11,27 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bayun.R;
+import com.bayun.S3wrapper.SecureAuthentication;
 import com.bayun.app.BayunApplication;
 import com.bayun.app.NotificationCenter;
 import com.bayun.aws.AWSS3Manager;
 import com.bayun.screens.adapter.FilesAdapter;
-import com.bayun.util.CognitoHelper;
 import com.bayun.screens.helper.DividerItemDecoration;
+import com.bayun.util.CognitoHelper;
 import com.bayun.util.Constants;
 import com.bayun.util.FileUtils;
 import com.bayun.util.RecyclerItemClickListener;
@@ -55,6 +57,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
     private TextView emptyView;
     private static final int PICKFILE_RESULT_CODE = 1;
     private static final int PERMISSION_REQUEST_CODE = 200;
+    private RelativeLayout progressBar;
     File file;
 
     @Override
@@ -92,9 +95,8 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
      * Sets up Views.
      */
     private void setUpView() {
-        progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
-        progressDialog.show();
-        fileProgressDialog = Utility.createFileProgressDialog(this, "uploading");
+        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
+        runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
         recyclerView = (RecyclerView) findViewById(R.id.list_files_recycler_view);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         emptyView = (TextView) findViewById(R.id.empty_view);
@@ -120,6 +122,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.AWS_DOWNLOAD_LIST);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.S3_BUCKET_FILE_EXIST);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.S3_BUCKET_FILE_NOT_EXIST);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.S3_BUCKET_ERROR);
     }
 
     /**
@@ -136,7 +139,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
      */
     public void showDialogFilePicker() {
         final CharSequence sequences[] = new CharSequence[]{"Upload", "Groups", "Encryption Policy",
-                "Logout"};
+                "Key Generation Policy", "Logout"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
         builder.setTitle("Options");
         builder.setItems(sequences, (dialog, which) -> {
@@ -145,22 +148,25 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
             }
             else if (sequences[which].equals("Groups")) {
                 Intent intent = new Intent(ListFilesActivity.this, GroupsListActivity.class);
+                finish();
                 startActivity(intent);
             }
             else if (sequences[which].equals("Logout")) {
                 Intent intent = new Intent(ListFilesActivity.this, RegisterActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 BayunApplication.tinyDB.clear();
-                AWSS3Manager.getInstance().resetEncryptionPolicyOnDevice();
-                // Logout from Cognito and Bayun
-                BayunApplication.secureAuthentication.signOut
-                        (CognitoHelper.getPool().getUser(CognitoHelper.getUserId()));
-
+                AWSS3Manager.getInstance().resetPoliciesOnDevice();
+                //BayunApplication.bayunCore.deauthenticate();
+                SecureAuthentication.getInstance().signOut(CognitoHelper.getPool().getUser(CognitoHelper.getUserId()));
                 if (getInstance().fileList() != null && getInstance().fileList().size() != 0)
                     getInstance().fileList().clear();
             }
-            else if (sequences[which].equals("Encryption Policy")){
+            else if (sequences[which].equals("Encryption Policy")) {
                 showDialogEncryptionPolicy();
+            }
+            else if (sequences[which].equals("Key Generation Policy")) {
+                showDialogKeyGenerationPolicy();
             }
         });
         builder.show();
@@ -173,20 +179,18 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         final CharSequence sequences[] = new CharSequence[] {"Create a New File", "Choose From Library"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
         builder.setTitle("Upload a File");
-        builder.setItems(sequences, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (sequences[which].equals("Create a New File")) {
-                    if (Utility.isNetworkAvailable()) {
-                        Intent intent = new Intent(ListFilesActivity.this, CreateNewFileActivity.class);
-                        startActivity(intent);
-                    } else {
-                        Utility.messageAlertForCertainDuration(ListFilesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
-                    }
+        builder.setItems(sequences, (dialog, which) -> {
+            if (sequences[which].equals("Create a New File")) {
+                if (Utility.isNetworkAvailable()) {
+                    Intent intent = new Intent(ListFilesActivity.this, CreateNewFileActivity.class);
+                    startActivity(intent);
                 }
                 else {
-                    openFileManager();
+                    Utility.messageAlertForCertainDuration(ListFilesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
                 }
+            }
+            else {
+                openFileManager();
             }
         });
         builder.show();
@@ -225,6 +229,41 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
     }
 
     /**
+     * Show dialog box for selecting key generation policy.
+     */
+    private void showDialogKeyGenerationPolicy() {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.spinner_dialog_layout);
+        ((TextView)dialog.findViewById(R.id.dialog_title)).setText("Set Key Generation Policy");
+        dialog.findViewById(R.id.dialog_group_name).setVisibility(View.GONE);
+        dialog.findViewById(R.id.dialog_employee_id).setVisibility(View.GONE);
+        Spinner spinner = (Spinner) dialog.findViewById(R.id.dialog_spinner);
+        // set up spinner options
+        final ArrayList<String> keyGenerationPolicies = getKeyGenerationPolicies();
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, keyGenerationPolicies);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+
+        // get stored value to show it selected
+        int position = AWSS3Manager.getInstance().getKeyGenerationPolicyOnDevice();
+        spinner.setSelection(position);
+
+        // setting click listeners
+        dialog.findViewById(R.id.cancel_action).setOnClickListener(v -> dialog.dismiss());
+        dialog.findViewById(R.id.ok_action).setOnClickListener(v -> {
+            String selectedValue = spinner.getSelectedItem().toString();
+            int selectedValueIndex = keyGenerationPolicies.indexOf(selectedValue);
+            // the policies index are the same as their values in BayunCore. One can also add checks and
+            // set the constants from BayunCore.
+            AWSS3Manager.getInstance().setKeyGenerationPolicy(selectedValueIndex);
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+    /**
      * Sets empty view.
      */
     public void setEmptyView() {
@@ -243,11 +282,12 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         if (id == NotificationCenter.S3_BUCKET_ADD_NEW_FILE) {
             getListFromS3Bucket();
         } else if (id == NotificationCenter.AWS_DOWNLOAD_LIST) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-            setListView();
-            swipeRefreshLayout.setEnabled(true);
+            runOnUiThread(() -> {
+                dismissDialog();
+                setListView();
+                swipeRefreshLayout.setEnabled(true);
+            });
+
         } else if (id == NotificationCenter.AWS_UPLOAD_COMPLETE) {
             dismissDialog();
             getListFromS3Bucket();
@@ -261,6 +301,9 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         } else if (id == NotificationCenter.S3_BUCKET_FILE_NOT_EXIST) {
             if (file != null)
                 getInstance().uploadFile(file);
+        } else if (id == NotificationCenter.S3_BUCKET_ERROR) {
+            Utility.displayToast(getResources().getString(R.string.s3Error), Toast.LENGTH_SHORT);
+            dismissDialog();
         }
     }
 
@@ -271,7 +314,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
 
         runOnUiThread(() -> {
             if (Utility.isNetworkAvailable()) {
-                progressDialog.show();
+                progressBar.setVisibility(View.VISIBLE);
                 getInstance().getListOfObjects();
             } else {
                 Utility.messageAlertForCertainDuration(ListFilesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
@@ -293,15 +336,15 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
      * Sets adapter data in recycler view.
      */
     public void setListView() {
-        recyclerView.setVisibility(View.VISIBLE);
-        emptyView.setVisibility(View.GONE);
-        new Handler(Looper.getMainLooper()).post(() -> filesAdapter.notifyDataSetChanged());
-        if (getInstance().fileList().size() == Constants.LIST_SIZE_EMPTY) {
-            setEmptyView();
-        }
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
+        runOnUiThread(() -> {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+            new Handler(Looper.getMainLooper()).post(() -> filesAdapter.notifyDataSetChanged());
+            if (getInstance().fileList().size() == Constants.LIST_SIZE_EMPTY) {
+                setEmptyView();
+            }
+            progressBar.setVisibility(View.GONE);
+        });
     }
 
     /**
@@ -329,12 +372,13 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
 
     /**
      * Show file progress.
-     *
-     * @param progress file progress.
      */
-    public static void showProgress(int progress) {
-        fileProgressDialog.setProgress(progress);
-    }
+    /*public void showProgress(int progress) {
+        runOnUiThread(() -> );
+        if (fileProgressDialog != null) {
+            fileProgressDialog.setProgress(progress);
+        }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -347,7 +391,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
                         try {
                             // Get the file path from the URI
                             final String path = FileUtils.getPath(this, uri);
-                            progressDialog.show();
+                            runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
                             if (!path.isEmpty()) {
                                 File file = new File(path);
                                 copyFile(path, file.getName());
@@ -399,12 +443,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
      * Dismiss dialog.
      */
     public void dismissDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-        if (fileProgressDialog != null && fileProgressDialog.isShowing()) {
-            fileProgressDialog.dismiss();
-        }
+        runOnUiThread(() -> progressBar.setVisibility(View.GONE));
     }
 
     @Override
@@ -423,7 +462,6 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
 
     @Override
     public void onItemLongPress(View childView, int position) {
-        // TODO: Check this status active.
         if (Utility.isNetworkAvailable()) {
             if (BayunApplication.bayunCore.isEmployeeActive())
                 deleteListItemDialog(position);
@@ -445,12 +483,12 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         String message = "Delete" + " " + fileName + " " + "permanently?";
         Utility.decisionAlert(ListFilesActivity.this, getString(R.string.dialog_delete_title), message,
                 getString(R.string.yes), getString(R.string.no), (dialog, which) -> {
-            getInstance().deleteFileFromS3(getInstance().fileList().get(position).getFileName());
-            getInstance().fileList().remove(position);
-            filesAdapter.notifyItemRemoved(position);
-            dialog.cancel();
-
-        }, (dialog, which) -> dialog.cancel());
+                    getInstance().deleteFileFromS3(getInstance().fileList().get(position).getFileName());
+                    getInstance().fileList().remove(position);
+                    filesAdapter.notifyItemRemoved(position);
+                    dialog.cancel();
+                },
+                (dialog, which) -> dialog.cancel());
     }
 
     @Override
@@ -489,12 +527,12 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
      * @param okListener    Listener for the ok button.
      */
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(ListFilesActivity.this)
+        runOnUiThread(() -> new AlertDialog.Builder(ListFilesActivity.this)
                 .setMessage(message)
                 .setPositiveButton("OK", okListener)
                 .setNegativeButton("Cancel", null)
                 .create()
-                .show();
+                .show());
     }
 
     /**
@@ -515,12 +553,22 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
      */
     public ArrayList<String> getPolicies() {
         final ArrayList<String> encryptionPolicies = new ArrayList<>();
-        // policies index in list is the same as their int value
+        // policies index in list is the same as their int value in bayun core.
         encryptionPolicies.add("None");
         encryptionPolicies.add("Default");
         encryptionPolicies.add("Company");
         encryptionPolicies.add("Employee");
         return encryptionPolicies;
+    }
+
+    public ArrayList<String> getKeyGenerationPolicies() {
+        final ArrayList<String> keyGenerationPolicies = new ArrayList<>();
+        // policies index in the list is the same as their int value in bayun core.
+        keyGenerationPolicies.add("Default");
+        keyGenerationPolicies.add("Static");
+        keyGenerationPolicies.add("Envelope encryption");
+        keyGenerationPolicies.add("Chain encryption");
+        return keyGenerationPolicies;
     }
 
     // Remove/Add observers when activity changes state.
@@ -529,6 +577,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         super.onResume();
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.S3_BUCKET_FILE_EXIST);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.S3_BUCKET_FILE_NOT_EXIST);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.S3_BUCKET_ERROR);
     }
 
     @Override
@@ -536,5 +585,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         super.onStop();
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.S3_BUCKET_FILE_EXIST);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.S3_BUCKET_FILE_NOT_EXIST);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.S3_BUCKET_ERROR);
     }
+
 }

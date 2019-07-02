@@ -40,12 +40,16 @@ public class Constants {
     public static final String LAST_MODIFIED_TIME_DAY = "days ago";
     public static final String LAST_MODIFIED_TIME_MINUTE = "minutes ago";
     public static final String LAST_MODIFIED_TIME_SECOND = "few seconds ago";
+    public static final String YES = "yes";
 
     // store value in sharedpreferences in constants
     public static final String SHARED_PREFERENCES_COMPANY_NAME = "company_name";
     public static final String SHARED_PREFERENCES_LOGGED_IN = "logged_in";
-    public static final String SHARED_PREFERENCES_REGISTER = "yes";
     public static final String SHARED_PREFERENCES_OLD_ENCRYPTION_POLICY_ON_DEVICE = "old_encryption_policy";
+    public static final String SHARED_PREFERENCES_IS_BAYUN_LOGGED_IN = "bayun_login";
+    public static final String SHARED_PREFERENCES_GROUP_ID_BEING_VIEWED = "idOfTheGroupBeingViewed";
+    public static final String SHARED_PREFERENCES_KEY_GENERATION_POLICY_ON_DEVICE = "keyGenerationPolicyOnDevice";
+    public static final String SHARED_PREFERENCES_CURRENT_ENCRYPTION_POLICY_ON_DEVICE = "encryptionPolicyOnDevice";
 
     // Response from bayun sdk
     public static final String ERROR = "BayunError";

@@ -23,6 +23,7 @@ NSString *const SecureAuthenticationErrorDomain = @"com.bayun.SecureAuthenticati
     static SecureAuthentication *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        
         sharedInstance = [[self alloc] init];
     });
     return sharedInstance;
@@ -36,54 +37,46 @@ userAttributes:(NSArray<AWSCognitoIdentityUserAttributeType *> *) userAttributes
 validationData:(NSArray<AWSCognitoIdentityUserAttributeType *> *) validationData
      withBlock:(AWSContinuationBlock)block {
     
-    if (!self.companyName || ![self.companyName isEqualToString:@""]) {
-        [self executeBlock:block withBayunError:BayunErrorCompanyNameCannotBeNil];
-    } else if (!self.appId || ![self.appId isEqualToString:@""]) {
-        [self executeBlock:block withBayunError:BayunErrorInvalidAppId];
-    } else {
-        [[pool signUp:username password:password userAttributes:userAttributes validationData:validationData] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserPoolSignUpResponse *> * _Nonnull task) {
+    [[pool signUp:username password:password userAttributes:userAttributes validationData:validationData] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserPoolSignUpResponse *> * _Nonnull task) {
+        
+        if (task.error || (task.result.user.confirmedStatus != AWSCognitoIdentityUserStatusConfirmed)) {
+            self.userPassword = password;
+            block(task);
+        } else {
+            //authenticate with Bayun
+            NSDictionary *postParamsDict = @{@"companyName" : self.companyName,
+                                             @"companyEmployeeId" : username,
+                                             @"password" : password,
+                                             @"appId" : self.appId,
+                                             @"appSecret" : self.appSecret
+                                             };
             
-            if (task.error || (task.result.user.confirmedStatus != AWSCognitoIdentityUserStatusConfirmed)) {
-                self.userPassword = password;
+            //authenticate with Bayun Key Management Server
+            [[BayunCore sharedInstance] authenticateWithCredentials:postParamsDict securityQuestions:nil  passphrase:nil autoCreateEmployee:true success:^{
+                //Bayun Authentication Successful
                 block(task);
-            } else {
-                //authenticate with Bayun
-                NSDictionary *postParamsDict = @{@"companyName" : self.companyName,
-                                                 @"companyEmployeeId" : username,
-                                                 @"password" : password,
-                                                 @"appId" : self.appId};
                 
-                //authenticate with Bayun Key Management Server
-                [[BayunCore sharedInstance] authenticateWithCredentials:postParamsDict passphrase:nil success:^{
-                    //Bayun Authentication Successful
-                    block(task);
-                    
-                } failure:^(BayunError errorCode) {
-                    
-                    [self executeBlock:block withBayunError:errorCode];
-                    
-                }];
-            }
-            return nil;
-        }];
-    }
+            } failure:^(BayunError errorCode) {
+                
+                [self executeBlock:block withBayunError:errorCode];
+                
+            }];
+        }
+        return nil;
+    }];
 }
 
 -(void)confirmSignUpForUser:(AWSCognitoIdentityUser*)user
            confirmationCode:(NSString *) confirmationCode
          forceAliasCreation:(BOOL)forceAliasCreation
                   withBlock:(AWSContinuationBlock)block {
-    if (!self.companyName || ![self.companyName isEqualToString:@""]) {
-        [self executeBlock:block withBayunError:BayunErrorCompanyNameCannotBeNil];
-    } else if (!self.appId || ![self.appId isEqualToString:@""]) {
-        [self executeBlock:block withBayunError:BayunErrorInvalidAppId];
-    } else {
-        [[user confirmSignUp:confirmationCode forceAliasCreation:forceAliasCreation] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserConfirmSignUpResponse *> * _Nonnull task) {
-            if(task.error) {
+    
+    [[user confirmSignUp:confirmationCode forceAliasCreation:forceAliasCreation] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserConfirmSignUpResponse *> * _Nonnull task) {
+            if(task.error){
                 if(task.error){
                     block(task);
                 }
-            } else {
+            }else {
                 //return to signin screen
                 NSDictionary *postParamsDict = @{@"companyName" : self.companyName,
                                                  @"companyEmployeeId" : user.username,
@@ -91,16 +84,16 @@ validationData:(NSArray<AWSCognitoIdentityUserAttributeType *> *) validationData
                                                  @"appId" : self.appId};
                 
                 //authenticate with Bayun Key Management Server
-                [[BayunCore sharedInstance] authenticateWithCredentials:postParamsDict passphrase:nil success:^{
+                [[BayunCore sharedInstance] authenticateWithCredentials:postParamsDict securityQuestions:nil passphrase:nil autoCreateEmployee:true success:^{
                     //Bayun Authentication Successful
                     block(task);
+                    
                 } failure:^(BayunError errorCode) {
                     [self executeBlock:block withBayunError:errorCode];
                 }];
             }
-            return nil;
-        }];
-    }
+        return nil;
+    }];
 }
 
 
@@ -109,63 +102,74 @@ validationData:(NSArray<AWSCognitoIdentityUserAttributeType *> *) validationData
          password:(NSString*)password
         withBlock:(AWSContinuationBlock)block{
     
-    if (!self.companyName || ![self.companyName isEqualToString:@""]) {
-        [self executeBlock:block withBayunError:BayunErrorCompanyNameCannotBeNil];
-    } else if (!self.appId || ![self.appId isEqualToString:@""]) {
-        [self executeBlock:block withBayunError:BayunErrorInvalidAppId];
-    } else {
-        AWSCognitoIdentityUser *user = [pool getUser:username];
-        [[user getSession:username password:password validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserSession *> * _Nonnull task) {
+    
+    AWSCognitoIdentityUser *user = [pool getUser:username];
+    [[user getSession:username password:password validationData:nil] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserSession *> * _Nonnull task) {
+        
+        if (task.error) {
+            block(task);
+        } else {
+            //return to signin screen
             
-            if (task.error) {
+            NSDictionary *postParamsDict = @{@"companyName" : self.companyName,
+                                             @"companyEmployeeId" : username,
+                                             @"password" : password,
+                                             @"appId" : self.appId,
+                                             @"appSecret" : self.appSecret
+                                             };
+            
+           // authenticate with Bayun Key Management Server
+            [[BayunCore sharedInstance] authenticateWithCredentials:postParamsDict securityQuestions:nil passphrase:nil autoCreateEmployee:true success:^{
+                //Bayun Authentication Successful
                 block(task);
-            } else {
-                //return to signin screen
-                NSDictionary *postParamsDict = @{@"companyName" : self.companyName,
-                                                 @"companyEmployeeId" : username,
-                                                 @"password" : password,
-                                                 @"appId" : self.appId};
-                
-                //authenticate with Bayun Key Management Server
-                [[BayunCore sharedInstance] authenticateWithCredentials:postParamsDict passphrase:nil success:^{
-                    //Bayun Authentication Successful
-                    block(task);
-                    
-                } failure:^(BayunError errorCode) {
-                    [self executeBlock:block withBayunError:errorCode];
-                }];
-            }
-            return nil;
-        }];
-    }
+            } failure:^(BayunError errorCode) {
+                [user signOut];
+                [self executeBlock:block withBayunError:errorCode];
+            }];
+            
+        }
+        return nil;
+    }];
+}
+
+- (void)signOut:(AWSCognitoIdentityUser*)user {
+    [user signOut];
+    [[BayunCore sharedInstance] deauthenticate];
 }
 
 - (void)forgotPasswordWithBlock:(AWSContinuationBlock)block {
+    
     NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Forgot Password Not Supported.", nil)};
     AWSTask *task = [AWSTask taskWithError:[NSError errorWithDomain:SecureAuthenticationErrorDomain
                                                code:SecureAuthenticationErrorNotSupported
                                            userInfo:userInfo]];
+    
     block(task);
-}
-
-- (void)signout:(AWSCognitoIdentityUser*)user {
-    [user signOut];
-    [[BayunCore sharedInstance] deauthenticate];
 }
 
 - (void) executeBlock:(AWSContinuationBlock)block withBayunError:(BayunError)bayunError {
    
     AWSTask *task;
+    
     if (bayunError == BayunErrorAuthenticationFailed) {
         task = [self taskWithErrorType:SecureAuthenticationErrorFailed
                              errorMessage:@"Bayun Authentication Failed."];
-    } else if(bayunError == BayunErrorInvalidPassword) {
+    } else if (bayunError == BayunErrorInvalidAppSecret) {
+        task = [self taskWithErrorType:SecureAuthenticationErrorInvalidAppSecret
+                          errorMessage:@"Invalid App Secret"];
+    } else if(bayunError == BayunErrorPasscodeAuthenticationCanceledByUser) {
+        task = [self taskWithErrorType:SecureAuthenticationErrorPasscodeAuthenticationCanceledByUser
+                          errorMessage:@"Passscode Authentication Canceled by User."];
+    } else if(bayunError == BayunErrorOneOrMoreIncorrectAnswers) {
+        task = [self taskWithErrorType:SecureAuthenticationErrorOneOrMoreIncorrectAnswers
+                          errorMessage:@"One or more invalid answers."];
+    }   else if(bayunError == BayunErrorInvalidPassword) {
         task = [self taskWithErrorType:SecureAuthenticationErrorInvalidPassword
                              errorMessage:@"Invalid Password."];
     } else if(bayunError == BayunErrorInvalidPassphrase) {
         task = [self taskWithErrorType:SecureAuthenticationErrorInvalidPassphrase
                              errorMessage:@"Invalid Passphrase."];
-    } else if (bayunError == BayunErrorInvalidCompanyName) {
+    } else if (bayunError ==  BayunErrorCompanyDoesNotExists) {
         task = [self taskWithErrorType:SecureAuthenticationErrorInvalidCompanyName
                              errorMessage:@"Invalid Company Name"];
     } else if(bayunError == BayunErrorInvalidCredentials) {
@@ -174,10 +178,23 @@ validationData:(NSArray<AWSCognitoIdentityUserAttributeType *> *) validationData
     } else if(bayunError == BayunErrorInvalidAppId) {
         task = [self taskWithErrorType:SecureAuthenticationErrorInvalidAppId
                              errorMessage:@"Invalid App Id."];
-    } else if(bayunError == BayunErrorSomethingWentWrong) {
+    }else if(bayunError == BayunErrorDevicePasscodeNotSet) {
+        task = [self taskWithErrorType:SecureAuthenticationErrorDevicePasscodeNotSet
+                          errorMessage:@"Device Passcode is not Set."];
+    } else if(bayunError == BayunErrorAppNotLinked) {
+        task = [self taskWithErrorType:SecureAuthenticationErrorAppNotLinked
+                          errorMessage:@"App is not linked. Login to the Admin Panel/App and link the app."];
+    } else if(bayunError == BayunErrorUserInActive) {
+        task = [self taskWithErrorType:SecureAuthenticationErrorUserInActive
+                          errorMessage:@"Please contact your Admin to activate your account."];
+    } else if (bayunError == BayunErrorInvalidAppSecret) {
+        task = [self taskWithErrorType:SecureAuthenticationErrorInvalidAppSecret
+                          errorMessage:@"Invalid App Secret."];
+    } else  {
         task = [self taskWithErrorType:SecureAuthenticationErrorSomethingWentWrong
                              errorMessage:@"Something Went Wrong."];
     }
+    
     block(task);
 }
 

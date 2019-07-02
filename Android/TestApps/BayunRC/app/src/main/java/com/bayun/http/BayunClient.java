@@ -40,8 +40,6 @@ import retrofit.client.Header;
 import retrofit.client.OkClient;
 import retrofit.client.Request;
 import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
-import retrofit.mime.TypedInput;
 
 
 class BayunClient extends OkClient {
@@ -83,11 +81,13 @@ class BayunClient extends OkClient {
 
                 JSONObject jsonObject = new JSONObject(sb.toString());
                 String result = jsonObject.getString("errorCode");
-                //Log.v("error here", result);
-                if (result.equalsIgnoreCase("TokenInvalid")) {
-                   // Log.v("here", "invalid and logout");
+                Log.v("error here", result);
+                /*if (result.equalsIgnoreCase("TokenInvalid")) {
+                    Log.v("here", "invalid and logout");
                     logout();
-                } else if (result.equalsIgnoreCase("TokenExpired")) {
+                } else */
+                if (result.equalsIgnoreCase("TokenInvalid") ||
+                        result.equalsIgnoreCase("TokenExpired")) {
                     Boolean authTokenRefreshed = getRefreshedAuthToken();
                     if (authTokenRefreshed) {
                         return execute(request);
@@ -133,7 +133,7 @@ class BayunClient extends OkClient {
                                     logout();
                                 }
                             } else {
-                                Utility.displayToast(Constants.ERROR_SOMETHING_WENT_WRONG, Toast.LENGTH_SHORT);
+                                Utility.displayToast(error.getMessage(), Toast.LENGTH_SHORT);
                             }
                         }
                     }

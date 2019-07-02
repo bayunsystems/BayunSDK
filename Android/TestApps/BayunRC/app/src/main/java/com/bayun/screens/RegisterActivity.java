@@ -7,6 +7,7 @@ import android.os.Message;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
 import com.bayun.R;
@@ -23,12 +24,11 @@ public class RegisterActivity extends AbstractActivity {
     private Long userName = 0L, extension = 0L;
     private String password;
     private CheckBox sandboxCheckbox;
+    private RelativeLayout progressBar;
 
     // Callback to authenticate user with Bayun - Success.
     private Handler.Callback responseSuccessCallback = message -> {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
+        runOnUiThread(() -> progressBar.setVisibility(View.GONE));
         BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_LOGGED_IN, Constants.SHARED_PREFERENCES_REGISTER);
         Intent intent = new Intent(RegisterActivity.this, ListMessagesActivity.class);
         startActivity(intent);
@@ -42,16 +42,14 @@ public class RegisterActivity extends AbstractActivity {
         @Override
         public boolean handleMessage(Message message) {
             if (message.what == Constants.CALLBACK_SUCCESS) {
-                String appId = getResources().getString(R.string.app_id);
+                String appId = Constants.APP_ID;
                 BasicBayunCredentials basicBayunCredentials = new BasicBayunCredentials(appId,
-                        userName.toString(), extension.toString(), password);
+                        userName.toString(), extension.toString(), password, Constants.APP_SECRET);
                 BayunApplication.bayunCore.authenticateWithCredentials(RegisterActivity.this,
-                        basicBayunCredentials, null, responseSuccessCallback,
-                        Utility.getDefaultFailureCallback(progressDialog));
+                        basicBayunCredentials, null, null, true, responseSuccessCallback,
+                        Utility.getDefaultFailureCallback(RegisterActivity.this, progressBar));
             } else {
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
+                runOnUiThread( () -> progressBar.setVisibility(View.GONE));
             }
             return false;
 
@@ -60,10 +58,8 @@ public class RegisterActivity extends AbstractActivity {
 
     // Validate passcode.
     private Handler.Callback passcodeCallback = message -> {
+        runOnUiThread(() -> progressBar.setVisibility(View.GONE));
 
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
         String response = message.getData().getString(Constants.AUTH_RESPONSE, "");
         if (response.equalsIgnoreCase(Constants.PASSCODE_REQUIRED)) {
             // Developer will add Custom UI for passcode.
@@ -88,7 +84,7 @@ public class RegisterActivity extends AbstractActivity {
         if (Utility.isNetworkAvailable()) {
             Utility.hideKeyboard(view);
             if (validateLoginData()) {
-                progressDialog.show();
+                progressBar.setVisibility(View.VISIBLE);
                 BayunApplication.tinyDB.putBoolean(Constants.SHARED_PREFERENCES_IS_SANDBOX_LOGIN,
                         sandboxCheckbox.isChecked());
                 RCAPIManager.getInstance(BayunApplication.appContext).authenticate(userName,
@@ -106,7 +102,7 @@ public class RegisterActivity extends AbstractActivity {
         phoneEditText = (EditText) findViewById(R.id.phone_number);
         extensionEditText = (EditText) findViewById(R.id.extension);
         passwordEditText = (EditText) findViewById(R.id.passcode);
-        progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
+        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
         sandboxCheckbox = (CheckBox) findViewById(R.id.sandbox_server_checkbox);
         ScrollView scrollView = (ScrollView) findViewById(R.id.login_activity_scrollview);
         scrollView.setVerticalScrollBarEnabled(false);

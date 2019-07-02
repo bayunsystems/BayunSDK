@@ -12,7 +12,8 @@
 @interface Constants : NSObject
 
 extern NSString *const kCompany;
-extern NSString *const kEncryptionPolicy;
+extern NSString *const kSelectedEncryptionPolicy;
+extern NSString *const kSelectedKeyGenPolicy;
 
 extern NSString *const kIsUserLoggedIn;
 extern NSString *const kPlaceholderTextView ;
@@ -30,6 +31,7 @@ extern NSString *const kEmployeeDoesNotExist;
 extern NSString *const kGroupJoined;
 extern NSString *const kFileDeletedSuccessfully;
 extern NSString *const kPermissionDenied;
+extern NSString *const kErrorMsgDevicePasscodeNotSet;
 
 extern NSString *const kErrorMsgNoTextToSave;
 extern NSString *const kErrorMsgFileNotSaved;
@@ -40,9 +42,14 @@ extern NSString *const kErrorMsgCouldNotConnectToServer;
 extern NSString *const kErrorMsgAccessDenied;
 extern NSString *const kErrorMsgSomethingWentWrong;
 extern NSString *const kErrorMsgFileDeletionFailed;
+extern NSString *const kErrorMsgFileDecryptionFailed;
+extern NSString *const kErrorMsgPasscodeAuthenticationFailed;
+extern NSString *const kErrorMsgInvalidAppSecret;
+extern NSString *const kErrorMsgBayunReauthenticationNeeded;
 
 extern NSString *const kErrorMsgIncorrectPassphrase;
 extern NSString *const kErrorMsgInvalidCredentials;
+extern NSString *const kErrorMsgInvalidAnswers;
 extern NSString *const kErrorMsgUserInActive;
 extern NSString *const kErrorMsgAppNotLinked;
 extern NSString *const kErrorMsgIncorrectPassword;
@@ -63,7 +70,8 @@ extern NSString *const CognitoIdentityUserPoolAppClientId;
 extern NSString *const CognitoIdentityUserPoolAppClientSecret;
 extern NSString *const CognitoIdentityPoolId;
 
-extern NSString *const BayunAppId;
-
+extern NSString *const kBayunAppId;
+extern NSString *const kBayunAppSecret;
+extern NSString *const kDefaultCompanyName;
 
 @end

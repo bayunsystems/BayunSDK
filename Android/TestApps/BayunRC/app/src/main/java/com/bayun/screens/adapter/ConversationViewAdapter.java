@@ -1,12 +1,12 @@
 package com.bayun.screens.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bayun.R;
 import com.bayun.app.BayunApplication;
@@ -58,8 +58,7 @@ public class ConversationViewAdapter extends RecyclerView.Adapter<ConversationVi
     public void onBindViewHolder(ViewHolder holder, int position) {
         String messageSubject = ConversationViewActivity.messageInfoArrayList.get(position).getSubject();
         String lastModifiedTime = convertDate(ConversationViewActivity.messageInfoArrayList.get(position).getCreationTime());
-        String decryptedText = BayunApplication.rcCryptManager.decryptText(messageSubject);
-        holder.messageSubject.setText(decryptedText);
+        holder.messageSubject.setText(messageSubject);
         holder.messageCreationTime.setText(lastModifiedTime);
     }
 

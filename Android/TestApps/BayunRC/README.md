@@ -18,7 +18,7 @@
    Select the prodDebug or prodRelease build variant and replace application_key_prod and application_key_secret_prod in strings.xml file with your Production Application Key and Application Secret Key.
 
 7. You are provided with an appId when your app is registered with Bayun, see  [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_android/getting_started.html).
-     In the strings.xml file, replace value of "app_id" with your Bayun AppId.
+     In the strings.xml file, replace value of "app_id" and "app_secret" with your Bayun AppId and AppSecret.
 
 8. Build and Run the project. You will need an active RingCentral account to login.
 

@@ -3,12 +3,13 @@ package com.bayun.screens.activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,24 +40,28 @@ public class RegisterActivity extends AbstractActivity {
     private String password;
     private String companyName = Constants.COMPANY_NAME;
 
+    private RelativeLayout progressBar;
 
     // Handler for authentication with AWS Cognito
     AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
         @Override
         public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice device) {
             CognitoHelper.setCurrSession(cognitoUserSession);
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
+            runOnUiThread(() -> progressBar.setVisibility(View.GONE));
 
             // if already logged in do not save company name again, as it might overwrite it with the default company name.
-            if (!BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_LOGGED_IN).equalsIgnoreCase(Constants.SHARED_PREFERENCES_REGISTER)) {
+            if (!BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_LOGGED_IN).equalsIgnoreCase(Constants.YES)) {
                 BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_COMPANY_NAME, companyName);
-                BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_LOGGED_IN, Constants.SHARED_PREFERENCES_REGISTER);
+                BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_LOGGED_IN, Constants.YES);
             }
-            Intent intent = new Intent(RegisterActivity.this, ListFilesActivity.class);
-            startActivity(intent);
-            finish();
+            // go forward only if a user has logged into bayun sdk as well.
+            // otherwise it may cause issue when a user doesn't cancel the authentication flow, and closes app when
+            // passphrase/questions dialog box is showing.
+            if (BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_IS_BAYUN_LOGGED_IN).equalsIgnoreCase(Constants.YES)) {
+                Intent intent = new Intent(RegisterActivity.this, ListFilesActivity.class);
+                startActivity(intent);
+                finish();
+            }
         }
 
         @Override
@@ -73,21 +78,27 @@ public class RegisterActivity extends AbstractActivity {
         @Override
         public void onFailure(Exception e) {
             runOnUiThread(() -> {
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
+                progressBar.setVisibility(View.GONE);
 
                 TextView label = (TextView) findViewById(R.id.textViewUserIdMessage);
-                label.setText("Sign-in failed");
+                label.setText(getString(R.string.signin_failed));
                 inPassword.setBackground(ContextCompat.getDrawable(RegisterActivity.this,
                         R.drawable.text_border_error));
 
                 label = (TextView) findViewById(R.id.textViewUserPasswordMessage);
-                label.setText("Sign-in failed");
+                label.setText(getString(R.string.signin_failed));
                 inUsername.setBackground(ContextCompat.getDrawable(RegisterActivity.this,
                         R.drawable.text_border_error));
 
-                Toast.makeText(RegisterActivity.this, CognitoHelper.formatException(e), Toast.LENGTH_SHORT).show();
+                String error = CognitoHelper.formatException(e);
+                String errorMessage = error;
+
+                if (error.startsWith("Bayun")) {
+                    Utility.showErrorMessage(error);
+                }
+                else {
+                    Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                }
             });
         }
 
@@ -104,7 +115,7 @@ public class RegisterActivity extends AbstractActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
+        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
 
         // Initialize
         CognitoHelper.init(getApplicationContext());
@@ -248,7 +259,7 @@ public class RegisterActivity extends AbstractActivity {
             return;
         }
 
-        progressDialog.show();
+        runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
 
         BayunApplication.secureAuthentication.signIn(RegisterActivity.this, username, password,
                 CognitoHelper.getPool().getUser(username), authenticationHandler);

@@ -707,14 +707,14 @@ const CGFloat kJSQMessagesCollectionViewAvatarSizeDefault = 38.0f;
     NSArray *behaviors = self.dynamicAnimator.behaviors;
     
     NSIndexSet *indexSet = [behaviors indexesOfObjectsPassingTest:^BOOL(UIAttachmentBehavior *springBehaviour, NSUInteger index, BOOL *stop) {
-        UICollectionViewLayoutAttributes *layoutAttributes = (UICollectionViewLayoutAttributes*)[springBehaviour.items firstObject];
+        UICollectionViewLayoutAttributes *layoutAttributes = [springBehaviour.items firstObject];
         return ![visibleItemsIndexPaths containsObject:layoutAttributes.indexPath];
     }];
     
     NSArray *behaviorsToRemove = [self.dynamicAnimator.behaviors objectsAtIndexes:indexSet];
     
     [behaviorsToRemove enumerateObjectsUsingBlock:^(UIAttachmentBehavior *springBehaviour, NSUInteger index, BOOL *stop) {
-        UICollectionViewLayoutAttributes *layoutAttributes = (UICollectionViewLayoutAttributes*)[springBehaviour.items firstObject];
+        UICollectionViewLayoutAttributes *layoutAttributes = [springBehaviour.items firstObject];
         [self.dynamicAnimator removeBehavior:springBehaviour];
         [self.visibleIndexPaths removeObject:layoutAttributes.indexPath];
     }];
@@ -722,7 +722,7 @@ const CGFloat kJSQMessagesCollectionViewAvatarSizeDefault = 38.0f;
 
 - (void)jsq_adjustSpringBehavior:(UIAttachmentBehavior *)springBehavior forTouchLocation:(CGPoint)touchLocation
 {
-    UICollectionViewLayoutAttributes *item = (UICollectionViewLayoutAttributes*)[springBehavior.items firstObject];
+    UICollectionViewLayoutAttributes *item = [springBehavior.items firstObject];
     CGPoint center = item.center;
     
     //  if touch is not (0,0) -- adjust item center "in flight"

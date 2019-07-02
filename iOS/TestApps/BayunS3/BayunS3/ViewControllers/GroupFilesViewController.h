@@ -10,6 +10,7 @@
 
 @interface GroupFilesViewController : UIViewController
 
+@property (nonatomic, strong) AWSCognitoIdentityUser * user;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *noItemsView;
 

@@ -3,10 +3,10 @@ package com.bayun.screens;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,28 +29,22 @@ public class ListExtensionActivity extends AbstractActivity {
     private TextView emptyView;
     public static ArrayList<ExtensionInfo> extensionInfoArrayList;
     private Handler.Callback callback;
+    private RelativeLayout progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setUpView();
         // Callback for handling the extension list.
-        callback = new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                if (message.what == Constants.CALLBACK_SUCCESS) {
-                    if (progressDialog != null && progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                        setListView();
-                    }
-                } else {
-                    if (progressDialog != null && progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
-                }
-                return false;
+        callback = message -> {
+            progressBar.setVisibility(View.GONE);
+
+            if (message.what == Constants.CALLBACK_SUCCESS) {
+                setListView();
             }
-        };if (Utility.isNetworkAvailable()) {
+            return false;
+        };
+        if (Utility.isNetworkAvailable()) {
             getExtensionList();
         } else {
             Utility.displayToast(Constants.ERROR_INTERNET_OFFLINE, Toast.LENGTH_SHORT);
@@ -63,7 +57,7 @@ public class ListExtensionActivity extends AbstractActivity {
      */
     private void setUpView() {
         setContentView(R.layout.activity_list_extension);
-        progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
+        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
         recyclerView = (RecyclerView) findViewById(R.id.list_files_recycler_view);
         emptyView = (TextView) findViewById(R.id.empty_view);
         recyclerView.setHasFixedSize(true);
@@ -89,12 +83,7 @@ public class ListExtensionActivity extends AbstractActivity {
         emptyView.setVisibility(View.GONE);
         messagesAdapter = new ExtensionListAdapter(ListExtensionActivity.this);
         recyclerView.setAdapter(messagesAdapter);
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                messagesAdapter.notifyDataSetChanged();
-            }
-        });
+        new Handler(Looper.getMainLooper()).post(() -> messagesAdapter.notifyDataSetChanged());
 
     }
 
@@ -103,8 +92,9 @@ public class ListExtensionActivity extends AbstractActivity {
      */
     private void getExtensionList() {
         if (Utility.isNetworkAvailable()) {
-            if (!isFinishing())
-                progressDialog.show();
+            if (!isFinishing()) {
+                progressBar.setVisibility(View.VISIBLE);
+            }
             RCAPIManager.getInstance(BayunApplication.appContext).getExtensionList(callback);
 
         }

@@ -8,16 +8,10 @@
 
 #import "Utilities.h"
 #import "NSDate+TimeAgoConversion.h"
+#import <Bayun/BayunCore.h>
 
 
 @implementation Utilities
-
-+ (NSString*)appId {
-    
-    //return @"6dc67116a1f3419cac6074a71c09db2c"; //BayunS3-1
-    return @"6acb2ca252da4ef8a3bc599f75535ecd"; //BayunS3
-}
-
 
 + (id)getFileSize:(id)value {
     double convertedValue = [value doubleValue];
@@ -43,7 +37,23 @@
 + (void)clearKeychainAndUserDefaults {
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kIsUserLoggedIn];
     [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kCompany];
+    [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:kSelectedKeyGenPolicy];
+    [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:kSelectedEncryptionPolicy];
     [[NSUserDefaults standardUserDefaults]synchronize];
+}
+
++ (void)logoutUser:(AWSCognitoIdentityUser *)user {
+    [[SecureAuthentication sharedInstance] signOut:user];
+    [[user getDetails] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserGetDetailsResponse *> * _Nonnull task) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(task.error){
+                [Utilities  clearKeychainAndUserDefaults];
+                [[BayunCore sharedInstance] deauthenticate];
+                [SVProgressHUD showErrorWithStatus:task.error.userInfo[NSLocalizedDescriptionKey]];
+            }
+        });
+        return nil;
+    }];
 }
 
 

@@ -17,9 +17,6 @@
  */
 + (instancetype)sharedInstance;
 
-/**
- * Returns decrypted text
- */
 - (void) decryptText :(NSString*) text success:(void (^)(NSString*))success failure:(void (^)(BayunError))failure;
 
 /**

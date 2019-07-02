@@ -29,15 +29,19 @@
             android:text="@string/extension"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
+
+
     </RelativeLayout>
 
+
     <!-- A RecyclerView with some commonly used attributes -->
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_files_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/activity_list_file_navigation_bar"
         android:scrollbars="vertical" />
+
 
     <TextView
         android:id="@+id/empty_view"
@@ -46,5 +50,21 @@
         android:gravity="center"
         android:text="@string/list_view_message_list_empty"
         android:visibility="gone" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progressBar"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@color/progress_bar_bg"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

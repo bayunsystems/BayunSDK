@@ -4,12 +4,15 @@
 package com.bayun.S3wrapper;
 
 import android.content.Context;
+import android.os.Handler;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.services.s3.AmazonS3;
+import com.bayun.app.BayunApplication;
+import com.bayun.util.Constants;
 import com.bayun_module.BayunCore;
 import com.bayun_module.util.BayunException;
 
@@ -44,9 +47,6 @@ public class SecureTransferUtility extends TransferUtility {
 
     private final BayunCore bayunCore;
     private final Context context;
-    // code for default encryption mode is 1
-    private static int encryptionPolicyOnDevice = 1;
-    private static String groupId = "";
 
     /**
      * Constructs a new TransferUtility specifying the client to use and
@@ -68,27 +68,29 @@ public class SecureTransferUtility extends TransferUtility {
      * @param bucket The name of the bucket to upload the new object to.
      * @param key    The key in the specified bucket by which to store the new object.
      * @param file   The file to upload.
-     * @return A SecureTransferObserver used to track upload progress and state
      */
 
-    public TransferObserver secureUpload(String bucket, String key, File file, TransferListener transferListener)
-            throws BayunException {
-        if (encryptionPolicyOnDevice == BayunCore.ENCRYPTION_POLICY_DEFAULT) {
-            bayunCore.lockFile(file.getAbsolutePath());
-        }
-        else {
-            String groupId = null;
-            if (encryptionPolicyOnDevice == BayunCore.ENCRYPTION_POLICY_GROUP) {
-                groupId = SecureTransferUtility.groupId;
-            }
-            bayunCore.lockFile(file.getAbsolutePath(), encryptionPolicyOnDevice, groupId);
-        }
+    public void secureUpload(String bucket, String key, File file, TransferListener transferListener) {
+        Handler.Callback success = msg -> {
+            TransferObserver transferObserver = super.upload(bucket, key, file);
+            setUploadTransferListener(transferListener, transferObserver);
 
-        TransferObserver transferObserver = super.upload(bucket, key, file);
-        //SecureTransferObserver secureTransferObserver = new SecureTransferObserver(transferObserver, context);
-        //secureTransferObserver.setFileType("upload"); (done)
-        setUploadTransferListener(transferListener, transferObserver);
-        return transferObserver;
+            return false;
+        };
+
+        Handler.Callback failure = msg -> {
+            transferListener.onError(1, new Exception(msg.getData().getString(Constants.ERROR)));
+            return false;
+        };
+
+        String groupId = null;
+        int encryptionPolicyOnDevice = getEncryptionPolicyOnDevice();
+
+        if (encryptionPolicyOnDevice == BayunCore.ENCRYPTION_POLICY_GROUP) {
+            groupId = getGroupId();
+        }
+        bayunCore.lockFile(file.getAbsolutePath(), encryptionPolicyOnDevice, getKeyGenerationPolicyOnDevice(),
+                groupId, success, failure);
     }
 
     /**
@@ -100,7 +102,8 @@ public class SecureTransferUtility extends TransferUtility {
      * @param file   The file to download the object's data to.
      * @return A SecureTransferObserver used to track download progress and state
      */
-    public TransferObserver secureDownload(String bucket, String key, File file, TransferListener transferListener) {
+    public TransferObserver secureDownload(String bucket, String key, File file,
+                                           TransferListener transferListener) {
         TransferObserver transferObserver = super.download(bucket, key, file);
         //SecureTransferObserver secureTransferObserver = new SecureTransferObserver(transferObserver, context);
         //secureTransferObserver.setFileType("download");
@@ -114,7 +117,9 @@ public class SecureTransferUtility extends TransferUtility {
      * @return encryption policy saved on device
      */
     public static int getEncryptionPolicyOnDevice() {
-        return encryptionPolicyOnDevice;
+        // code for default encryptionPolicy is 1
+        return BayunApplication.tinyDB.getInt(Constants.SHARED_PREFERENCES_CURRENT_ENCRYPTION_POLICY_ON_DEVICE,
+                1);
     }
 
     /**
@@ -123,7 +128,29 @@ public class SecureTransferUtility extends TransferUtility {
      * @param policy encryption policy saved on device
      */
     public static void setEncryptionPolicyOnDevice(int policy) {
-        encryptionPolicyOnDevice = policy;
+        BayunApplication.tinyDB.putInt(Constants.SHARED_PREFERENCES_CURRENT_ENCRYPTION_POLICY_ON_DEVICE,
+                policy);
+    }
+
+    /**
+     * Gets the key generation policy.
+     *
+     * @return Key generation policy
+     */
+    public static int getKeyGenerationPolicyOnDevice() {
+        // code for default KGP is 0
+        return BayunApplication.tinyDB.getInt(Constants.SHARED_PREFERENCES_KEY_GENERATION_POLICY_ON_DEVICE,
+                0);
+    }
+
+    /**
+     * Sets the key generation policy.
+     *
+     * @param keyGenerationPolicyOnDevice policy to be saved as key generation policy
+     */
+    public static void setKeyGenerationPolicyOnDevice(int keyGenerationPolicyOnDevice) {
+        BayunApplication.tinyDB.putInt(Constants.SHARED_PREFERENCES_KEY_GENERATION_POLICY_ON_DEVICE,
+                keyGenerationPolicyOnDevice);
     }
 
     /**
@@ -132,7 +159,8 @@ public class SecureTransferUtility extends TransferUtility {
      * @return group id
      */
     public static String getGroupId() {
-        return groupId;
+        return BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_GROUP_ID_BEING_VIEWED);
+        //return groupId;
     }
 
     /**
@@ -141,7 +169,7 @@ public class SecureTransferUtility extends TransferUtility {
      * @param groupId group id to be set
      */
     public static void setGroupId(String groupId) {
-        SecureTransferUtility.groupId = groupId;
+        BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_GROUP_ID_BEING_VIEWED, groupId);
     }
 
     /**
@@ -163,10 +191,20 @@ public class SecureTransferUtility extends TransferUtility {
                     if (state.equals(TransferState.COMPLETED)) {
                         BayunCore bayunCore = new BayunCore(context);
                         try {
-                            bayunCore.unlockFile(transferObserver.getAbsoluteFilePath());
-                            listener.onStateChanged(id, state);
+                            Handler.Callback unlockSuccess = msg -> {
+                                listener.onStateChanged(id, state);
+                                return false;
+                            };
+
+                            Handler.Callback unlockFailure = msg -> {
+                                listener.onError(id, new Exception(msg.getData().getString(Constants.ERROR)));
+                                return false;
+                            };
+
+                            bayunCore.unlockFile(transferObserver.getAbsoluteFilePath(), unlockSuccess,
+                                    unlockFailure);
                         } catch (BayunException exception) {
-                            onError(id, exception);
+                            listener.onError(id, exception);
                         }
                     } else {
                         listener.onStateChanged(id, state);
@@ -221,18 +259,3 @@ public class SecureTransferUtility extends TransferUtility {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

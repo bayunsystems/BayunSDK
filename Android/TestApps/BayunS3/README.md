@@ -18,7 +18,7 @@ BayunS3 is a sample application that uses overridden methods from AWSS3 SDK for 
 Place the access key and secret key in the strings.xml file.
 
 7. You are provided with an appId when your app is registered with Bayun, see  [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_android/getting_started.html).
-In the strings.xml file, replace value of "app_id" with your Bayun AppId.
+In the strings.xml file, replace value of "app_id" and "app_secret" with your Bayun AppId and Bayun App Secret.
 
 8. You will need your userPoolId, clientId, clientSecret, cognitoRegion. Place them under the defined variables in class "CognitoHelper".
 

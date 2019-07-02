@@ -13,6 +13,9 @@
 typedef NS_ENUM(NSInteger, SecureAWSS3TransferManagerErrorType) {
     SecureAWSS3TransferManagerErrorUnknown,
     SecureAWSS3TransferManagerErrorCancelled,
+    SecureAWSS3TransferManagerErrorInvalidAppSecret,
+    SecureAWSS3TransferErrorPasscodeAuthenticationCanceledByUser,
+    SecureAWSS3TransferErrorReAuthenticationNeeded,
     SecureAWSS3TransferManagerErrorPaused,
     SecureAWSS3TransferManagerErrorCompleted,
     SecureAWSS3TransferManagerErrorInternalInConsistency,
@@ -20,6 +23,7 @@ typedef NS_ENUM(NSInteger, SecureAWSS3TransferManagerErrorType) {
     SecureAWSS3TransferManagerErrorInvalidParameters,
     SecureAWSS3TransferManagerErrorAccessDenied,
     SecureAWSS3TransferManagerErrorUserInactive,
+    SecureAWSS3TransferManagerErrorUnlockingFailed,
     SecureAWSS3TransferManagerErrorInternetConnection,
     SecureAWSS3TransferManagerErrorSomethingWentWrong,
     SecureAWSS3TransferManagerErrorNoInternetConnection
@@ -38,6 +42,12 @@ typedef NS_ENUM(NSInteger, SecureAWSS3TransferManagerErrorType) {
  Default encryption policy is BayunEncryptionPolicyDefault.
  */
 @property (nonatomic, assign) BayunEncryptionPolicy encryptionPolicy;
+
+/**
+ Key Generation Policy determines what policy is used for Data Encryption Key.
+ Default encryption policy is BayunKeyGenerationPolicyStatic.
+ */
+@property (nonatomic, assign) BayunKeyGenerationPolicy keyGenerationPolicy;
 
 /**
  Returns the singleton service client. If the singleton object does not exist, the SDK instantiates the default service client with `defaultServiceConfiguration` from `[AWSServiceManager defaultServiceManager]`. The reference to this object is maintained by the SDK, and you do not need to retain it manually.

@@ -168,7 +168,7 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
                                                                 attributes:nil
                                                                      error:&error];
         if (!result) {
-            AWSLogError(@"Failed to create a temporary directory: %@", error);
+            NSLog(@"Failed to create a temporary directory: %@", error);
         }
         
         // Clean up the temporary directory
@@ -212,6 +212,7 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
     
     [[BayunCore sharedInstance] lockFile:fileURL
                         encryptionPolicy:self.encryptionPolicy
+                     keyGenerationPolicy:self.keyGenerationPolicy 
                                  groupId:self.groupId
                                  success:^{
         
@@ -328,7 +329,7 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
     NSArray *contentsOfDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.temporaryDirectoryPath
                                                                                        error:&error];
     if (!contentsOfDirectory) {
-        AWSLogError(@"Failed to retrieve the contents of the tempoprary directory: %@", error);
+        NSLog(@"Failed to retrieve the contents of the tempoprary directory: %@", error);
     }
     
     // Goes through the temporary directory.
@@ -340,7 +341,7 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath
                                                                                     error:&error];
         if (!attributes) {
-            AWSLogError(@"Failed to load temporary file attributes: %@", error);
+            NSLog(@"Failed to load temporary file attributes: %@", error);
         }
         NSDate *fileCreationDate = [attributes objectForKey:NSFileCreationDate];
         // Removes an 'expired' temporary file.
@@ -349,7 +350,7 @@ static SecureAWSS3TransferUtility *_defaultS3TransferUtility = nil;
             BOOL result = [[NSFileManager defaultManager] removeItemAtPath:filePath
                                                                      error:&error];
             if (!result) {
-                AWSLogError(@"Failed to remove a temporary file: %@", error);
+                NSLog(@"Failed to remove a temporary file: %@", error);
             }
         }
     }];

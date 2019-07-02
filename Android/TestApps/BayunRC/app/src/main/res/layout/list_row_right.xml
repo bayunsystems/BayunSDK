@@ -35,4 +35,22 @@
 
     </RelativeLayout>
 
+
+    <!--  <TextView
+          android:id="@+id/chat_layout_date_text"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text=""
+
+          android:textSize="12sp"
+          android:textColor="@color/light_gray_color"
+          android:layout_marginRight="5dp"
+          android:paddingLeft="10dp"
+          android:paddingRight="13dp"
+          android:paddingBottom="5dp"
+          android:layout_marginLeft="6dp"
+          android:layout_alignBottom="@+id/chat_layout_profile_grid_layout"
+          android:layout_toLeftOf="@+id/chat_layout_profile_grid_layout"/>
+
+  -->
 </RelativeLayout>

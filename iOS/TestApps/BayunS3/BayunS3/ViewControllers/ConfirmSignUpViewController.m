@@ -40,25 +40,28 @@
     [SVProgressHUD show];
     [[SecureAuthentication sharedInstance] confirmSignUpForUser:self.user confirmationCode:self.code.text forceAliasCreation:YES withBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserConfirmSignUpResponse *> * _Nonnull task) {
         [SVProgressHUD dismiss];
-       // dispatch_async(dispatch_get_main_queue(), ^{
             if(task.error){
-                if(task.error){
-                    [[[UIAlertView alloc] initWithTitle:task.error.userInfo[@"__type"]
-                                                message:task.error.userInfo[@"message"]
-                                               delegate:nil
-                                      cancelButtonTitle:@"Ok"
-                                      otherButtonTitles:nil] show];
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([[task.error.userInfo valueForKey:@"NSLocalizedDescription"] isEqualToString:@"Device Passcode is not Set."]) {
+                        [[[UIAlertView alloc] initWithTitle:@""
+                                                    message:kErrorMsgDevicePasscodeNotSet
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil] show];
+                    } else {
+                        // [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
+                        [[[UIAlertView alloc] initWithTitle:@""
+                                                    message:kErrorMsgSomethingWentWrong
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"OK", nil] show];
+                    }
+                });
             }else {
-            
                 //return to signin screen
                 ((SignInViewController *)self.navigationController.viewControllers[0]).usernameText = self.user.username;
                 [self.navigationController popToRootViewControllerAnimated:YES];
-//                [[NSUserDefaults standardUserDefaults]setBool:YES forKey:kIsUserLoggedIn];
-//                [[NSUserDefaults standardUserDefaults] synchronize];
-//                [self performSegueWithIdentifier:@"ListFilesSegue" sender:nil];
             }
-        //});
         return nil;
     }];
 }

@@ -213,6 +213,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                     taskNew = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
                                                                          code:SecureAWSS3ServiceErrorUserInactive
                                                                      userInfo:userInfo]];
+                } else if (errorCode == BayunErrorInvalidAppSecret) {
+                    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid App Secret", nil)};
+                    taskNew = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
+                                                                         code:SecureAWSS3ServiceErrorInvalidAppSecret
+                                                                     userInfo:userInfo]];
+                } else if (errorCode == BayunErrorDecryptionFailed) {
+                    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Unlocking Failed", nil)};
+                    taskNew = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
+                                                                         code:SecureAWSS3ServiceErrorUnlockingFailed
+                                                                     userInfo:userInfo]];
+                } else if (errorCode == BayunErrorPasscodeAuthenticationCanceledByUser) {
+                    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Passcode Authentication Canceled by User", nil)};
+                    taskNew = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
+                                                                         code:SecureAWSS3ServiceErrorPasscodeAuthenticationCanceledByUser
+                                                                     userInfo:userInfo]];
+                } else if (errorCode == BayunErrorReAuthenticationNeeded) {
+                    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Reauthentication with Bayun is Needed", nil)};
+                    taskNew = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
+                                                                         code:SecureAWSS3ServiceErrorReAuthenticationNeeded
+                                                                     userInfo:userInfo]];
                 } else {
                     NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Something Went Wrong", nil)};
                     taskNew = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
@@ -237,6 +257,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     [[BayunCore sharedInstance] lockFile:request.body
                         encryptionPolicy:self.encryptionPolicy
+                     keyGenerationPolicy:self.keyGenerationPolicy
                                  groupId:self.groupId
                                  success:^{
         NSError *error = nil;
@@ -270,6 +291,21 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
             task = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
                                                               code:SecureAWSS3ServiceErrorUserInactive
                                                           userInfo:userInfo]];
+        } else if (errorCode == BayunErrorInvalidAppSecret) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid App Secret", nil)};
+            task = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
+                                                                 code:SecureAWSS3ServiceErrorInvalidAppSecret
+                                                             userInfo:userInfo]];
+        } else if (errorCode == BayunErrorPasscodeAuthenticationCanceledByUser) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Passcode Authentication Canceled by User", nil)};
+            task = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
+                                                                 code:SecureAWSS3ServiceErrorPasscodeAuthenticationCanceledByUser
+                                                             userInfo:userInfo]];
+        } else if (errorCode == BayunErrorReAuthenticationNeeded) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Reauthentication with Bayun is Needed", nil)};
+            task = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
+                                                                 code:SecureAWSS3ServiceErrorReAuthenticationNeeded
+                                                             userInfo:userInfo]];
         } else {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey: NSLocalizedString(@"Something Went Wrong", nil)};
             task = [AWSTask taskWithError:[NSError errorWithDomain:SecureAWSS3ServiceErrorDomain
@@ -407,7 +443,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                     [[NSFileManager defaultManager] removeItemAtURL:tempURL
                                                               error:&error];
                     if (error) {
-                        AWSLogError(@"Failed to delete a temporary file for part upload: [%@]", error);
+                        NSLog(@"Failed to delete a temporary file for part upload: [%@]", error);
                     }
                     
                     if (task.error) {
@@ -468,9 +504,9 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
     
     [[weakSelf abortMultipartUpload:abortMultipartUploadRequest] continueWithBlock:^id(AWSTask *task) {
         if (task.error) {
-            AWSLogDebug(@"Received response for abortMultipartUpload with Error:%@",task.error);
+            NSLog(@"Received response for abortMultipartUpload with Error:%@",task.error);
         } else {
-            AWSLogDebug(@"Received response for abortMultipartUpload.");
+            NSLog(@"Received response for abortMultipartUpload.");
         }
         return nil;
     }];

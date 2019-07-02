@@ -1,15 +1,16 @@
 package com.bayun.screens.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
@@ -29,9 +30,9 @@ public class CognitoRegisterUserActivity extends AbstractActivity {
     private EditText phone;
 
     private AlertDialog userDialog;
-    private ProgressDialog waitDialog;
     private String usernameInput;
     private String userPasswd;
+    private RelativeLayout progressBar;
 
 
     @Override
@@ -55,6 +56,7 @@ public class CognitoRegisterUserActivity extends AbstractActivity {
 
     // This will create the list/form for registration
     private void setUpViews() {
+        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
         username = (EditText) findViewById(R.id.editTextRegUserId);
         username.addTextChangedListener(new TextWatcher() {
             @Override
@@ -237,7 +239,7 @@ public class CognitoRegisterUserActivity extends AbstractActivity {
                 }
             }
 
-            showWaitDialog("Signing up...");
+            showWaitDialog();
             BayunApplication.secureAuthentication.signUp(CognitoRegisterUserActivity.this,
                     CognitoHelper.getPool(), usernameInput, userpasswordInput, userAttributes,
                     null, signUpHandler);
@@ -309,45 +311,38 @@ public class CognitoRegisterUserActivity extends AbstractActivity {
      * @param exit  Boolean if app should exit after the dialog dismisses.
      */
     private void showDialogMessage(String title, String body, final boolean exit) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title).setMessage(body).setNeutralButton("OK", (dialog, which) -> {
-            try {
-                userDialog.dismiss();
-                if(exit) {
-                    exit(usernameInput);
+        runOnUiThread(() -> {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(title).setMessage(body).setNeutralButton("OK", (dialog, which) -> {
+                try {
+                    userDialog.dismiss();
+                    if(exit) {
+                        exit(usernameInput);
+                    }
+                } catch (Exception e) {
+                    if(exit) {
+                        exit(usernameInput);
+                    }
                 }
-            } catch (Exception e) {
-                if(exit) {
-                    exit(usernameInput);
-                }
-            }
+            });
+            userDialog = builder.create();
+            userDialog.show();
         });
-        userDialog = builder.create();
-        userDialog.show();
     }
 
     /**
      * Show progress dialog.
-     *
-     * @param message Message for the dialog box.
      */
-    private void showWaitDialog(String message) {
+    private void showWaitDialog() {
         closeWaitDialog();
-        waitDialog = new ProgressDialog(this);
-        waitDialog.setTitle(message);
-        waitDialog.show();
+        runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
     }
 
     /**
      * Dismiss progress dialog.
      */
     private void closeWaitDialog() {
-        try {
-            waitDialog.dismiss();
-        }
-        catch (Exception e) {
-            //
-        }
+        runOnUiThread(() -> progressBar.setVisibility(View.GONE));
     }
 
     /**

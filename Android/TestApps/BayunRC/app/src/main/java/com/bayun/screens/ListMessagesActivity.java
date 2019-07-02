@@ -1,16 +1,14 @@
 package com.bayun.screens;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bayun.R;
@@ -39,12 +37,15 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
     private ActivityDBOperations activityDBOperations;
     private Handler.Callback callback;
     public static ArrayList<ConversationInfo> conversationInfoArrayList;
+    private RelativeLayout progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_messages);
         setUpView();
+        progressBar.setVisibility(View.VISIBLE);
+
         // Callback for handling the message list.
         callback = message -> {
             if (message.what == Constants.CALLBACK_SUCCESS) {
@@ -62,7 +63,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
      * Sets up Views.
      */
     private void setUpView() {
-        progressDialog = Utility.createProgressDialog(this, getString(R.string.please_wait));
+        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
         recyclerView = (RecyclerView) findViewById(R.id.list_files_recycler_view);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         emptyView = (TextView) findViewById(R.id.empty_view);
@@ -71,6 +72,8 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
         swipeRefreshLayout.setOnRefreshListener(this);
+        // reset the variable that stores if error was already shown
+        Utility.isErrorShown = false;
         messagesAdapter = new MessagesAdapter(ListMessagesActivity.this);
         recyclerView.setAdapter(messagesAdapter);
         BayunApplication.tinyDB.putString(Constants.SHARED_PREFERENCES_ACTIVITY, Constants.EMPTY_STRING);
@@ -132,7 +135,70 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
         emptyView.setVisibility(View.GONE);
         conversationInfoArrayList = activityDBOperations.getAllConversations();
         Collections.sort(conversationInfoArrayList);
-        new Handler(Looper.getMainLooper()).post(() -> messagesAdapter.notifyDataSetChanged());
+
+        ArrayList<String> displayTexts = new ArrayList<>();
+        final int[] count = {conversationInfoArrayList.size()};
+        final int[] convoIndex = {0};
+        final Handler.Callback[] decryptConvoSubjects = {message -> false};
+
+        Handler.Callback setUpRecyclerViewWhenSuccess = message -> {
+            // update convo list with the display texts
+            for (int i = 0; i < conversationInfoArrayList.size(); i++) {
+                conversationInfoArrayList.get(i).setSubject(displayTexts.get(i));
+            }
+
+            runOnUiThread(() -> {
+                progressBar.setVisibility(View.GONE);
+                messagesAdapter.notifyDataSetChanged();
+            });
+            return false;
+        };
+
+        Handler.Callback setUpRecyclerViewWhenFailure = message -> {
+            // set recycler view with the list received
+            runOnUiThread(() -> {
+                progressBar.setVisibility(View.GONE);
+                messagesAdapter.notifyDataSetChanged();
+            });
+            return false;
+        };
+
+        Handler.Callback decryptTextCallback = message -> {
+            // if failure was called, don't continue with the list
+            if (message.getData().getBoolean(Constants.WAS_AUTHENTICATION_CANCELLED)) {
+                setUpRecyclerViewWhenFailure.handleMessage(null);
+            }
+            // text decryption was successful
+            else {
+                String decryptedText = message.getData().getString(Constants.DECRYPTED_TEXT);
+                if (decryptedText == null || decryptedText.isEmpty()) {
+                    displayTexts.add(conversationInfoArrayList.get(convoIndex[0]).getSubject());
+                }
+                else {
+                    displayTexts.add(decryptedText);
+                }
+                count[0]--;
+                convoIndex[0]++;
+
+                // if all messages have been decrypted
+                if (count[0] == 0) {
+                    setUpRecyclerViewWhenSuccess.handleMessage(null);
+                } else {
+                    decryptConvoSubjects[0].handleMessage(null);
+                }
+            }
+
+            return false;
+        };
+
+        // decrypt the conversation subjects
+        decryptConvoSubjects[0] = message -> {
+            BayunApplication.rcCryptManager.decryptText(conversationInfoArrayList.get(convoIndex[0])
+                    .getSubject(), decryptTextCallback);
+            return false;
+        };
+
+        decryptConvoSubjects[0].handleMessage(null);
 
     }
 
@@ -143,6 +209,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
      */
     private void getMessage(String lastMessageDate) {
         if (Utility.isNetworkAvailable()) {
+            progressBar.setVisibility(View.VISIBLE);
             RCAPIManager.getInstance(BayunApplication.appContext).getMessageList(lastMessageDate, callback);
         } else {
             Utility.messageAlertForCertainDuration(ListMessagesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
@@ -210,15 +277,16 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
+            getMessage(getLastModifiedTime());
+            /*if (resultCode == RESULT_OK) {
                 getMessage(getLastModifiedTime());
-            }
+            }*/
         }
     }
 
     @Override
     protected void onResume() {
-        getMessageList();
+        //getMessageList();
         super.onResume();
     }
 }

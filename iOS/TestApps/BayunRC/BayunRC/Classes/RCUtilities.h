@@ -57,6 +57,11 @@
 + (NSString*)appId;
 
 /**
+ Returns App Secret
+ */
++ (NSString*)appSecret;
+
+/**
  Clears the Cache
  */
 + (void)clearCacheData;

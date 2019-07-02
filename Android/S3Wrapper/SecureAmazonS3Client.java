@@ -5,6 +5,7 @@
 package com.bayun.S3wrapper;
 
 import android.content.Context;
+import android.os.Handler;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
@@ -23,6 +24,8 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.UploadPartRequest;
 import com.amazonaws.util.IOUtils;
+import com.bayun.aws.AWSS3Manager;
+import com.bayun.util.Constants;
 import com.bayun_module.BayunCore;
 import com.bayun_module.util.BayunException;
 
@@ -172,15 +175,12 @@ public class  SecureAmazonS3Client extends AmazonS3Client {
      * @return A PutObjectResult is result of uploaded file.
      */
     public PutObjectResult putObject(String bucketName, String key, File file, int encryptionPolicy,
-                                     String groupId) throws AmazonClientException {
+                                     int keyGenerationPolicy, String groupId, Handler.Callback success,
+                                     Handler.Callback failure) throws AmazonClientException {
         PutObjectResult putObjectResult = null;
         CompleteMultipartUploadResult completeMultipartUploadResult = null;
-        if (encryptionPolicy == BayunCore.ENCRYPTION_POLICY_DEFAULT) {
-            bayunCore.lockFile(file.getAbsolutePath());
-        }
-        else {
-            bayunCore.lockFile(file.getAbsolutePath(), encryptionPolicy, groupId);
-        }
+        bayunCore.lockFile(file.getAbsolutePath(), encryptionPolicy, keyGenerationPolicy, groupId,
+                success, failure);
         try {
             if (shouldUploadInMultipart(file)) {
                 completeMultipartUploadResult = multipartUpload(bucketName, key, file);
@@ -213,14 +213,29 @@ public class  SecureAmazonS3Client extends AmazonS3Client {
     public S3Object getObject(String bucketName, String key) throws AmazonClientException {
         S3Object s3Object = super.getObject(bucketName, key);
         S3ObjectInputStream objectContent = s3Object.getObjectContent();
-        byte fileData[] = null;
+
         try {
+            Handler.Callback success = msg -> {
+                byte fileData[] = msg.getData().getByteArray("lockedData");
+                if (fileData != null) {
+                    InputStream stream = new ByteArrayInputStream(fileData);
+                    s3Object.setObjectContent(stream);
+                }
+                return false;
+            };
+
+            Handler.Callback failure = msg -> {
+                throw new AmazonClientException(msg.getData().getString(Constants.ERROR));
+            };
+
             byte[] encryptedData = IOUtils.toByteArray(objectContent);
-            fileData = bayunCore.lockData(encryptedData);
-            if (fileData != null) {
-                InputStream stream = new ByteArrayInputStream(fileData);
-                s3Object.setObjectContent(stream);
+            String groupId = null;
+            if (AWSS3Manager.getInstance().getEncryptionPolicyOnDevice() == BayunCore.ENCRYPTION_POLICY_GROUP) {
+                groupId = AWSS3Manager.getInstance().getGroupId();
             }
+            bayunCore.lockData(encryptedData, AWSS3Manager.getInstance().getEncryptionPolicyOnDevice(),
+                    AWSS3Manager.getInstance().getKeyGenerationPolicyOnDevice(), groupId, success, failure);
+
         } catch (BayunException | IOException exception) {
             throw new AmazonClientException(exception.getMessage());
         }

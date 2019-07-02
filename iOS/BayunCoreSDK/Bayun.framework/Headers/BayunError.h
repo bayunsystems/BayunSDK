@@ -16,8 +16,14 @@
 typedef NS_ENUM(NSUInteger, BayunError) {
     /**If user access is denied(authentication token expires) or if user does not have right to perform certain operation, library returns BayunErrorAccessDenied*/
     BayunErrorAccessDenied = 0,
+    /**If app secret is Invalid, library returns BayunErrorInvalidAppSecret*/
+    BayunErrorInvalidAppSecret,
     /**If user authentication fails, library returns BayunErrorAuthenticationFailed*/
     BayunErrorAuthenticationFailed,
+    /**If user cancels the passcode authentication, library returns BayunErrorPasscodeAuthenticationCanceledByUser*/
+    BayunErrorPasscodeAuthenticationCanceledByUser,
+    /**If authentication needs to be done again, library returns BayunErrorReAuthenticationNeeded*/
+    BayunErrorReAuthenticationNeeded,
     /**If there is no internet connectivity, library returns BayunErrorInternetConnection*/
     BayunErrorInternetConnection,
     /**If request has timed out, library returns BayunErrorRequestTimeOut*/
@@ -32,12 +38,14 @@ typedef NS_ENUM(NSUInteger, BayunError) {
     BayunErrorTextCannotBeNil,
     /**If file url for encryption/decryption is nil, library returns BayunErrorFileUrlCannotBeNil*/
     BayunErrorFileUrlCannotBeNil,
+    /**If employee doesn't exists in the given company, library returns BayunErrorEmployeeNotExistsInGivenCompany*/
+    BayunErrorEmployeeNotExistsInGivenCompany,
     /**If data for encryption/decryption is nil, library returns BayunErrorDataCannotBeNil*/
     BayunErrorDataCannotBeNil,
     /**If CompanyName is nil, library returns BayunErrorCompanyNameCannotBeNil*/
     BayunErrorCompanyNameCannotBeNil,
-    /**If company name is invalid, library returns BayunErrorInvalidCompanyName*/
-    BayunErrorInvalidCompanyName,
+    /**If company name is invalid, library returns  BayunErrorCompanyDoesNotExists*/
+     BayunErrorCompanyDoesNotExists,
     /**If CompanyEmployeeId is nil, library returns BayunErrorCompanyEmployeeIdCannotBeNil*/
     BayunErrorCompanyEmployeeIdCannotBeNil,
     /**If GroupId is nil, library returns BayunErrorGroupIdCannotBeNil*/
@@ -78,4 +86,19 @@ typedef NS_ENUM(NSUInteger, BayunError) {
     BayunErrorInvalidAppId,
     /**If error is unknown, library returns BayunErrorSomethingWentWrong*/
     BayunErrorSomethingWentWrong,
+    /**If device passcode is not set, library returns BayunErrorDevicePasscodeNotSet*/
+    BayunErrorDevicePasscodeNotSet,
+    /**If user answers less than Three security questions, library returns BayunErrorAtleastThreeAnswersRequired*/
+    BayunErrorAtleastThreeAnswersRequired,
+    /**If user has provided wrong answers for more than Two out of Five security questions, library returns BayunErrorIncorrectAnswers*/
+    BayunErrorOneOrMoreIncorrectAnswers,
+    /**Tried to Create Duplicate Entry **/
+    BayunErrorTriedToCreateDuplicateEntry,
+    /**Company with the given name already exists on LMS **/
+    BayunErrorCompanyAlreadyExists,
+    /**Employee with the given employeeId already exists in the company**/
+    BayunErrorEmployeeAlreadyExists,
+    /**Invalid Operation**/
+    BayunErrorInvalidOperation,
+    
 };

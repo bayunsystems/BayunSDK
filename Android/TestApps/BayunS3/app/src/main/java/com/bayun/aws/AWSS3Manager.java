@@ -8,7 +8,6 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
@@ -152,7 +151,6 @@ public class AWSS3Manager {
         @Override
         protected String doInBackground(File... params) {
             final File file = params[0];
-            TransferObserver observer = null;
             //[OPTIONAL] The following error handling conditions are optional and client app may apply checks against the SecureAWSS3TransferUtilityErrorType according per its requirement.
             // TransferListener is an interface that provide the state of file like completed,failed etc.
             // if we implement this then we can track progress of file.
@@ -166,7 +164,6 @@ public class AWSS3Manager {
                         Utility.RunOnUIThread(new Runnable() {
                             @Override
                             public void run() {
-
                                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.AWS_UPLOAD_COMPLETE);
                             }
                         });
@@ -177,7 +174,6 @@ public class AWSS3Manager {
                         Utility.RunOnUIThread(new Runnable() {
                             @Override
                             public void run() {
-
                                 Utility.displayToast(Constants.ERROR_UPLOAD_FAILED, Toast.LENGTH_SHORT);
                             }
                         });
@@ -187,7 +183,7 @@ public class AWSS3Manager {
                 @Override
                 public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                     float percentage = (((float) bytesCurrent / (float) bytesTotal) * Constants.FILE_PERCENTAGE);
-                    ListFilesActivity.showProgress((int) percentage);
+                    //ListFilesActivity.showProgress((int) percentage);
                 }
 
                 @Override
@@ -204,7 +200,7 @@ public class AWSS3Manager {
             };
 
             try {
-                observer = secureTransferUtility.secureUpload(getBucketName(), file.getName(), file, transferListener);
+                secureTransferUtility.secureUpload(getBucketName(), file.getName(), file, transferListener);
             } catch (final BayunException exception) {
                 // in case of user is not active
                 Utility.RunOnUIThread(new Runnable() {
@@ -216,9 +212,6 @@ public class AWSS3Manager {
                 });
             }
 
-            if (observer != null) {
-
-            }
             return "";
         }
     }
@@ -244,7 +237,7 @@ public class AWSS3Manager {
                 @Override
                 public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
                     float percentage = (((float) bytesCurrent / (float) bytesTotal) * 100.0f);
-                    ListFilesActivity.showProgress((int) percentage);
+                    //ListFilesActivity.showProgress((int) percentage);
                 }
 
                 @Override
@@ -320,6 +313,7 @@ public class AWSS3Manager {
                 System.out.println("AWS Error Code:   " + ase.getErrorCode());
                 System.out.println("Error Type:       " + ase.getErrorType());
                 System.out.println("Request ID:       " + ase.getRequestId());
+                isExist = false;
             } catch (AmazonClientException ace) {
                 System.out.println("Caught an AmazonClientException, which " +
                         "means the client encountered " +
@@ -327,6 +321,7 @@ public class AWSS3Manager {
                         "communicate with S3, " +
                         "such as not being able to access the network.");
                 System.out.println("Error Message: " + ace.getMessage());
+                isExist = false;
             }
             return isExist;
         }
@@ -335,6 +330,9 @@ public class AWSS3Manager {
             super.onPostExecute(aBoolean);
             if (aBoolean) {
                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.S3_BUCKET_EXIST);
+            }
+            else {
+                NotificationCenter.getInstance().postNotificationName(NotificationCenter.S3_BUCKET_ERROR);
             }
         }
     }
@@ -368,7 +366,8 @@ public class AWSS3Manager {
                     listObjectsRequest.setMarker(objectListing.getNextMarker());
                 } while (objectListing.isTruncated());
             } catch (AmazonS3Exception e) {
-
+                NotificationCenter.getInstance().postNotificationName(NotificationCenter.S3_BUCKET_ERROR);
+                return null;
             }
 
             Collections.sort(AWSS3Manager.getInstance().fileInfoList, Collections.reverseOrder());
@@ -377,8 +376,10 @@ public class AWSS3Manager {
 
         @Override
         protected void onPostExecute(List list) {
-            super.onPostExecute(list);
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.AWS_DOWNLOAD_LIST);
+            if (list != null) {
+                super.onPostExecute(list);
+                NotificationCenter.getInstance().postNotificationName(NotificationCenter.AWS_DOWNLOAD_LIST);
+            }
         }
     }
 
@@ -488,10 +489,50 @@ public class AWSS3Manager {
         SecureTransferUtility.setEncryptionPolicyOnDevice(encryptionPolicyOnDevice);
     }
 
-
-    public void resetEncryptionPolicyOnDevice() {
-        // policy 1 = default encryption policy
+    /**
+     * Resets the encryption policy saved on device to default.
+     */
+    public void resetPoliciesOnDevice() {
+        // policy 1 = default policy
         SecureTransferUtility.setEncryptionPolicyOnDevice(1);
+        // kgp policy 0 = default policy
+        SecureTransferUtility.setKeyGenerationPolicyOnDevice(0);
+    }
+
+    /**
+     * Get the key generation policy.
+     *
+     * @return Key generation policy
+     */
+    public int getKeyGenerationPolicyOnDevice() {
+        return SecureTransferUtility.getKeyGenerationPolicyOnDevice();
+    }
+
+    /**
+     * Sets the key generation policy.
+     *
+     * @param keyGenerationPolicy policy to be saved as key generation policy
+     */
+    public void setKeyGenerationPolicy(int keyGenerationPolicy) {
+        SecureTransferUtility.setKeyGenerationPolicyOnDevice(keyGenerationPolicy);
+    }
+
+    /**
+     * Get the group id of the current group.
+     *
+     * @return Group id.
+     */
+    public String getGroupId() {
+        return SecureTransferUtility.getGroupId();
+    }
+
+    /**
+     * Sets the group id.
+     *
+     * @param groupId group id to be saved.
+     */
+    public void setGroupId (String groupId) {
+        SecureTransferUtility.setGroupId(groupId);
     }
 }
 

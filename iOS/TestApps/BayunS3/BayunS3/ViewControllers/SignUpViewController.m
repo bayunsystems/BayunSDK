@@ -40,7 +40,7 @@
     [super viewDidLoad];
     self.pool = [AWSCognitoIdentityUserPool CognitoIdentityUserPoolForKey:@"UserPool"];
     
-    self.defaultCompanyName = @"BayunS3Pool";
+    self.defaultCompanyName = kDefaultCompanyName;
 }
 
 - (void) viewWillAppear:(BOOL)animated {

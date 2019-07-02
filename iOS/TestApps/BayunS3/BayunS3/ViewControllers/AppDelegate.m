@@ -11,9 +11,11 @@
 #import <Reachability/Reachability.h>
 #import <AWSCore/AWSCore.h>
 #import <AWSCognito/AWSCognito.h>
-#import <Bayun/BayunCore.h>
 #import "AWSCognitoIdentityUserPool.h"
 #import "SecureAuthentication.h"
+#import <Bayun/BayunCore.h>
+
+
 
 
 @interface AppDelegate ()
@@ -51,10 +53,6 @@
     
     [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
     
-    //Set BayunEncryption Policy to BayunEncryptionPolicyDefault
-    [[NSUserDefaults standardUserDefaults] setInteger:BayunEncryptionPolicyDefault forKey:kEncryptionPolicy];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
     //create a pool
     AWSServiceConfiguration *serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion
                                                                                 credentialsProvider:nil];
@@ -77,10 +75,9 @@
                                                                                    credentialsProvider:credentialsProvider];
     
     [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = awsServiceConfiguration;
-    
-    
-    [SecureAuthentication sharedInstance].companyName = @"BayunS3Pool";
-    [SecureAuthentication sharedInstance].appId =  BayunAppId;
+    [SecureAuthentication sharedInstance].companyName = kDefaultCompanyName;
+    [SecureAuthentication sharedInstance].appId =  kBayunAppId;
+    [SecureAuthentication sharedInstance].appSecret = kBayunAppSecret;
     
     return YES;
 }
@@ -110,15 +107,6 @@
     });
     return self.signInViewController;
 }
-
-- (void)showLoginScreen {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    UINavigationController *navigationController = (UINavigationController*) self.window.rootViewController;
-    [navigationController pushViewController:[storyboard instantiateViewControllerWithIdentifier:@"SignInViewController"] animated:NO];
-    [Utilities  clearKeychainAndUserDefaults];
-    [[BayunCore sharedInstance] deauthenticate];
-}
-
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

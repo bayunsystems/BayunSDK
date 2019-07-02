@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIBarItem.h>
+#import "SecureAuthentication.h"
 
 typedef NS_ENUM(NSInteger, alertViewTag) {
     alertViewTagNameFile = 0,
@@ -19,6 +20,6 @@ typedef NS_ENUM(NSInteger, alertViewTag) {
 + (void)clearKeychainAndUserDefaults;
 + (id)getFileSize:(id)value;
 + (NSString*)getCurrentTimeStampDateString:(NSDate*) date;
-+ (NSString*)appId;
++ (void)logoutUser:(AWSCognitoIdentityUser *)user;
 
 @end

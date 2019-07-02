@@ -4,11 +4,12 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.os.StrictMode;
 
 import com.bayun.R;
 import com.bayun.S3wrapper.SecureAuthentication;
-import com.bayun.util.Constants;
 import com.bayun.thirdParty.TinyDB;
+import com.bayun.util.Constants;
 import com.bayun_module.BayunCore;
 
 /**
@@ -25,6 +26,7 @@ public class BayunApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         appContext = getApplicationContext();
         settings = getSharedPreferences(Constants.APP_NAME, MODE_PRIVATE);
         tinyDB = new TinyDB(settings);
@@ -33,6 +35,10 @@ public class BayunApplication extends Application {
         secureAuthentication = SecureAuthentication.getInstance();
         secureAuthentication.setContext(appContext);
         secureAuthentication.setAppId(getResources().getString(R.string.app_id));
+        secureAuthentication.setAppSecret(getResources().getString(R.string.app_secret));
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
     }
 
 }

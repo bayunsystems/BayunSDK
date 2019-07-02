@@ -29,15 +29,12 @@
  * Returns RingCentral Application Key
  */
 + (NSString*) rcApplicationKey {
-    
     NSString *applicationKey;
-
     if ([[[NSUserDefaults standardUserDefaults] objectForKey:kRCServer] isEqualToString:@"Sandbox"]) {
         applicationKey = kApplicationKeySandbox;
     } else {
         applicationKey = kApplicationKeyProd;
     }
-    
     return applicationKey;
 }
 
@@ -47,12 +44,13 @@
 + (NSString*) rcSecretKey {
     
     NSString *secretKey;
-    
+
     if ([[[NSUserDefaults standardUserDefaults] objectForKey:kRCServer] isEqualToString:@"Sandbox"]) {
         secretKey = kApplicationSecretKeySandbox;
     } else {
         secretKey = kApplicationSecretKeyProd;
     }
+    
     return secretKey;
 }
 
@@ -105,6 +103,13 @@
  */
 + (NSString*)appId {
     return kBayunAppId;
+}
+
+/**
+ Returns App Secret
+ */
++ (NSString*)appSecret {
+    return kAppSecret;
 }
 
 /**
