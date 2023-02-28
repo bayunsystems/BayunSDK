@@ -3,7 +3,7 @@
 //  BayunRC
 //
 //  Created by Preeti Gaur on 24/06/16.
-//  Copyright © 2016 Bayun Systems, Inc. All rights reserved.
+//  Copyright © 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "RCCryptManager.h"
@@ -26,6 +26,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[self alloc] init];
+        
     });
     return sharedInstance;
 }
@@ -34,9 +35,11 @@
  * Returns decrypted text
  */
 - (void) decryptText :(NSString*) text success:(void (^)(NSString*))success failure:(void (^)(BayunError))failure{
-  
+    
+    //self.decryptedText = text;
     //Decrypt text using Bayun Library
     [[BayunCore sharedInstance] unlockText:text success:^(NSString *decryptedTextResponse) {
+        //self.decryptedText = decryptedTextResponse;
         if (success) {
             success(decryptedTextResponse);
         }
@@ -58,9 +61,12 @@
     
     //Encrypt text using Bayun Library
     [[BayunCore sharedInstance] lockText:text success:^(NSString *responseText) {
+        //self.encryptedText = responseText;
+        
         if (success) {
             success(responseText);
         }
+        
     } failure:^(BayunError errorCode) {
         //errorCode might be BayunErrorUserInActive (if user is not active or cancelled by admin),
         //BayunErrorEncryptionFailed (if encryption fails)

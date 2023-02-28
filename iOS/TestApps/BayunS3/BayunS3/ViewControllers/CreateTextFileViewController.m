@@ -3,16 +3,16 @@
 //  DemoPhase1
 //
 //  Created by Preeti Gaur on 29/05/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "CreateTextFileViewController.h"
-#import "SecureAWSS3TransferManager.h"
 #import "AWSManager.h"
 #import "DropDownView.h"
 #import "DLAVAlertViewTheme.h"
 #import "DLAVAlertView.h"
 #import "MKDropdownMenu.h"
+#import "SecureAWSS3TransferUtility.h"
 
 
 @interface CreateTextFileViewController ()<AWSManagerDelegate,UITextFieldDelegate,UITextViewDelegate>
@@ -161,7 +161,7 @@
         [AWSManager sharedInstance].delegate = self;
         
         if (self.group) {
-            [[AWSManager sharedInstance] setGroupId:[self.group valueForKey:@"id"]];
+            [[AWSManager sharedInstance] setGroupId:self.group.groupId];
             [[AWSManager sharedInstance] setEncryptionPolicy:BayunEncryptionPolicyGroup];
         } else {
             [[AWSManager sharedInstance] setGroupId:nil];
@@ -184,13 +184,13 @@
             
         } failure:^(NSError *error) {
             [SVProgressHUD dismiss];
-            if (error.code == SecureAWSS3TransferManagerErrorUserInactive) {
+            if (error.code == SecureAWSS3TransferUtilityErrorUserInactive) {
                 [SVProgressHUD showErrorWithStatus:kErrorMsgUserInActive];
-            } else if (error.code == SecureAWSS3TransferManagerErrorAccessDenied) {
+            } else if (error.code == SecureAWSS3TransferUtilityErrorAccessDenied) {
                 [SVProgressHUD showErrorWithStatus:kErrorMsgAccessDenied];
-            } else if (error.code == SecureAWSS3TransferManagerErrorNoInternetConnection) {
+            } else if (error.code == SecureAWSS3TransferUtilityErrorNoInternetConnection) {
                 [SVProgressHUD showErrorWithStatus:kErrorMsgInternetConnection];
-            } else if (error.code == SecureAWSS3TransferManagerErrorSomethingWentWrong) {
+            } else if (error.code == SecureAWSS3TransferUtilityErrorSomethingWentWrong) {
                 [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
             }
         }];

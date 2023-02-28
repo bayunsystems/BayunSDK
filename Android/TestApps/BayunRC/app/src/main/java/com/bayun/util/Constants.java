@@ -10,8 +10,6 @@ public class Constants {
     public static final retrofit.RestAdapter.LogLevel RETROFIT_LOG_LEVEL = RestAdapter.LogLevel.FULL;
 
     public static final String APP_NAME = "BayunRC";
-    public static final String APP_ID = "enter_your_app_id_here";
-    public static final String APP_SECRET = "enter_your_app_secret_here";
 
     public static final String BASE_URL = "https://platform.ringcentral.com";
     public static final String BASE_URL_SANDBOX = "https://platform.devtest.ringcentral.com";
@@ -34,12 +32,7 @@ public class Constants {
     public static final String LOCKED_TEXT = "lockedText";
     public static final String DECRYPTED_TEXT = "decryptedText";
     public static final String ENCRYPTED_TEXT = "encryptedText";
-    public static final String WAS_AUTHENTICATION_CANCELLED = "wasAuthenticationCancelled";
 
-    public static final String APPLICATION_KEY_SANDBOX = "enter_your_RC_key_here";
-    public static final String APPLICATION_SECRET_KEY_SANDBOX = "enter_your_RC_key_here";
-    public static final String APPLICATION_KEY_PROD = "enter_your_RC_key_here";
-    public static final String APPLICATION_KEY_SECRET_PROD = "enter_your_RC_key_here";
 
     public static final String SHARED_PREFERENCES_ACTIVITY = "activity";
     public static final String SHARED_PREFERENCES_ACTIVITY_STATUS = "back_button";

@@ -15,7 +15,7 @@ import com.bayun.app.BayunApplication;
 import com.bayun.http.RCAPIManager;
 import com.bayun.util.Constants;
 import com.bayun.util.Utility;
-import com.bayun_module.credentials.BasicBayunCredentials;
+import com.bayun_module.configuration.BasicBayunCredentials;
 
 
 public class RegisterActivity extends AbstractActivity {
@@ -37,16 +37,20 @@ public class RegisterActivity extends AbstractActivity {
         return false;
     };
 
+    // Callback to authenticate user with Bayun - Success.
+    private Handler.Callback authrizeEmployeeCallback = message -> {
+        runOnUiThread(() -> progressBar.setVisibility(View.GONE));
+        return false;
+    };
+
     // Callback to authenticate user with RingCentral.
     private Handler.Callback ringcentralCallback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message message) {
             if (message.what == Constants.CALLBACK_SUCCESS) {
-                String appId = Constants.APP_ID;
-                BasicBayunCredentials basicBayunCredentials = new BasicBayunCredentials(appId,
-                        userName.toString(), extension.toString(), password, Constants.APP_SECRET);
-                BayunApplication.bayunCore.authenticateWithCredentials(RegisterActivity.this,
-                        basicBayunCredentials, null, null, true, responseSuccessCallback,
+
+                BayunApplication.bayunCore.loginWithPassword(RegisterActivity.this,
+                        userName.toString(), extension.toString(),password ,true, authrizeEmployeeCallback,null,null, responseSuccessCallback,
                         Utility.getDefaultFailureCallback(RegisterActivity.this, progressBar));
             } else {
                 runOnUiThread( () -> progressBar.setVisibility(View.GONE));

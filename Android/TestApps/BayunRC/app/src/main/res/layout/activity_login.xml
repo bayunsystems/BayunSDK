@@ -90,13 +90,14 @@
                 android:id="@+id/sandbox_server_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:layout_below="@id/login_button"
+                android:layout_gravity="start|left"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:buttonTint="@color/white"
                 android:text="@string/point_to_sandbox"
                 android:textColor="@color/white"
                 android:textSize="18sp"
-                android:layout_gravity="start|left"/>
+                />
 
             </RelativeLayout>
 

@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 20/07/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "ConversationViewController.h"
@@ -184,7 +184,7 @@
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"creationTime" ascending:YES];
     [allFetchedMessages sortUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
     
-    if (self.messages.count != allFetchedMessages.count) {
+    if (allFetchedMessages.count != 0 && (self.messages.count != allFetchedMessages.count )) {
         
         // Create the indexes with a loop
         NSMutableArray *indexes = [NSMutableArray array];
@@ -214,12 +214,15 @@
  * Fetches new pager messages
  */
 - (void)getNewMessages {
-  
+    
+    //NSLog(@"isRefreshingMessages : %hhd", self.isRefreshingMessages);
+    
     if (!self.isRefreshingMessages && [[NSUserDefaults standardUserDefaults] boolForKey:kIsUserLoggedIn]) {
         self.isRefreshingMessages = YES;
         [[RCAPIManager sharedInstance]getMessageList:^{
             self.isRefreshingMessages = NO;
             [self addNewMessagesToConversation];
+           // [self refreshMessages];
         } failure:^(RCError errorCode) {
             self.isRefreshingMessages = NO;
             [self doneSendingMessage];
@@ -309,16 +312,18 @@
                   senderId:(NSString *)senderId
          senderDisplayName:(NSString *)senderDisplayName
                       date:(NSDate *)date {
+  
+  if (self.chatParticipant != nil) {
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:kIsAccessDenied];
     [[NSUserDefaults standardUserDefaults]synchronize];
     [self setSendingMessage];
     NSString *message = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-
+    
     NSDictionary *recipient = @{@"extensionNumber" : self.chatParticipant.extension};
     NSDictionary *sender = @{@"extensionNumber" :
-                                 [[NSUserDefaults standardUserDefaults] valueForKey:kRCExtension]};
+                               [[NSUserDefaults standardUserDefaults] valueForKey:kRCExtension]};
     
     NSArray *recipientArray = [[NSArray alloc] initWithObjects:recipient, nil];
     
@@ -326,25 +331,27 @@
     [parameters setObject:sender forKey:@"from"];
     
     
-   [[RCCryptManager sharedInstance] encryptText:message success:^(NSString *encryptedMessage) {
-   
-       [parameters setObject:encryptedMessage  forKey:@"text"];
-       [self sendMessage:parameters];
-       
-   } failure:^(BayunError error) {
-       
-       if(error == BayunErrorDevicePasscodeNotSet) {
-           [SVProgressHUD showErrorWithStatus:kErrorMsgDevicePasscodeNotSet];
-       } else if(error == BayunErrorPasscodeAuthenticationCanceledByUser) {
-           [SVProgressHUD showErrorWithStatus:kErrorMsgPasscodeAuthenticationFailed];
-       }  else if(error == BayunErrorReAuthenticationNeeded) {
-           AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-           [appDelegate logoutWithMessage:kErrorBayunAuthenticationIsNeeded];
-       } else {
-           [SVProgressHUD showErrorWithStatus:kErrorMessageCouldNotBeSent];
-       }
-       
-   }];
+    [[RCCryptManager sharedInstance] encryptText:message success:^(NSString *encryptedMessage) {
+      
+      [parameters setObject:encryptedMessage  forKey:@"text"];
+      [self sendMessage:parameters];
+      
+    } failure:^(BayunError error) {
+      
+      if(error == BayunErrorDevicePasscodeNotSet) {
+        [SVProgressHUD showErrorWithStatus:kErrorMsgDevicePasscodeNotSet];
+      } else if(error == BayunErrorPasscodeAuthenticationCanceledByUser) {
+        [SVProgressHUD showErrorWithStatus:kErrorMsgPasscodeAuthenticationFailed];
+      }  else if(error == BayunErrorReAuthenticationNeeded) {
+        AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+        [appDelegate logoutWithMessage:kErrorBayunAuthenticationIsNeeded];
+      } else {
+        [SVProgressHUD showErrorWithStatus:kErrorMessageCouldNotBeSent];
+      }
+      
+    }];
+    
+  }
 }
 
 - (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView messageDataForItemAtIndexPath:(NSIndexPath *)indexPath {

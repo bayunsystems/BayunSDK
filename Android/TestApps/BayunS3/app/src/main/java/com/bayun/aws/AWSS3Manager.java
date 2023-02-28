@@ -2,6 +2,7 @@ package com.bayun.aws;
 
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.amazonaws.AmazonClientException;
@@ -16,15 +17,14 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.bayun.R;
 import com.bayun.S3wrapper.SecureAmazonS3Client;
 import com.bayun.S3wrapper.SecureTransferUtility;
 import com.bayun.app.BayunApplication;
 import com.bayun.app.NotificationCenter;
 import com.bayun.aws.model.FileInfo;
-import com.bayun.screens.activity.ListFilesActivity;
 import com.bayun.util.Constants;
 import com.bayun.util.Utility;
+import com.bayun.R;
 import com.bayun_module.util.BayunException;
 
 import java.io.BufferedWriter;
@@ -81,9 +81,9 @@ public class AWSS3Manager {
      *
      * @param file New file for upload.
      */
-    public void uploadFile(File file) {
+    public void uploadFile(File file, String bucketName) {
 
-        new uploadAsyncTask().execute(file);
+        new uploadAsyncTask().execute(file, bucketName);
     }
 
     /**
@@ -91,9 +91,8 @@ public class AWSS3Manager {
      *
      * @param fileName Download file by file name.
      */
-    public void downloadFile(String fileName) {
-
-        new DownloadFile().execute(fileName);
+    public void downloadFile(String fileName, String bucketName) {
+        new DownloadFile().execute(fileName, bucketName);
     }
 
     /**
@@ -101,9 +100,9 @@ public class AWSS3Manager {
      *
      * @param fileName Delete file by file name
      */
-    public void deleteFileFromS3(String fileName) {
+    public void deleteFileFromS3(String fileName, String bucketName) {
 
-        new deleteFileAsyncTask().execute(fileName);
+        new deleteFileAsyncTask().execute(fileName, bucketName);
     }
 
     /**
@@ -119,8 +118,8 @@ public class AWSS3Manager {
     /**
      * Gets list of objects from amazon s3.
      */
-    public void getListOfObjects() {
-        new listFileAsyncTask().execute();
+    public void getListOfObjects(String bucketName) {
+        new listFileAsyncTask().execute(bucketName);
 
     }
 
@@ -129,8 +128,8 @@ public class AWSS3Manager {
      *
      * @param key The key in the specified bucket by which to store the new object.
      */
-    public void Exists(String key) {
-        new fileExistAsyncTask().execute(key);
+    public void Exists(String key, String bucketName) {
+        new fileExistAsyncTask().execute(key, bucketName);
 
     }
 
@@ -146,11 +145,13 @@ public class AWSS3Manager {
     /**
      * Upload file using asynchronous task.
      */
-    private class uploadAsyncTask extends AsyncTask<File, String, String> {
+    private class uploadAsyncTask extends AsyncTask<Object, String, String> {
 
         @Override
-        protected String doInBackground(File... params) {
-            final File file = params[0];
+        protected String doInBackground(Object... params) {
+            final File file = (File) params[0];
+            final String bucketName = (String) params[1];
+
             //[OPTIONAL] The following error handling conditions are optional and client app may apply checks against the SecureAWSS3TransferUtilityErrorType according per its requirement.
             // TransferListener is an interface that provide the state of file like completed,failed etc.
             // if we implement this then we can track progress of file.
@@ -161,22 +162,14 @@ public class AWSS3Manager {
                     // do something
                     if (state.equals(TransferState.COMPLETED)) {
 
-                        Utility.RunOnUIThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                NotificationCenter.getInstance().postNotificationName(NotificationCenter.AWS_UPLOAD_COMPLETE);
-                            }
-                        });
+                        Utility.RunOnUIThread(() ->
+                                NotificationCenter.getInstance().postNotificationName(NotificationCenter.AWS_UPLOAD_COMPLETE));
 
 
                     } else if (state.equals(TransferState.FAILED)) {
 
-                        Utility.RunOnUIThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Utility.displayToast(Constants.ERROR_UPLOAD_FAILED, Toast.LENGTH_SHORT);
-                            }
-                        });
+                        Utility.RunOnUIThread(() ->
+                                Utility.displayToast(Constants.ERROR_UPLOAD_FAILED, Toast.LENGTH_SHORT));
                     }
                 }
 
@@ -188,27 +181,21 @@ public class AWSS3Manager {
 
                 @Override
                 public void onError(int id, final Exception exception) {
-                    Utility.RunOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Utility.showErrorMessage(exception.getMessage());
-                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.TRANSFER_FAILED);
-                        }
+                    Utility.RunOnUIThread(() -> {
+                        Utility.showErrorMessage(exception.getMessage());
+                        NotificationCenter.getInstance().postNotificationName(NotificationCenter.TRANSFER_FAILED);
                     });
                 }
 
             };
 
             try {
-                secureTransferUtility.secureUpload(getBucketName(), file.getName(), file, transferListener);
+                secureTransferUtility.secureUpload(bucketName, file.getName(), file, transferListener);
             } catch (final BayunException exception) {
                 // in case of user is not active
-                Utility.RunOnUIThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Utility.showErrorMessage(exception.getMessage());
-                        NotificationCenter.getInstance().postNotificationName(NotificationCenter.TRANSFER_FAILED);
-                    }
+                Utility.RunOnUIThread(() -> {
+                    Utility.showErrorMessage(exception.getMessage());
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.TRANSFER_FAILED);
                 });
             }
 
@@ -223,9 +210,11 @@ public class AWSS3Manager {
         @Override
         protected String doInBackground(String... params) {
             String fileName = params[0];
+            final String bucketName = params[1];
             File file = null;
             file = new File(BayunApplication.appContext.getExternalFilesDir(
                     Environment.DIRECTORY_PICTURES), fileName);
+
             TransferListener transferListener = new TransferListener() {
                 @Override
                 public void onStateChanged(int id, TransferState state) {
@@ -252,7 +241,7 @@ public class AWSS3Manager {
 
                 }
             };
-            secureTransferUtility.secureDownload(getBucketName(), fileName, file, transferListener);
+            secureTransferUtility.secureDownload(bucketName, fileName, file, transferListener);
             return "";
         }
     }
@@ -265,7 +254,9 @@ public class AWSS3Manager {
         protected String doInBackground(String... params) {
             try {
                 String fileName = params[0];
-                secureAWSS3Client.deleteObject(getBucketName(), fileName);
+                final String bucketName = params[1];
+
+                secureAWSS3Client.deleteObject(bucketName, fileName);
             } catch (AmazonServiceException ase) {
                 System.out.println("Caught an AmazonServiceException.");
                 System.out.println("Error Message:    " + ase.getMessage());
@@ -296,7 +287,11 @@ public class AWSS3Manager {
                 if (!(secureAWSS3Client.doesBucketExist(bucketName))) {
                     // Note that CreateBucketRequest does not specify region. So bucket is
                     // created in the region specified in the client.
+
+                   // final String region = "us-west-2";
+                    secureAWSS3Client.setEndpoint(String.format("s3-%s.amazonaws.com", "us-west-2"));
                     secureAWSS3Client.setRegion(Region.getRegion(Regions.US_WEST_2));
+                  //  secureAWSS3Client.setRegion(Region.getRegion(Regions.US_WEST_2));
                     secureAWSS3Client.createBucket(new CreateBucketRequest(
                             bucketName));
                     isExist = true;
@@ -345,8 +340,9 @@ public class AWSS3Manager {
         @Override
         protected List<FileInfo> doInBackground(String... params) {
 
+            final String bucketName = params[0];
             ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
-                    .withBucketName(getBucketName());
+                    .withBucketName(bucketName);
             ObjectListing objectListing;
             fileInfoList.clear();
             try {
@@ -390,10 +386,12 @@ public class AWSS3Manager {
 
         @Override
         protected Boolean doInBackground(String... params) throws AmazonClientException {
+            final String bucketName = params[1];
             final String key = params[0];
             boolean isValidFile = true;
             try {
-                secureAWSS3Client.getObjectMetadata(getBucketName(), key);
+                secureAWSS3Client.getObjectMetadata(bucketName, key);
+
             } catch (AmazonS3Exception s3e) {
                 if (s3e.getStatusCode() == 404) {
                     // i.e. 404: NoSuchKey - The specified key does not exist
@@ -416,17 +414,12 @@ public class AWSS3Manager {
         }
     }
 
-    private String getBucketName() {
-        String bucketName = BayunApplication.tinyDB.getString(Constants.S3_BUCKET_NAME);
-        return bucketName;
-    }
-
     /**
      * Writes text into file.
      *
      * @param encryptedData encrypted data.
      */
-    public void writeFile(String encryptedData, String fileName) {
+    public void writeFile(String encryptedData, String fileName, String bucketName) {
         File file = new File(BayunApplication.appContext.getExternalFilesDir(
                 Environment.DIRECTORY_PICTURES), fileName);
         try {
@@ -434,7 +427,7 @@ public class AWSS3Manager {
                     new FileOutputStream(file)));
             out.write(encryptedData);
             out.close();
-            AWSS3Manager.getInstance().uploadFile(file);
+            AWSS3Manager.getInstance().uploadFile(file, bucketName);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.bayun.R;
 import com.bayun.aws.model.GroupInfo;
+import com.bayun.R;
 
 import java.util.List;
 

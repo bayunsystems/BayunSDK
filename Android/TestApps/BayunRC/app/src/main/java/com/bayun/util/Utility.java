@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.database.ActivityDBOperations;
 import com.bayun.screens.RegisterActivity;
@@ -207,7 +208,7 @@ public class Utility {
 
                 // logout the user
                 BayunApplication.tinyDB.clear();
-                BayunApplication.bayunCore.deauthenticate();
+                BayunApplication.bayunCore.logout();
                 Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 BayunApplication.appContext.startActivity(intent);
@@ -219,7 +220,7 @@ public class Utility {
                 // logout the user if logged in
                 if (userLoggedIn.equalsIgnoreCase(Constants.SHARED_PREFERENCES_REGISTER)) {
                     BayunApplication.tinyDB.clear();
-                    BayunApplication.bayunCore.deauthenticate();
+                    BayunApplication.bayunCore.logout();
                     Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     BayunApplication.appContext.startActivity(intent);
@@ -230,15 +231,34 @@ public class Utility {
             }
             else if ((error.equalsIgnoreCase(BayunError.ERROR_INCORRECT_ANSWERS))) {
                 errorMessage = "One or more wrong answers entered.";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_INCORRECT_ANSWERS))) {
+                errorMessage = "One or more wrong answers entered.";
             }
-            else if ((error.equalsIgnoreCase(BayunError.ERROR_INVALID_APP_SECRET))) {
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_COMBINING_PARTS))) {
+                errorMessage = "Error occurred while combining user private key parts.";
+            }
+            else if ((error.equalsIgnoreCase(BayunError.ERROR_DUPLICATE_ENTRY_CREATED))) {
+                errorMessage = "Tried to create duplicate entry.";
+            } else if ((error.equalsIgnoreCase(BayunError.ERROR_LINK_USER_ACCOUNT))) {
+                errorMessage = "Login to Admin Panel to link this User Account with an existing Employee Account to continue using the SDK APIs.";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_NO_USER_ACCOUNT_WITHOUT_PASSWORD))) {
+                errorMessage = "There is no User Account to login without password.";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_USER_PASSWORD_VERIFICATION_ENABLED))) {
+                errorMessage = "There is no User Account to login without password.";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_EMPLOYEE_ALREADY_EXISTS))) {
+                errorMessage = "Employee already exist with this complayee";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_USER_ALREADY_EXISTS))) {
+                errorMessage = "User already exist with this complayee";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_EMPLOYEE_APP_NOT_REGISTERED))) {
+                errorMessage = "Employee App Is Not Registered.";
+            } else if ((error.equalsIgnoreCase(BayunError.ERROR_INVALID_APP_SECRET))) {
                 errorMessage = "Please login again to continue.";
                 String userLoggedIn = BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_LOGGED_IN);
 
                 // logout the user if logged in
                 if (userLoggedIn.equalsIgnoreCase(Constants.SHARED_PREFERENCES_REGISTER)) {
                     BayunApplication.tinyDB.clear();
-                    BayunApplication.bayunCore.deauthenticate();
+                    BayunApplication.bayunCore.logout();
                     Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     BayunApplication.appContext.startActivity(intent);
@@ -275,13 +295,13 @@ public class Utility {
         byte[] encodedKey;
         String key;
         if (BayunApplication.tinyDB.getBoolean(Constants.SHARED_PREFERENCES_IS_SANDBOX_LOGIN, false)) {
-            String concatenatedString = Constants.APPLICATION_KEY_SANDBOX + ":" + Constants.APPLICATION_SECRET_KEY_SANDBOX;
+            String concatenatedString =  BayunApplication.appContext.getString(R.string.application_key_sandbox) + ":" + BayunApplication.appContext.getString(R.string.application_secret_key_sandbox);
             encodedKey = Base64.encode(concatenatedString.getBytes(), Base64.DEFAULT);
             key = new String(encodedKey);
             key = key.replace(System.getProperty("line.separator"), "");
         }
         else {
-            String concatenatedString = Constants.APPLICATION_KEY_PROD + ":" + Constants.APPLICATION_KEY_SECRET_PROD;
+            String concatenatedString =  BayunApplication.appContext.getString(R.string.application_key_prod) + ":" + BayunApplication.appContext.getString(R.string.application_key_secret_prod);
             encodedKey = Base64.encode(concatenatedString.getBytes(), Base64.DEFAULT);
             key = new String(encodedKey);
             key = key.replace(System.getProperty("line.separator"), "");

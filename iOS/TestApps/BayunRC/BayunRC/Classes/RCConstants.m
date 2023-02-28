@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 02/06/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "RCConstants.h"
@@ -42,5 +42,7 @@ NSString *const kErrorMsgAppNotLinked = @"Please link this app with your company
 NSString *const kErrorMsgPasscodeAuthenticationFailed = @"Passcode Authentication Canceled By User.";
 NSString *const kErrorMsgDevicePasscodeNotSet = @"Device Passcode Is Not Set";
 NSString *const kErrorMsgAdminRegistrationIncomplete = @"Please contact your Admin to complete his Bayun registration.";
+NSString *const kErrorMsgEmployeeAppIsNotRegistered = @"Employee App is not registered";
+NSString *const kErrorRegistrationFailedAppNotApproved = @"Registration failed as the application is not approved. Please contact your Admin for approval.";
 
 @end

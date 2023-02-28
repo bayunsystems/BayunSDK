@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/config.js"></script>
+    <script src="./lib/bayun.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="./lib/vishwam-lib.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.726.0.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./S3Wrapper/secure_s3.js"></script>
+    <script src="./S3Wrapper/secure_auth.js"></script>
+    <link rel="stylesheet" href="styles.css">
+
+    <title>Document</title>
+</head>
+
+<body>
+
+    <!-- To test image lock. -->
+
+    <center>
+        <img src="res/bayunlogo.png" height="50" width="200"><br><br>
+
+        <a>Choose A Unlocked Image To Get It Locked And Upload On S3</a><br><br><input type="file" id="file" name="file"
+            accept="image/*"><br><br>
+
+        <button id="up" onclick="readFileAsText()">Upload File</button><br><br>
+        <button id="down" onclick="downloadUnlockedFile()">Download File</button>
+
+        <br>
+        <br>
+        <div>
+            <button type="button" onclick="sign_Out()">Sign Out</button><br>
+        </div>
+
+    </center>
+
+    <script>
+
+        var secures3;
+        secureinitS3();
+
+
+        async function secureinitS3() {
+            secures3 = await new SecureS3(
+                '<bayunSessionId>', // Unique SessionId which is received in the login/registration function response.
+                '<apiVersion>', //A String in YYYY-MM-DD format (or a date) that represents the latest possible API version that can be used in all services (unless overridden by apiVersions). Specify 'latest' to use the latest possible version.
+                '<accessKeyId>', // Your AWS access key ID.
+                '<secretAccessKey>', // your AWS secret access key.
+                '<signatureVersion>', // The signature version to sign requests with (overriding the API configuration). Possible values are: 'v2', 'v3', 'v4'.
+                '<region>', // The region to send service requests to.
+                '<bucket>', // Name of your bucket
+            );
+            
+            secures3.setEncryptionPolicy(BayunCore.EncryptionPolicy.EMPLOYEE);
+            secures3.setKeyGenerationPolicy(BayunCore.KeyGenerationPolicy.ENVELOPE);
+
+            console.log(s3);
+        }
+
+        readFileAsText = async () => {
+            var file = document.getElementById("file").files[0];
+            await secures3.upload(file);
+        };
+
+        downloadUnlockedFile = async () => {
+            await secures3.downloadFile("pexels-carlos-oliva-3586966.jpg");
+        }
+
+        sign_Out = async () => {
+            var secureAuth = new SecureAuthentication(localStorage.getItem("bayunCompanyName"));
+            secureAuth.signOut();
+        }
+    </script>
+</body>
+
+</html>
+
+
+
+

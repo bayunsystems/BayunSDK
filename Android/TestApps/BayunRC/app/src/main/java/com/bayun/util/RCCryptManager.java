@@ -10,6 +10,8 @@ import com.bayun.app.BayunApplication;
 import com.bayun.screens.RegisterActivity;
 import com.bayun_module.constants.BayunError;
 
+import java.util.Objects;
+
 /**
  * Created by gagan on 25/06/16.
  */
@@ -26,8 +28,8 @@ public class RCCryptManager {
                 final Message message = Message.obtain();
                 final Bundle bundle = new Bundle();
                 message.setData(bundle);
-                bundle.putString(Constants.DECRYPTED_TEXT, msg.getData().getString(Constants.UNLOCKED_TEXT).trim());
-                bundle.putBoolean(Constants.WAS_AUTHENTICATION_CANCELLED, false);
+                bundle.putString(Constants.DECRYPTED_TEXT,
+                        Objects.requireNonNull(msg.getData().getString(Constants.UNLOCKED_TEXT)).trim());
                 callback.handleMessage(message);
             }
             return false;
@@ -49,7 +51,7 @@ public class RCCryptManager {
 
                 // logout the user
                 BayunApplication.tinyDB.clear();
-                BayunApplication.bayunCore.deauthenticate();
+                BayunApplication.bayunCore.logout();
                 Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 BayunApplication.appContext.startActivity(intent);
@@ -64,7 +66,7 @@ public class RCCryptManager {
                 String userLoggedIn = BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_LOGGED_IN);
                 if (userLoggedIn.equalsIgnoreCase(Constants.SHARED_PREFERENCES_REGISTER)) {
                     BayunApplication.tinyDB.clear();
-                    BayunApplication.bayunCore.deauthenticate();
+                    BayunApplication.bayunCore.logout();
                     Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     BayunApplication.appContext.startActivity(intent);
@@ -76,14 +78,6 @@ public class RCCryptManager {
                 final Bundle bundle = new Bundle();
                 message.setData(bundle);
                 bundle.putString(Constants.DECRYPTED_TEXT, text);
-                if (BayunError.ERROR_DEVICE_AUTHENTICATION_REQUIRED.equalsIgnoreCase(
-                        msg.getData().getString(Constants.ERROR)) || BayunError.ERROR_INVALID_APP_SECRET.equalsIgnoreCase(
-                        msg.getData().getString(Constants.ERROR))) {
-                    bundle.putBoolean(Constants.WAS_AUTHENTICATION_CANCELLED, true);
-                }
-                else {
-                    bundle.putBoolean(Constants.WAS_AUTHENTICATION_CANCELLED, false);
-                }
                 callback.handleMessage(message);
             }
             return false;
@@ -104,7 +98,6 @@ public class RCCryptManager {
                 final Bundle bundle = new Bundle();
                 message.setData(bundle);
                 bundle.putString(Constants.ENCRYPTED_TEXT, msg.getData().getString(Constants.LOCKED_TEXT));
-                bundle.putBoolean(Constants.WAS_AUTHENTICATION_CANCELLED, false);
                 callback.handleMessage(message);
             }
             return false;
@@ -124,7 +117,7 @@ public class RCCryptManager {
 
                 // logout the user
                 BayunApplication.tinyDB.clear();
-                BayunApplication.bayunCore.deauthenticate();
+                BayunApplication.bayunCore.logout();
                 Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 BayunApplication.appContext.startActivity(intent);
@@ -136,13 +129,6 @@ public class RCCryptManager {
                 final Bundle bundle = new Bundle();
                 message.setData(bundle);
                 bundle.putString(Constants.ENCRYPTED_TEXT, "");
-                if (BayunError.ERROR_DEVICE_AUTHENTICATION_REQUIRED.equalsIgnoreCase(
-                        msg.getData().getString(Constants.ERROR))) {
-                    bundle.putBoolean(Constants.WAS_AUTHENTICATION_CANCELLED, true);
-                }
-                else {
-                    bundle.putBoolean(Constants.WAS_AUTHENTICATION_CANCELLED, false);
-                }
                 callback.handleMessage(message);
             }
             return false;

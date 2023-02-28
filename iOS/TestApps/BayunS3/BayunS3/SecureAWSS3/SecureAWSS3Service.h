@@ -1,9 +1,6 @@
 //
-//  SecureAWSS3Sevice.h
-//  
-//
-//  Created by Preeti-Gaur on 12/10/15.
-//  Copyright © 2016 Bayun Systems, Inc. All rights reserved.
+// SecureAWSS3Sevice.h
+// Copyright © 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -168,21 +165,6 @@ typedef NS_ENUM(NSInteger, SecureAWSS3ServiceErrorType) {
  @see AWSS3GetObjectOutput
  */
 - (AWSTask *)getObject:(AWSS3GetObjectRequest *)request;
-
-
-/**
- Adds an object to a bucket after locking.
- 
- @param request A container for the necessary parameters to execute the PutObject service method.
- 
- @return An instance of `AWSTask`. On successful execution, `task.result` will contain an instance of `AWSS3PutObjectOutput`.
- 
- @see AWSS3PutObjectRequest
- @see AWSS3PutObjectOutput
- */
-- (AWSTask *)putObject:(AWSS3PutObjectRequest *)request;
-
-
 
 @end
 

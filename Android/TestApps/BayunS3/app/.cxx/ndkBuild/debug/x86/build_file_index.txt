@@ -1,0 +1,2 @@
+/Users/rahulmahore/Desktop/Android_Project/BayunS3/Bayun/src/main/jni/Android.mk
+/Users/rahulmahore/Desktop/Android_Project/BayunS3/Bayun/src/main/jni/Application.mk

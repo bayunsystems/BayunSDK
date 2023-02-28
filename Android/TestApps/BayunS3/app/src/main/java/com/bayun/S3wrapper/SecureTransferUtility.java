@@ -1,6 +1,7 @@
 /*
- * Copyright (C) Bayun Systems, Inc. All rights reserved.
+ * Copyright © 2023 Bayun Systems, Inc. All rights reserved.
  */
+ 
 package com.bayun.S3wrapper;
 
 import android.content.Context;
@@ -11,6 +12,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.services.s3.AmazonS3;
+import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.util.Constants;
 import com.bayun_module.BayunCore;
@@ -59,7 +61,9 @@ public class SecureTransferUtility extends TransferUtility {
     public SecureTransferUtility(AmazonS3 s3, Context context) {
         super(s3, context);
         this.context = context;
-        bayunCore = new BayunCore(context);
+        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.app_id),
+                context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt),BayunApplication.isDeviceLock);
+
     }
 
     /**
@@ -84,11 +88,14 @@ public class SecureTransferUtility extends TransferUtility {
         };
 
         String groupId = null;
-        int encryptionPolicyOnDevice = getEncryptionPolicyOnDevice();
+       int encryptionPolicyOnDevice = getEncryptionPolicyOnDevice();
 
-        if (encryptionPolicyOnDevice == BayunCore.ENCRYPTION_POLICY_GROUP) {
+
+        if (encryptionPolicyOnDevice == BayunCore.ENCRYPTION_POLICY_GROUP
+                || encryptionPolicyOnDevice == BayunCore.ENCRYPTION_POLICY_GROUP_ASYMMETRIC) {
             groupId = getGroupId();
         }
+
         bayunCore.lockFile(file.getAbsolutePath(), encryptionPolicyOnDevice, getKeyGenerationPolicyOnDevice(),
                 groupId, success, failure);
     }
@@ -189,7 +196,8 @@ public class SecureTransferUtility extends TransferUtility {
                 @Override
                 public void onStateChanged(int id, TransferState state) {
                     if (state.equals(TransferState.COMPLETED)) {
-                        BayunCore bayunCore = new BayunCore(context);
+                        BayunCore bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.app_id),
+                                context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt),BayunApplication.isDeviceLock);;
                         try {
                             Handler.Callback unlockSuccess = msg -> {
                                 listener.onStateChanged(id, state);

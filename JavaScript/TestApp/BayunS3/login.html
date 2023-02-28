@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <!-- Javascript SDKs-->
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="js/amazon-cognito-auth.min.js"></script>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
+  <script src="js/amazon-cognito-identity.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="./lib/bayun.js"></script>
+  <script src="./S3Wrapper/secure_auth.js"></script>
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+  <center>
+    <img src="res/bayunlogo.png" height="50" width="200">
+
+    <form>
+      <h1 class="h3 mb-3 font-weight-normal" id="titleheader">Cognito User Pools Sample</h1>
+
+      <input type="personalname" class="form-control" id="personalnameRegister" placeholder="Username" pattern=".*"
+        style="display: block;">
+      <input type="text" id="inputUsername" placeholder="Email" name="username" style="display: block;">
+      <input type="password" id="inputPassword" placeholder="Password" name="password" style="display: block;">
+
+      Login With Bayun Only: <input type="checkbox" id="myCheck2" value="Login With Bayun Only"
+        onclick="checkforfields()">
+      <br>
+      <button type="button" onclick="createObject()">Sign in</button><br><br>
+      <p>If you do not have an account, visit <a href="./index.html">Register</a>.</p>
+
+      <small id="msg"></small><br>
+      <a href="" onclick="myinput()">Set Company's Name</a>
+
+    </form>
+
+    <h4 id="accessToken"></h4>
+
+  </center>
+
+  <script>
+
+    function initBayunCore() {
+      bayunCoreObject = BayunCore.init(
+        BayunConstants.BAYUN_APP_ID,
+        BayunConstants.BAYUN_APP_SECRET,
+        BayunConstants.BAYUN_APP_SALT,
+        localStorageMode,
+        BayunConstants.ENABLE_FACE_RECOGNITION,
+        BayunConstants.BASE_URL,
+      );
+      console.log("Instanciated_BayunCore_Object_Cognito");
+    }
+
+    let bayunCoreObject;
+    let bayunSessionId;
+    var localStorageMode = BayunCore.LocalDataEncryptionMode.SESSION_MODE;
+    initBayunCore();
+
+    function checkforfields() {
+      // var loginWithPwd = document.getElementById("myCheck1");
+      var LoginWithBayunOnly = document.getElementById("myCheck2");
+
+      if (LoginWithBayunOnly.checked == true) {
+        document.getElementById("inputUsername").style.display = "none";
+      }
+      else if (LoginWithBayunOnly.checked == false) {
+        document.getElementById("inputUsername").style.display = "block";
+      }
+    }
+
+    var bayunCompanyName = "TestCompany";
+    function myinput() {
+
+      bayunCompanyName = prompt("Enter Company's Name:", bayunCompanyName);
+
+      if (bayunCompanyName == null || bayunCompanyName == "") {
+        document.getElementById("msg").innerHTML = "You did not entert anything. Please enter your company's name again";
+      }
+      else {
+        document.getElementById("msg").innerHTML = "Company's Name is " + bayunCompanyName;
+      }
+      event.preventDefault();
+      return false;
+    }
+
+    async function createObject() {
+      var loginWithPwd = false;
+      if (document.getElementById("inputUsername").value != null || document.getElementById("inputUsername").value != "") {
+        var loginWithPwd = true;
+      }
+
+      var LoginWithBayunOnly = document.getElementById("myCheck2").checked;
+      var companyEmployeeId = document.getElementById("personalnameRegister").value;
+      var email = document.getElementById("inputUsername").value;
+      var password = document.getElementById("inputPassword").value;
+      let sessionIdForBayun;
+      let sessionId = "485u45u45";
+
+      if (LoginWithBayunOnly == true) {
+        if (loginWithPwd == true) {
+          sessionIdForBayun = await loginBayunOnly(sessionId, bayunCompanyName, companyEmployeeId, password, true);
+        } else {
+          sessionIdForBayun = await loginBayunOnly(sessionId, bayunCompanyName, companyEmployeeId, password, false);
+        }
+      } else {
+        var secureAuth = new SecureAuthentication(localStorage.getItem("bayunCompanyName"));
+
+        sessionIdForBayun = await secureAuth.login(sessionId, companyEmployeeId, email, password, loginWithPwd);
+      }
+      
+      if (sessionIdForBayun) {
+        localStorage.setItem("sessionIdForBayun", sessionIdForBayun);
+      }
+    }
+
+    async function loginBayunOnly(sessionId, bayunCompanyName, companyEmployeeId, password, withPassword) {
+      if (withPassword) {
+        await bayunCoreObject.loginWithPassword(
+          sessionId, //window.sessionId
+          bayunCompanyName,
+          companyEmployeeId,
+          password,
+          false, //autoCreateEmployee,
+          null, //securityQuestionsCallback,
+          null, //passphraseCallback,
+          onLoginSuccess_Callback,
+          onLoginFailure_Callback
+        );
+      } else {
+        await bayunCoreObject.loginWithoutPassword(
+          sessionId, //window.sessionId,
+          bayunCompanyName,
+          companyEmployeeId,
+          null,
+          null,
+          onLoginSuccess_Callback,
+          onLoginFailure_Callback
+        );
+      }
+      return bayunSessionId;
+    }
+
+    async function onLoginFailure_Callback(error) {
+      console.error(error);
+      console.log("login fail");
+    };
+
+    async function onLoginSuccess_Callback(data) {
+      console.log("data = ", data);
+      if (data.sessionId) {
+        console.log("sessionId: ", sessionId);
+        console.log("login success");
+        bayunSessionId = data.sessionId;
+
+        window.location.replace("./test.html");
+
+      }
+    };
+
+  </script>
+
+</body>
+
+</html>

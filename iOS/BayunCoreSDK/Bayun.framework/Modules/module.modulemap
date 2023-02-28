@@ -6,6 +6,6 @@ framework module Bayun {
 }
 
 module Bayun.Swift {
-    header "Bayun-Swift.h"
-    requires objc
+  header "Bayun-Swift.h"
+  requires objc
 }

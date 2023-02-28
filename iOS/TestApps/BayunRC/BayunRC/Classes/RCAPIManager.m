@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 02/07/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "RCAPIManager.h"
@@ -131,7 +131,7 @@
             url = [NSString stringWithFormat:@"%@%@&dateFrom=%@",[RCUtilities baseURL],kRCGetMessageList,[[NSUserDefaults standardUserDefaults] valueForKey:kRCLastMessageDateString]];
         }
         else{
-            url = [NSString stringWithFormat:@"%@%@&dateFrom=0",[RCUtilities baseURL],kRCGetMessageList];
+            url = [NSString stringWithFormat:@"%@%@&dateFrom=2023-02-06T09:27:21.000Z",[RCUtilities baseURL],kRCGetMessageList];
         }
         
         [manager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -278,7 +278,6 @@
             if (success) {
                 success();
             }
-            
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
              NSInteger statusCode = operation.response.statusCode;
              if(statusCode == 401) {

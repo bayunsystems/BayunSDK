@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 11/06/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -60,6 +60,11 @@
  Returns App Secret
  */
 + (NSString*)appSecret;
+
+/**
+ Returns App Salt
+ */
++ (NSString*)appSalt;
 
 /**
  Clears the Cache

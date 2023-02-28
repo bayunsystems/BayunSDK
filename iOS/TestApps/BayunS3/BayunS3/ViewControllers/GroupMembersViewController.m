@@ -3,7 +3,7 @@
 //  BayunS3
 //
 //  Created by Preeti Gaur on 05/04/17.
-//  Copyright © 2017 bayun. All rights reserved.
+//  Copyright © 2023 bayun. All rights reserved.
 //
 
 #import "GroupMembersViewController.h"
@@ -11,7 +11,7 @@
 
 @interface GroupMembersViewController ()<UITableViewDelegate, UITableViewDataSource>
 
-@property (strong,nonatomic) NSArray *groupMembers;
+@property (strong,nonatomic) NSArray<GroupMember*> *groupMembers;
 
 @end
 
@@ -45,9 +45,9 @@
 - (void)getGroupDetails {
     
     [SVProgressHUD show];
-    [[BayunCore sharedInstance] getGroupById:self.groupId success:^(NSDictionary *group) {
+    [[BayunCore sharedInstance] getGroupById:self.groupId success:^(Group *group) {
         [SVProgressHUD dismiss];
-        self.groupMembers = [group valueForKey:@"groupMembers"];
+        self.groupMembers = group.groupMembers;
         [self setUpView];
         
     } failure:^(BayunError error) {
@@ -75,11 +75,10 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] ;
     }
     
-    NSDictionary *member = [self.groupMembers objectAtIndex:indexPath.row];
+    GroupMember *member = [self.groupMembers objectAtIndex:indexPath.row];
     
-    cell.textLabel.text = [member valueForKey:@"companyEmployeeId"];
-    
-    cell.detailTextLabel.text = [member valueForKey:@"companyName"];
+    cell.textLabel.text = member.companyEmployeeId;
+    cell.detailTextLabel.text = member.companyName;
     cell.detailTextLabel.font=[UIFont fontWithName:@"Helvetica" size:9.0];
     
     cell.imageView.image = [UIImage imageNamed:@"Member"];
@@ -97,51 +96,38 @@
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        
-        NSDictionary *member = [self.groupMembers objectAtIndex:indexPath.row];
-        NSString *memberId = [member valueForKey:@"companyEmployeeId"];
-        NSString *companyName = [member valueForKey:@"companyName"];
-        
-        UIAlertController * alert = [UIAlertController
-                                     alertControllerWithTitle:@""
-                                     message:[NSString stringWithFormat:@"Remove %@ from Members?",memberId]
-                                     preferredStyle:UIAlertControllerStyleAlert];
-        
-        //Add Buttons
-        UIAlertAction* yesButton = [UIAlertAction
-                                    actionWithTitle:@"Yes"
-                                    style:UIAlertActionStyleDefault
-                                    handler:^(UIAlertAction * action) {
-                                        
-                                        NSDictionary *parameters = @{@"companyName" : companyName,
-                                                                     @"companyEmployeeId" : memberId,
-                                                                     @"groupId" : self.groupId};
-                                        
-                                        [[BayunCore sharedInstance] removeGroupMember:parameters success:^{
-                                            [self getGroupDetails];
-                                            [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@ removed from Members",memberId]];
-                                            
-                                            
-                                        } failure:^(BayunError error) {
-                                            [SVProgressHUD showErrorWithStatus:@"Something Went Wrong"];
-                                        }];
-                                        
-                                        
-                                    }];
-        
-        UIAlertAction* noButton = [UIAlertAction
-                                   actionWithTitle:@"Cancel"
-                                   style:UIAlertActionStyleDefault
-                                   handler:nil];
-        
-        
-        [alert addAction:yesButton];
-        [alert addAction:noButton];
-        
-        [self presentViewController:alert animated:YES completion:nil];
-        
-    }
+  if (editingStyle == UITableViewCellEditingStyleDelete) {
+    
+    GroupMember *member = [self.groupMembers objectAtIndex:indexPath.row];
+    NSString *memberId = member.companyEmployeeId;
+
+    UIAlertController * alert = [UIAlertController
+                                 alertControllerWithTitle:@""
+                                 message:[NSString stringWithFormat:@"Remove %@ from Members?",memberId]
+                                 preferredStyle:UIAlertControllerStyleAlert];
+    
+    //Add Buttons
+    UIAlertAction* yesButton = [UIAlertAction
+                                actionWithTitle:@"Yes"
+                                style:UIAlertActionStyleDefault
+                                handler:^(UIAlertAction * action) {
+      
+      [[BayunCore sharedInstance] removeFromGroup:self.groupId groupMember:member success:^{
+        [self getGroupDetails];
+        [SVProgressHUD showSuccessWithStatus:[NSString stringWithFormat:@"%@ removed from Members",memberId]];
+      } failure:^(BayunError error) {
+        [SVProgressHUD showErrorWithStatus:@"Something Went Wrong"];
+      }];
+    }];
+    
+    UIAlertAction* noButton = [UIAlertAction
+                               actionWithTitle:@"Cancel"
+                               style:UIAlertActionStyleDefault
+                               handler:nil];
+    [alert addAction:yesButton];
+    [alert addAction:noButton];
+    [self presentViewController:alert animated:YES completion:nil];
+  }
 }
 
 /*

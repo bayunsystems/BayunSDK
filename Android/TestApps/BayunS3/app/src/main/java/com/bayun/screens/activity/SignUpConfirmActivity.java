@@ -18,9 +18,9 @@ import android.widget.TextView;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GenericHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.VerificationHandler;
-import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.util.CognitoHelper;
+import com.bayun.R;
 
 public class SignUpConfirmActivity extends AppCompatActivity {
 
@@ -211,7 +211,7 @@ public class SignUpConfirmActivity extends AppCompatActivity {
                     R.drawable.text_border_error));
             return;
         }
-
+        runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
         BayunApplication.secureAuthentication.confirmSignUp(SignUpConfirmActivity.this,
                 CognitoHelper.getPool().getUser(userName), confirmCode, true, confHandler);
     }

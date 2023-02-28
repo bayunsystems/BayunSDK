@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.bayun">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -8,29 +9,48 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+
+
     <application
         android:name=".app.BayunApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".screens.activity.RegisterActivity">
+        android:theme="@style/AppTheme"
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.bayun.bayuns3.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+        <uses-library android:name ="org.apache.http.legacy" android:required ="false"/>
+
+        <activity android:name=".screens.activity.RegisterActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Hockey app update activity -->
-        <activity android:name="net.hockeyapp.android.UpdateActivity" />
+
         <activity
             android:name=".screens.activity.CreateNewFileActivity"
             android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".screens.activity.ListFilesActivity"
             android:exported="true" />
-        <activity android:name=".screens.activity.ViewFileActivity" />
+        <activity android:name=".screens.activity.ViewFileActivity"
+            android:exported="true"
+            />
         <activity
             android:name=".screens.activity.PassphraseActivity"
             android:windowSoftInputMode="stateAlwaysVisible" />
@@ -46,11 +66,10 @@
         <activity android:name=".screens.activity.ViewGroupActivity" />
         <activity android:name=".screens.activity.GroupMembersActivity" />
 
-        <service android:name="com.bayun_module.BayunBackgroundService" />
-        <activity android:name="com.bayun_module.EmptyActivity"/>
-
         <activity android:name=".screens.activity.CognitoRegisterUserActivity" />
         <activity android:name=".screens.activity.SignUpConfirmActivity" />
+
+
     </application>
 
 </manifest>

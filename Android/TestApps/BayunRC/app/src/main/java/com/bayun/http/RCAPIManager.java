@@ -91,7 +91,11 @@ public class RCAPIManager {
     public void getMessageList(String date, final Handler.Callback callback) {
         RestClient api = RestUtils.restAdapter().create(RestClient.class);
         final Message message = Message.obtain();
-        api.getMessageList(date, new retrofit.Callback<MessageListInfo>() {
+            if(date.equalsIgnoreCase("0")){
+                date=null;
+            }
+       api.getMessageList(date, new retrofit.Callback<MessageListInfo>() {
+     //   api.getMessageList( new retrofit.Callback<MessageListInfo>() {
             @Override
             public void success(MessageListInfo messageListInfo, Response response) {
                 activityDBOperations = new ActivityDBOperations(appContext);

@@ -3,10 +3,11 @@
 //  DemoPhase1
 //
 //  Created by Preeti Gaur on 29/05/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
+#import <Bayun/BayunCore.h>
 
 @interface CreateTextFileViewController : UIViewController
 
@@ -16,6 +17,6 @@
 
 - (IBAction)saveButtonIsPressed:(id)sender;
 
-@property (strong,nonatomic) NSDictionary *group;
+@property (strong,nonatomic) Group *group;
 
 @end

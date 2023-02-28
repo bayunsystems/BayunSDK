@@ -82,19 +82,22 @@
         android:text=" "
         android:id="@+id/textViewRegUserPasswordLabel"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/textViewRegUserIdMessage" />
+        android:layout_below="@+id/textViewRegUserIdMessage"
+        />
 
     <EditText
+        android:id="@+id/editTextRegUserPassword"
         android:layout_width="match_parent"
         android:layout_height="@dimen/activity_text_height"
-        android:paddingLeft="@dimen/activity_text_padding"
-        android:paddingRight="@dimen/activity_text_padding"
-        android:id="@+id/editTextRegUserPassword"
         android:layout_below="@+id/textViewRegUserPasswordLabel"
         android:layout_centerHorizontal="true"
         android:background="@drawable/text_border_selector"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:paddingLeft="@dimen/activity_text_padding"
+        android:paddingRight="@dimen/activity_text_padding"
+
+        />
 
     <TextView
         android:layout_width="match_parent"
@@ -105,7 +108,9 @@
         android:textColor="@color/alert"
         android:id="@+id/textViewUserRegPasswordMessage"
         android:layout_below="@+id/editTextRegUserPassword"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+
+        />
 
     <TextView
         android:layout_width="match_parent"
@@ -115,19 +120,21 @@
         android:text=" "
         android:id="@+id/textViewRegGivenNameLabel"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/textViewUserRegPasswordMessage" />
+        android:layout_below="@+id/textViewUserRegPasswordMessage"
+        android:visibility="gone"/>
 
     <EditText
+        android:id="@+id/editTextRegGivenName"
         android:layout_width="match_parent"
         android:layout_height="@dimen/activity_text_height"
-        android:paddingLeft="@dimen/activity_text_padding"
-        android:paddingRight="@dimen/activity_text_padding"
-        android:id="@+id/editTextRegGivenName"
         android:layout_below="@+id/textViewRegGivenNameLabel"
         android:layout_centerHorizontal="true"
         android:background="@drawable/text_border_selector"
         android:hint="Given name"
-        android:inputType="textPersonName"/>
+        android:inputType="textPersonName"
+        android:paddingLeft="@dimen/activity_text_padding"
+        android:paddingRight="@dimen/activity_text_padding"
+        android:visibility="gone"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -138,7 +145,8 @@
         android:textColor="@color/alert"
         android:id="@+id/textViewRegGivenNameMessage"
         android:layout_below="@+id/editTextRegGivenName"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -151,16 +159,16 @@
         android:layout_below="@id/textViewRegGivenNameMessage" />
 
     <EditText
+        android:id="@+id/editTextRegEmail"
         android:layout_width="match_parent"
         android:layout_height="@dimen/activity_text_height"
-        android:paddingLeft="@dimen/activity_text_padding"
-        android:paddingRight="@dimen/activity_text_padding"
-        android:id="@+id/editTextRegEmail"
         android:layout_below="@id/textViewRegEmailLabel"
         android:layout_centerHorizontal="true"
         android:background="@drawable/text_border_selector"
         android:hint="Email"
-        android:inputType="textEmailAddress"/>
+        android:inputType="textEmailAddress"
+        android:paddingLeft="@dimen/activity_text_padding"
+        android:paddingRight="@dimen/activity_text_padding" />
 
     <TextView
         android:layout_width="match_parent"
@@ -181,19 +189,21 @@
         android:text=" "
         android:id="@+id/textViewRegPhoneLabel"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/textViewRegEmailMessage" />
+        android:layout_below="@id/textViewRegEmailMessage"
+        android:visibility="gone"/>
 
     <EditText
+        android:id="@+id/editTextRegPhone"
         android:layout_width="match_parent"
         android:layout_height="@dimen/activity_text_height"
-        android:paddingLeft="@dimen/activity_text_padding"
-        android:paddingRight="@dimen/activity_text_padding"
-        android:id="@+id/editTextRegPhone"
         android:layout_below="@id/textViewRegPhoneLabel"
         android:layout_centerHorizontal="true"
         android:background="@drawable/text_border_selector"
         android:hint="Phone number"
-        android:inputType="phone"/>
+        android:inputType="phone"
+        android:paddingLeft="@dimen/activity_text_padding"
+        android:paddingRight="@dimen/activity_text_padding"
+        android:visibility="gone"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -204,7 +214,8 @@
         android:textColor="@color/alert"
         android:id="@+id/textViewRegPhoneMessage"
         android:layout_below="@id/editTextRegPhone"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
 
     <Space
         android:layout_width="match_parent"
@@ -213,15 +224,67 @@
         android:id="@+id/space_about_2" />
 
     <Button
+        android:id="@+id/signUp"
         android:layout_width="match_parent"
         android:layout_height="@dimen/activity_button_height"
+        android:layout_below="@id/space_about_2"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_selector"
         android:text="Sign up"
         android:textAllCaps="false"
         android:textColor="@color/white"
-        android:textSize="@dimen/activity_button_text_size"
-        android:id="@+id/signUp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/space_about_2"
-        android:background="@drawable/button_selector" />
+        android:textSize="@dimen/activity_button_text_size" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_intra_group_separation"
+        android:layout_below="@id/signUp"
+        android:id="@+id/space_about_3" />
+
+    <CheckBox
+        android:id="@+id/chb_reg_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/space_about_3"
+        android:buttonTint="@color/button_default"
+        android:text="Register Bayun With Password"
+        android:layout_marginLeft="-5dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="15dp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_intra_group_separation"
+        android:layout_below="@id/chb_reg_type"
+        android:id="@+id/space_about_4" />
+
+    <CheckBox
+        android:id="@+id/chb_reg_with_bayun_only"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/space_about_4"
+        android:layout_marginLeft="-5dp"
+        android:buttonTint="@color/button_default"
+        android:text="Register With Bayun Only"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="15dp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_intra_group_separation"
+        android:layout_below="@id/chb_reg_with_bayun_only"
+        android:id="@+id/space_about_5" />
+    <TextView
+        android:id="@+id/textViewUserForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/space_about_5"
+
+        android:clickable="true"
+        android:onClick="changeCompany"
+        android:text="Set Company"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/button_default"
+        android:textSize="15dp" />
 
 </RelativeLayout>

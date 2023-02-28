@@ -3,7 +3,9 @@ package com.bayun.app;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.StrictMode;
 
+import com.bayun.R;
 import com.bayun.database.ActivityDBHelper;
 import com.bayun.database.DatabaseManager;
 import com.bayun.util.Constants;
@@ -23,6 +25,7 @@ public class BayunApplication extends Application {
     public static SharedPreferences settings;
     public static BayunCore bayunCore;
     public static RCCryptManager rcCryptManager;
+    public static boolean verifyDeviceLock = false;
 
     @Override
     public void onCreate() {
@@ -32,7 +35,10 @@ public class BayunApplication extends Application {
         tinyDB = new TinyDB(settings);
         DatabaseManager.initializeInstance(ActivityDBHelper.getInstance());
         rcCryptManager=new RCCryptManager();
-        bayunCore = new BayunCore(appContext);
+        bayunCore = new BayunCore(appContext, getString(R.string.base_url), getString(R.string.app_id),getString(R.string.app_secret),getString(R.string.app_salt), verifyDeviceLock);
+        StrictMode.ThreadPolicy policy =
+                new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         /*//TODO: Remove this before prod.
         // This is added for debug the application.

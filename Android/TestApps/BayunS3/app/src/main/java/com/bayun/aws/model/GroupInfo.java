@@ -10,14 +10,18 @@ public class GroupInfo {
     private String id;
     private String name;
     private String type;
+    private String creatorCompanyName;
+    private String creatorCompanyEmployeeId;
 
     public GroupInfo() {}
 
-    public GroupInfo (String groupKey, String id, String name, String type) {
+    public GroupInfo (String groupKey, String id, String name, String type, String creatorCompanyName, String creatorCompanyEmployeeId) {
         this.groupKey = groupKey;
         this.id = id;
         this.name = name;
         this.type = type;
+        this.creatorCompanyName = creatorCompanyName;
+        this.creatorCompanyEmployeeId = creatorCompanyEmployeeId;
     }
 
     public String getGroupKey() {
@@ -50,5 +54,21 @@ public class GroupInfo {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getCreatorCompanyName() {
+        return creatorCompanyName;
+    }
+
+    public void setCreatorCompanyName(String creatorCompanyName) {
+        this.creatorCompanyName = creatorCompanyName;
+    }
+
+    public String getCreatorCompanyEmployeeId() {
+        return creatorCompanyEmployeeId;
+    }
+
+    public void setCreatorCompanyEmployeeId(String creatorCompanyEmployeeId) {
+        this.creatorCompanyEmployeeId = creatorCompanyEmployeeId;
     }
 }

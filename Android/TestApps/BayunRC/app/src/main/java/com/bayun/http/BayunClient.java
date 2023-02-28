@@ -6,7 +6,6 @@ package com.bayun.http;
 
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
@@ -15,12 +14,9 @@ import com.bayun.app.BayunApplication;
 import com.bayun.database.ActivityDBOperations;
 import com.bayun.http.model.ErrorInfo;
 import com.bayun.http.model.LoginInfo;
-import com.bayun.screens.ConversationViewActivity;
 import com.bayun.screens.RegisterActivity;
 import com.bayun.util.Constants;
 import com.bayun.util.Utility;
-import com.google.gson.JsonObject;
-import com.squareup.okhttp.OkHttpClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,13 +40,13 @@ import retrofit.client.Response;
 
 class BayunClient extends OkClient {
 
-    public BayunClient(OkHttpClient client) {
+    /*public BayunClient(OkHttpClient client) {
         super(client);
-    }
+    }*/
 
     @Override
     public Response execute(Request request) throws IOException {
-        Response response = null;
+        Response response;
         String token = BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_ACCESS_TOKEN);
         String temp = "Bearer ".concat(token);
         List<Header> headers = new ArrayList<>();
@@ -61,7 +57,7 @@ class BayunClient extends OkClient {
         StrictMode.setThreadPolicy(policy);
         Request newReq = new Request(request.getMethod(), request.getUrl(), headers, request.getBody());
         response = super.execute(newReq);
-       // Log.v("error here", "" + response.getStatus());
+
         if (response.getStatus() == 401) {
             try {
                 StringBuilder sb = new StringBuilder();
@@ -82,13 +78,10 @@ class BayunClient extends OkClient {
                 JSONObject jsonObject = new JSONObject(sb.toString());
                 String result = jsonObject.getString("errorCode");
                 Log.v("error here", result);
-                /*if (result.equalsIgnoreCase("TokenInvalid")) {
-                    Log.v("here", "invalid and logout");
-                    logout();
-                } else */
+
                 if (result.equalsIgnoreCase("TokenInvalid") ||
                         result.equalsIgnoreCase("TokenExpired")) {
-                    Boolean authTokenRefreshed = getRefreshedAuthToken();
+                    boolean authTokenRefreshed = getRefreshedAuthToken();
                     if (authTokenRefreshed) {
                         return execute(request);
                     }
@@ -172,7 +165,7 @@ class BayunClient extends OkClient {
 
     private void logout() {
         BayunApplication.tinyDB.clear();
-        BayunApplication.bayunCore.deauthenticate();
+       // BayunApplication.bayunCore.deauthenticate();
         ActivityDBOperations.deleteAll();
         Intent intent = new Intent(BayunApplication.appContext, RegisterActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

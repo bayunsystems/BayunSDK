@@ -23,9 +23,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:text="@string/create_new_file"
             android:clickable="true"
             android:onClick="createNewFileClick"
+            android:text="@string/create_new_file"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 

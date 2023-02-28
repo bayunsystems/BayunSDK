@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 17/07/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "RCMessage.h"
@@ -20,6 +20,9 @@
 @property (strong, nonatomic) Message *message;
 @property (strong, nonatomic) id media;
 @property (assign) CGSize originalMediaSize;
+@property (assign, nonatomic) BOOL isdecrypted;
+@property (strong, nonatomic) NSString *decryptedMessage;
+
 
 @end
 
@@ -38,12 +41,29 @@
 
 -(NSString *)text {
     
+    //    __block NSString *message = self.message.subject;
+    //    [[RCCryptManager sharedInstance] decryptText:self.message.subject success:^(NSString *decryptedMessage) {
+    //        message =  decryptedMessage;
+    //    } failure:^(BayunError error) {
+    //        message = self.message.subject;
+    //    }];
+    
+    if (self.isdecrypted) {
+        return self.decryptedMessage;
+    }
     __block NSString *message = self.message.subject;
-    [[RCCryptManager sharedInstance] decryptText:self.message.subject success:^(NSString *decryptedMessage) {
-        message =  decryptedMessage;
-    } failure:^(BayunError error) {
-        message = self.message.subject;
-    }];
+    
+    if (message != nil) {
+        
+        [[RCCryptManager sharedInstance] decryptText:message success:^(NSString *decryptedMessage) {
+            message =  decryptedMessage;
+            self.decryptedMessage = decryptedMessage;
+            self.isdecrypted = true;
+        } failure:^(BayunError error) {
+            message = self.message.subject;
+            self.decryptedMessage = nil;
+        }];
+    }
     
     return message;
 }

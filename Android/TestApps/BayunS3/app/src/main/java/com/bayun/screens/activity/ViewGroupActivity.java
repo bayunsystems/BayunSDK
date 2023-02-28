@@ -14,11 +14,12 @@ import android.os.Looper;
 import android.os.Message;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +30,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bayun.R;
 import com.bayun.S3wrapper.SecureTransferUtility;
 import com.bayun.app.BayunApplication;
 import com.bayun.app.NotificationCenter;
@@ -39,13 +39,18 @@ import com.bayun.util.Constants;
 import com.bayun.util.FileUtils;
 import com.bayun.util.RecyclerItemClickListener;
 import com.bayun.util.Utility;
+import com.bayun_module.AddMemberErrObject;
 import com.bayun_module.BayunCore;
+import com.bayun.R;
+import com.bayun_module.GroupMember;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -58,19 +63,19 @@ import static com.bayun.aws.AWSS3Manager.getInstance;
  */
 
 public class ViewGroupActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener,
-        NotificationCenter.NotificationCenterDelegate, RecyclerItemClickListener.OnItemClickListener{
+        NotificationCenter.NotificationCenterDelegate {
 
-    private Toolbar toolbar;
+    private String  groupName;
     private String groupId;
     private RecyclerView recyclerView;
     private TextView emptyView;
     private RelativeLayout progressBar;
-    private int refreshFlag = 0;
     private FilesAdapter filesAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private static final int PERMISSION_REQUEST_CODE = 200;
     private static final int PICK_FILE_RESULT_CODE = 1;
     private File file;
+    private String bucketName;
 
     //callback for add member to group api call
     private Handler.Callback addGroupMemberSuccessCallback = new Handler.Callback() {
@@ -81,6 +86,8 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
 
             return false;
         }
+
+
     };
 
     //callback for removing a member from group api call
@@ -111,9 +118,8 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
         groupId = SecureTransferUtility.getGroupId();
-        String bucketName = "bayun-group-" + groupId;
+        bucketName = "bayun-group-" + groupId;
         bucketName = bucketName.toLowerCase();
-        BayunApplication.tinyDB.putString(Constants.S3_BUCKET_NAME, bucketName);
 
         setUpViews();
 
@@ -170,27 +176,56 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
      * sets up views for the activity
      */
     private void setUpViews() {
-        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
-        String groupName = getIntent().getStringExtra(Constants.SHARED_PREFERENCES_GROUP_NAME);
+         groupName = getIntent().getStringExtra(Constants.SHARED_PREFERENCES_GROUP_NAME);
         if (groupName == null || groupName.isEmpty()) {
             groupName = "Untitled";
         }
-        ((TextView)toolbar.findViewById(R.id.group_name)).setText(groupName);
+        ((TextView) toolbar.findViewById(R.id.group_name)).setText(groupName);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        emptyView = (TextView) findViewById(R.id.empty_view);
-        filesAdapter = new FilesAdapter(ViewGroupActivity.this, getInstance().fileList());
-        recyclerView = (RecyclerView) findViewById(R.id.files_recycler_view);
+        emptyView = findViewById(R.id.empty_view);
+        filesAdapter = new FilesAdapter(getInstance().fileList());
+        recyclerView = findViewById(R.id.files_recycler_view);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
-        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, this));
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView,
+                new RecyclerItemClickListener.ClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        if (Utility.isNetworkAvailable()) {
+                            if (getInstance().fileList().size() != 0) {
+                                String fileName = getInstance().fileList().get(position).getFileName();
+                                Intent intent = new Intent(ViewGroupActivity.this, ViewFileActivity.class);
+                                intent.putExtra(Constants.DOWNLOAD_FILE_NAME, fileName);
+                                intent.putExtra(Constants.GROUP_ID_EXTRA, groupId);
+                                startActivity(intent);
+                            }
+                        } else {
+                            Utility.messageAlertForCertainDuration(ViewGroupActivity.this, Constants.ERROR_INTERNET_OFFLINE);
+                        }
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+                        if (Utility.isNetworkAvailable()) {
+                            if (BayunCore.isEmployeeActive())
+                                deleteListItemDialog(position);
+                            else {
+                                Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_LONG);
+                            }
+                        } else {
+                            Utility.messageAlertForCertainDuration(ViewGroupActivity.this, Constants.ERROR_INTERNET_OFFLINE);
+                        }
+                    }
+                }));
         recyclerView.setAdapter(filesAdapter);
         setListView();
     }
@@ -242,6 +277,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
                 startActivity(intent);
             }
             else if (sequences[which].equals("Add Member")) {
+
                 showAddMemberDialog();
             }
             else if (sequences[which].equals("Remove Member")) {
@@ -281,13 +317,10 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
             String companyName = ((EditText)dialog.findViewById(R.id.dialog_group_name)).getText()
                     .toString();
             progressBar.setVisibility(View.VISIBLE);
-
-            HashMap<String, String> parameters = new HashMap<>();
-            parameters.put("companyEmployeeId", companyEmployeeId);
-            parameters.put("companyName", companyName);
-            parameters.put("groupId", groupId);
-
-            BayunApplication.bayunCore.addGroupMember(parameters, addGroupMemberSuccessCallback,
+            GroupMember groupMember = new GroupMember();
+            groupMember.companyEmployeeId = companyEmployeeId;
+            groupMember.companyName = companyName;
+           BayunApplication.bayunCore.addInGroup(groupId, groupMember,addGroupMemberSuccessCallback,
                     Utility.getDefaultFailureCallback(ViewGroupActivity.this, progressBar));
             dialog.dismiss();
         });
@@ -318,12 +351,10 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
                     .toString();
             progressBar.setVisibility(View.VISIBLE);
 
-            HashMap<String, String> parameters = new HashMap<>();
-            parameters.put("companyEmployeeId", companyEmployeeId);
-            parameters.put("companyName", companyName);
-            parameters.put("groupId", groupId);
-
-            BayunApplication.bayunCore.removeGroupMember(parameters, removeMemberSuccessCallback,
+            GroupMember groupMember = new GroupMember();
+            groupMember.companyEmployeeId = companyEmployeeId;
+            groupMember.companyName = companyName;
+            BayunApplication.bayunCore.removeFromGroup(groupId, groupMember,removeMemberSuccessCallback,
                     Utility.getDefaultFailureCallback(ViewGroupActivity.this, progressBar));
             dialog.dismiss();
 
@@ -335,13 +366,14 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
      * Shows dialog for upload file options - upload or create a new file
      */
     private void showUploadFileDialog() {
-        final CharSequence sequences[] = new CharSequence[] {"Create a New File", "Choose From Library"};
+        final CharSequence[] sequences = new CharSequence[]{"Create a New File", "Choose From Library"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
         builder.setTitle("Upload a File");
         builder.setItems(sequences, (dialog, which) -> {
             if (sequences[which].equals("Create a New File")) {
                 if (Utility.isNetworkAvailable()) {
                     Intent intent = new Intent(ViewGroupActivity.this, CreateNewFileActivity.class);
+                    intent.putExtra(Constants.GROUP_ID_EXTRA, groupId);
                     startActivity(intent);
                 } else {
                     Utility.messageAlertForCertainDuration(ViewGroupActivity.this, Constants.ERROR_INTERNET_OFFLINE);
@@ -364,12 +396,12 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
                     ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
                 } else {
                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                    intent.setType("file/*");
+                    intent.setType("*/*");
                     startActivityForResult(intent, PICK_FILE_RESULT_CODE);
                 }
             } else {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("file/*");
+                intent.setType("*/*");
                 startActivityForResult(intent, PICK_FILE_RESULT_CODE);
             }
         } else {
@@ -379,7 +411,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
 
     @Override
     public void onRefresh() {
-        refreshFlag = 1;
+        int refreshFlag = 1;
         getListFromS3Bucket();
         swipeRefreshLayout.setRefreshing(false);
     }
@@ -391,7 +423,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
         runOnUiThread(() -> {
             if (Utility.isNetworkAvailable()) {
                 progressBar.setVisibility(View.VISIBLE);
-                getInstance().getListOfObjects();
+                getInstance().getListOfObjects(bucketName);
             } else {
                 Utility.messageAlertForCertainDuration(ViewGroupActivity.this, Constants.ERROR_INTERNET_OFFLINE);
             }
@@ -445,7 +477,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
             Utility.displayToast(Constants.FILE_ALREADY_EXIST, Toast.LENGTH_SHORT);
         } else if (id == NotificationCenter.S3_BUCKET_FILE_NOT_EXIST) {
             if (file != null) {
-                getInstance().uploadFile(file);
+                getInstance().uploadFile(file, bucketName);
             }
         }
     }
@@ -463,13 +495,14 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
      * @param childView View of the item that was clicked.
      * @param position  Position of the item that was clicked.
      */
-    @Override
+    /*@Override
     public void onItemClick(View childView, int position) {
         if (Utility.isNetworkAvailable()) {
             if (getInstance().fileList().size() != 0) {
                 String fileName = getInstance().fileList().get(position).getFileName();
                 Intent intent = new Intent(ViewGroupActivity.this, ViewFileActivity.class);
                 intent.putExtra(Constants.DOWNLOAD_FILE_NAME, fileName);
+                intent.putExtra(Constants.GROUP_ID_EXTRA, groupId);
                 startActivity(intent);
             }
         } else {
@@ -488,7 +521,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
         } else {
             Utility.messageAlertForCertainDuration(ViewGroupActivity.this, Constants.ERROR_INTERNET_OFFLINE);
         }
-    }
+    }*/
 
     /**
      * Delete file from S3 Bucket.
@@ -500,7 +533,8 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
         String message = "Delete" + " " + fileName + " " + "permanently?";
         Utility.decisionAlert(ViewGroupActivity.this, getString(R.string.dialog_delete_title), message,
             getString(R.string.yes), getString(R.string.no), (dialog, which) -> {
-                getInstance().deleteFileFromS3(getInstance().fileList().get(position).getFileName());
+                getInstance().deleteFileFromS3(getInstance().fileList().get(position).getFileName(),
+                        bucketName);
                 getInstance().fileList().remove(position);
                 filesAdapter.notifyItemRemoved(position);
                 dialog.cancel();
@@ -558,7 +592,7 @@ public class ViewGroupActivity extends AppCompatActivity implements SwipeRefresh
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            getInstance().Exists(file.getName());
+            getInstance().Exists(file.getName(), bucketName);
 
         } catch (Exception e) {
             Log.e("tag", e.getMessage());

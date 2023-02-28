@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.bayun.R;
 import com.bayun.S3wrapper.SecureTransferUtility;
 import com.bayun.app.BayunApplication;
 import com.bayun.aws.model.GroupInfo;
@@ -23,9 +22,10 @@ import com.bayun.screens.helper.DividerItemDecoration;
 import com.bayun.util.Constants;
 import com.bayun.util.RecyclerItemClickListener;
 import com.bayun.util.Utility;
+import com.bayun.R;
+import com.bayun_module.Group;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Fragment to show joined groups for the user.
@@ -33,25 +33,31 @@ import java.util.HashMap;
  * Created by Akriti on 8/18/2017.
  */
 
-public class MyGroupsFragment extends BaseFragment implements RecyclerItemClickListener.OnItemClickListener{
+public class MyGroupsFragment extends BaseFragment {
 
     private View view;
     private ArrayList<GroupInfo> myGroups;
     private RecyclerView recyclerView;
-    private ArrayList<HashMap<String, String>> myGroupsArray;
+    private ArrayList<Group> myGroupsArray;
     private RelativeLayout progressBar;
 
     private Handler.Callback getMyGroupsSuccessCallback = message -> {
-        myGroupsArray = (ArrayList<HashMap<String, String>>) message.getData().getSerializable(Constants.MY_GROUPS_ARRAY);
-        getActivity().runOnUiThread(() -> progressBar.setVisibility(View.GONE));
+        myGroupsArray = (ArrayList<Group>) message.getData().getSerializable(Constants.MY_GROUPS_ARRAY);
+
+        if(getActivity()!=null){
+            getActivity().runOnUiThread(() -> progressBar.setVisibility(View.GONE));
+
+        }
 
         myGroups = new ArrayList<>();
-        for (HashMap<String, String> groupMap: myGroupsArray) {
+        for (Group groupMap: myGroupsArray) {
             GroupInfo groupInfo = new GroupInfo();
-            groupInfo.setGroupKey(groupMap.get("groupKey"));
-            groupInfo.setId(groupMap.get("id"));
-            groupInfo.setName(groupMap.get("name"));
-            groupInfo.setType(groupMap.get("type"));
+            groupInfo.setGroupKey(groupMap.groupKey);
+            groupInfo.setId(groupMap.groupId);
+            groupInfo.setName(groupMap.groupName);
+            groupInfo.setType(groupMap.groupType);
+            groupInfo.setCreatorCompanyName(groupMap.creatorCompanyName);
+            groupInfo.setCreatorCompanyEmployeeId(groupMap.creatorCompanyEmployeeId);
 
             myGroups.add(groupInfo);
         }
@@ -67,7 +73,9 @@ public class MyGroupsFragment extends BaseFragment implements RecyclerItemClickL
                     RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
                     recyclerView.setLayoutManager(mLayoutManager);
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
-                    recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
+                    if(getActivity()!=null){
+                        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
+                    }
                     groupsAdapter.notifyDataSetChanged();
                     recyclerView.setAdapter(groupsAdapter);
                 }
@@ -101,7 +109,35 @@ public class MyGroupsFragment extends BaseFragment implements RecyclerItemClickL
         view =  inflater.inflate(R.layout.fragment_tab_layout, container, false);
         progressBar = (RelativeLayout) view.findViewById(R.id.progressBar);
         recyclerView = (RecyclerView) view.findViewById(R.id.fragment_tab_layout_recycler_view);
-        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), this));
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerView,
+                new RecyclerItemClickListener.ClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        String groupId = myGroups.get(position).getId();
+                        SecureTransferUtility.setGroupId(groupId);
+                        BayunApplication.tinyDB.putInt(Constants.SHARED_PREFERENCES_OLD_ENCRYPTION_POLICY_ON_DEVICE,
+                                SecureTransferUtility.getEncryptionPolicyOnDevice());
+                        SecureTransferUtility.setEncryptionPolicyOnDevice(BayunApplication.bayunCore.ENCRYPTION_POLICY_GROUP);
+
+                        Intent intent = new Intent(getActivity(), ViewGroupActivity.class);
+                        String groupName = myGroups.get(position).getName();
+                        intent.putExtra(Constants.SHARED_PREFERENCES_GROUP_NAME, groupName);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+                        if (Utility.isNetworkAvailable()) {
+                            if (BayunApplication.bayunCore.isEmployeeActive())
+                                deleteListItemDialog(position);
+                            else {
+                                Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_LONG);
+                            }
+                        } else {
+                            Utility.messageAlertForCertainDuration(getActivity(), Constants.ERROR_INTERNET_OFFLINE);
+                        }
+                    }
+                }));
         updateRecyclerView();
         return view;
     }
@@ -123,23 +159,27 @@ public class MyGroupsFragment extends BaseFragment implements RecyclerItemClickL
      * sets empty view
      */
     private void setUpEmptyView() {
-        getActivity().runOnUiThread(() -> {
-            view.findViewById(R.id.fragment_tab_layout_empty_view).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.fragment_tab_layout_recycler_view).setVisibility(View.GONE);
-        });
+        if(getActivity()!= null){
+            getActivity().runOnUiThread(() -> {
+                view.findViewById(R.id.fragment_tab_layout_empty_view).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.fragment_tab_layout_recycler_view).setVisibility(View.GONE);
+            });
+        }
+
     }
 
     /**
      * Sets adapter data in recycler view.
      */
     private void setUpListView() {
+        if(getActivity() != null)
         getActivity().runOnUiThread(() -> {
             view.findViewById(R.id.fragment_tab_layout_empty_view).setVisibility(View.GONE);
             view.findViewById(R.id.fragment_tab_layout_recycler_view).setVisibility(View.VISIBLE);
         });
     }
 
-    @Override
+    /*@Override
     public void onItemClick(View childView, int position) {
         String groupId = myGroups.get(position).getId();
         SecureTransferUtility.setGroupId(groupId);
@@ -164,7 +204,7 @@ public class MyGroupsFragment extends BaseFragment implements RecyclerItemClickL
         } else {
             Utility.messageAlertForCertainDuration(getActivity(), Constants.ERROR_INTERNET_OFFLINE);
         }
-    }
+    }*/
 
     /**
      * Delete file from S3 Bucket.

@@ -7,21 +7,11 @@
 		<key>BayunRC.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>4</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>1E5531D71DFE790600403284</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>1E55324D1DFE7BBF00403284</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>1EA9C8851D1BDFF600BCFCB9</key>
 		<dict>
 			<key>primary</key>

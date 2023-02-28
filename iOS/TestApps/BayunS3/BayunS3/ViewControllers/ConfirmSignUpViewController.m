@@ -1,5 +1,5 @@
 //
-// Copyright 2014-2016 Amazon.com,
+// Copyright 2023-2023 Amazon.com,
 // Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Amazon Software License (the "License").
@@ -42,12 +42,35 @@
         [SVProgressHUD dismiss];
             if(task.error){
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([[task.error.userInfo valueForKey:@"NSLocalizedDescription"] isEqualToString:@"Device Passcode is not Set."]) {
-                        [[[UIAlertView alloc] initWithTitle:@""
-                                                    message:kErrorMsgDevicePasscodeNotSet
-                                                   delegate:nil
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"OK", nil] show];
+
+                  if([[task.error.userInfo valueForKey:@"NSLocalizedDescription"] isEqualToString:@"Employee Authorization is Pending"]) {
+                    
+                    UIAlertController * alert = [UIAlertController
+                                                 alertControllerWithTitle:@""
+                                                 message:[task.error.userInfo valueForKey:@"NSLocalizedDescription"]
+                                                 preferredStyle:UIAlertControllerStyleAlert];
+                    
+                    //Add Buttons
+                    UIAlertAction* okButton = [UIAlertAction
+                                                actionWithTitle:@"Ok"
+                                                style:UIAlertActionStyleDefault
+                                               handler:^(UIAlertAction * action) {
+                      dispatch_async(dispatch_get_main_queue(), ^{
+                        //return to signin screen
+                        ((SignInViewController *)self.navigationController.viewControllers[0]).usernameText = self.user.username;
+                        [self.navigationController popToRootViewControllerAnimated:YES];
+                      });
+                    }];
+                    
+                    [alert addAction:okButton];
+                    [self presentViewController:alert animated:YES completion:nil];
+                    
+                  } else if([task.error.userInfo valueForKey:@"NSLocalizedDescription"]) {
+                      [[[UIAlertView alloc] initWithTitle:@""
+                                                  message:[task.error.userInfo valueForKey:@"NSLocalizedDescription"]
+                                                 delegate:nil
+                                        cancelButtonTitle:nil
+                                        otherButtonTitles:@"OK", nil] show];
                     } else {
                         // [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
                         [[[UIAlertView alloc] initWithTitle:@""
@@ -58,9 +81,11 @@
                     }
                 });
             }else {
+              dispatch_async(dispatch_get_main_queue(), ^{
                 //return to signin screen
                 ((SignInViewController *)self.navigationController.viewControllers[0]).usernameText = self.user.username;
                 [self.navigationController popToRootViewControllerAnimated:YES];
+              });
             }
         return nil;
     }];

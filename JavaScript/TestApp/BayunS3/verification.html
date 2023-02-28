@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="js/amazon-cognito-auth.min.js"></script>
+    <script src="./lib/bayun.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
+    <script src="js/amazon-cognito-identity.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="./S3Wrapper/secure_auth.js"></script>
+    <link rel="stylesheet" href="styles.css">
+
+    <title>Document</title>
+</head>
+
+<body>
+    <center>
+        <h1>Check your email for a verification code</h1>
+        <input type="email" class="form-control" id="emailInputRegister" placeholder="Email" pattern=".*"
+            required><br><br>
+        <input type="text" id="code" placeholder="Code" name="code"><br><br>
+        <button id="codebutton" class="btn btn-lg btn-primary btn-block" type="button"
+            onclick="createObject()">Verify
+            Code</button>
+        <br>
+        <p>Please follow here to <a href="./login.html">Sign In</a> after successful Verification.</p>
+        <h4 id="verificationSuccess"></h4>
+    </center>
+    <script>
+        function createObject() {
+
+            //fetching parameters from input fields 
+            let email = document.getElementById("emailInputRegister").value;
+            let code = document.getElementById("code").value;
+
+            var sAuth = new SecureAuthentication(localStorage.getItem("companyName"));
+            sAuth.confirmSignUp(email,code);
+        }
+    </script>
+</body>
+
+</html>

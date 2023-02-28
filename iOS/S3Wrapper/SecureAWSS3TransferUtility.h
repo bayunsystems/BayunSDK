@@ -1,9 +1,6 @@
 //
 //  SecureAWSS3TransferUtility.h
-//  BayunS3
-//
-//  Created by Preeti Gaur on 05/07/16.
-//  Copyright © 2016 Bayun Systems, Inc. All rights reserved.
+//  Copyright © 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -12,6 +9,25 @@
 #import <Bayun/BayunCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_ENUM(NSInteger, SecureAWSS3TransferUtilityErrorType) {
+  SecureAWSS3TransferUtilityErrorUnknown,
+  SecureAWSS3TransferUtilityErrorCancelled,
+  SecureAWSS3TransferUtilityErrorInvalidAppSecret,
+  SecureAWSS3TransferErrorPasscodeAuthenticationCanceledByUser,
+  SecureAWSS3TransferErrorReAuthenticationNeeded,
+  SecureAWSS3TransferUtilityErrorPaused,
+  SecureAWSS3TransferUtilityErrorCompleted,
+  SecureAWSS3TransferUtilityErrorInternalInConsistency,
+  SecureAWSS3TransferUtilityErrorMissingRequiredParameters,
+  SecureAWSS3TransferUtilityErrorInvalidParameters,
+  SecureAWSS3TransferUtilityErrorAccessDenied,
+  SecureAWSS3TransferUtilityErrorUserInactive,
+  SecureAWSS3TransferUtilityErrorUnlockingFailed,
+  SecureAWSS3TransferUtilityErrorInternetConnection,
+  SecureAWSS3TransferUtilityErrorSomethingWentWrong,
+  SecureAWSS3TransferUtilityErrorNoInternetConnection
+};
 
 @interface SecureAWSS3TransferUtility : AWSS3TransferUtility
 
@@ -28,6 +44,19 @@ NS_ASSUME_NONNULL_BEGIN
  Default encryption policy is BayunKeyGenerationPolicyStatic.
  */
 @property (nonatomic, assign) BayunKeyGenerationPolicy keyGenerationPolicy;
+
+/**
+ The service configuration used to instantiate this service client.
+ 
+ @warning Once the client is instantiated, do not modify the configuration object. It may cause unspecified behaviors.
+ */
+@property (readonly) AWSServiceConfiguration *configuration_;
+
+/**
+ The transfer utility configuration.
+ */
+@property (readonly) AWSS3TransferUtilityConfiguration *transferUtilityConfiguration_;
+
 
 /**
  Returns the singleton service client. If the singleton object does not exist, the SDK instantiates the default service client with `defaultServiceConfiguration` from `[AWSServiceManager defaultServiceManager]`. The reference to this object is maintained by the SDK, and you do not need to retain it manually.
@@ -56,6 +85,30 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)defaultS3TransferUtility;
 
+/**
+ Retrieves the service client associated with the key. You need to call `+ registerS3TransferUtilityWithConfiguration:forKey:` before invoking this method. If `+ registerS3TransferUtilityWithConfiguration:forKey:` has not been called in advance or the key does not exist, this method returns `nil`.
+ 
+ For example, set the default service configuration in `- application:didFinishLaunchingWithOptions:`
+ 
+ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+ AWSStaticCredentialsProvider *credentialsProvider = [[AWSStaticCredentialsProvider alloc] initWithAccessKey:YourS3AccessKey secretKey:YourS3SecretKey];
+ 
+ AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSWest2 credentialsProvider:credentialsProvider];
+ 
+ [SecureAWSS3TransferUtility registerS3TransferUtilityWithConfiguration:configuration forKey:@"USWest2S3TransferUtility"];
+ 
+ return YES;
+ }
+ 
+ Then call the following to get the service client:
+ 
+ SecureAWSS3TransferUtility *S3TransferUtility = [SecureAWSS3TransferUtility S3ForKey:@"USWest2S3TransferUtility"];
+ 
+ @param key A string to identify the service client.
+ 
+ @return An instance of the service client.
+ */
++ (instancetype)S3TransferUtilityForKey:(NSString *)key;
 
 /**
  Creates a service client with the given service configuration and registers it for the key.
@@ -90,31 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
                                             forKey:(NSString *)key;
 
 /**
- Retrieves the service client associated with the key. You need to call `+ registerS3TransferUtilityWithConfiguration:forKey:` before invoking this method. If `+ registerS3TransferUtilityWithConfiguration:forKey:` has not been called in advance or the key does not exist, this method returns `nil`.
- 
- For example, set the default service configuration in `- application:didFinishLaunchingWithOptions:`
- 
- - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
- AWSStaticCredentialsProvider *credentialsProvider = [[AWSStaticCredentialsProvider alloc] initWithAccessKey:YourS3AccessKey secretKey:YourS3SecretKey];
- 
- AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSWest2 credentialsProvider:credentialsProvider];
- 
- [SecureAWSS3TransferUtility registerS3TransferUtilityWithConfiguration:configuration forKey:@"USWest2S3TransferUtility"];
- 
- return YES;
- }
- 
- Then call the following to get the service client:
- 
- SecureAWSS3TransferUtility *S3TransferUtility = [SecureAWSS3TransferUtility S3ForKey:@"USWest2S3TransferUtility"];
- 
- @param key A string to identify the service client.
- 
- @return An instance of the service client.
- */
-+ (instancetype)S3TransferUtilityForKey:(NSString *)key;
-
-/**
  Removes the service client associated with the key and release it.
  
  @warning Before calling this method, make sure no method is running on this client.
@@ -124,23 +152,57 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)removeS3TransferUtilityForKey:(NSString *)key;
 
 /**
- Saves the `NSData` to a temporary directory, locks and uploads it to the specified Amazon S3 bucket.
+ Locks and saves the `NSData` to a temporary directory and uploads it to the configured Amazon S3 bucket in `AWSS3TransferUtilityConfiguration`.
+ 
+ @param data              The data to upload.
+ @param key               The Amazon S3 object key name.
+ @param contentType       `Content-Type` of the data.
+ @param expression        The container object to configure the upload request.
+ @param completionHandler The completion handler when the upload completes.
+ 
+ @return Returns an instance of `AWSTask`. On successful initialization, `task.result` contains an instance of `AWSS3TransferUtilityUploadTask`.
+ */
+- (AWSTask<AWSS3TransferUtilityUploadTask *> *)uploadData:(NSData *)data
+                                                      key:(NSString *)key
+                                              contentType:(NSString *)contentType
+                                               expression:(nullable AWSS3TransferUtilityUploadExpression *)expression
+                                        completionHandler:(nullable AWSS3TransferUtilityUploadCompletionHandlerBlock)completionHandler;
+
+/**
+ Locks and saves the `NSData` to a temporary directory and uploads it to the specified Amazon S3 bucket.
  
  @param data              The data to upload.
  @param bucket            The Amazon S3 bucket name.
  @param key               The Amazon S3 object key name.
  @param contentType       `Content-Type` of the data.
  @param expression        The container object to configure the upload request.
- @param completionHandler The completion hanlder when the upload completes.
+ @param completionHandler The completion handler when the upload completes.
  
  @return Returns an instance of `AWSTask`. On successful initialization, `task.result` contains an instance of `AWSS3TransferUtilityUploadTask`.
  */
-- (AWSTask *)uploadData:(NSData *)data
-                 bucket:(NSString *)bucket
-                    key:(NSString *)key
-            contentType:(NSString *)contentType
-             expression:(nullable AWSS3TransferUtilityUploadExpression *)expression
-       completionHander:(nullable AWSS3TransferUtilityUploadCompletionHandlerBlock)completionHandler;
+- (AWSTask<AWSS3TransferUtilityUploadTask *> *)uploadData:(NSData *)data
+                                                   bucket:(NSString *)bucket
+                                                      key:(NSString *)key
+                                              contentType:(NSString *)contentType
+                                               expression:(nullable AWSS3TransferUtilityUploadExpression *)expression
+                                        completionHandler:(nullable AWSS3TransferUtilityUploadCompletionHandlerBlock)completionHandler;
+
+/**
+ Uploads the locked file to the configured Amazon S3 bucket in `AWSS3TransferUtilityConfiguration`.
+ 
+ @param fileURL           The file URL of the file to upload.
+ @param key               The Amazon S3 object key name.
+ @param contentType       `Content-Type` of the file.
+ @param expression        The container object to configure the upload request.
+ @param completionHandler The completion handler when the upload completes.
+ 
+ @return Returns an instance of `AWSTask`. On successful initialization, `task.result` contains an instance of `AWSS3TransferUtilityUploadTask`.
+ */
+- (AWSTask<AWSS3TransferUtilityUploadTask *> *)uploadFile:(NSURL *)fileURL
+                                                      key:(NSString *)key
+                                              contentType:(NSString *)contentType
+                                               expression:(nullable AWSS3TransferUtilityUploadExpression *)expression
+                                        completionHandler:(nullable AWSS3TransferUtilityUploadCompletionHandlerBlock)completionHandler;
 
 /**
  Uploads the locked file to the specified Amazon S3 bucket.
@@ -154,13 +216,12 @@ NS_ASSUME_NONNULL_BEGIN
  
  @return Returns an instance of `AWSTask`. On successful initialization, `task.result` contains an instance of `AWSS3TransferUtilityUploadTask`.
  */
-- (AWSTask *)uploadFile:(NSURL *)fileURL
-                 bucket:(NSString *)bucket
-                    key:(NSString *)key
-            contentType:(NSString *)contentType
-             expression:(nullable AWSS3TransferUtilityUploadExpression *)expression
-       completionHander:(nullable AWSS3TransferUtilityUploadCompletionHandlerBlock)completionHandler;
-
+- (AWSTask<AWSS3TransferUtilityUploadTask *> *)uploadFile:(NSURL *)fileURL
+                                                   bucket:(NSString *)bucket
+                                                      key:(NSString *)key
+                                              contentType:(NSString *)contentType
+                                               expression:(nullable AWSS3TransferUtilityUploadExpression *)expression
+                                        completionHandler:(nullable AWSS3TransferUtilityUploadCompletionHandlerBlock)completionHandler;
 /**
  Downloads the specified Amazon S3 object as `NSData`.
  
@@ -192,7 +253,6 @@ NS_ASSUME_NONNULL_BEGIN
                        key:(NSString *)key
                 expression:(nullable AWSS3TransferUtilityDownloadExpression *)expression
           completionHander:(nullable AWSS3TransferUtilityDownloadCompletionHandlerBlock)completionHandler;
-
 
 @end
 

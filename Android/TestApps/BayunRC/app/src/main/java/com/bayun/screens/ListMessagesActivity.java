@@ -53,6 +53,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
                 setListView();
             } else {
                 swipeRefreshLayout.setRefreshing(false);
+                progressBar.setVisibility(View.GONE);
             }
             return false;
         };
@@ -63,10 +64,10 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
      * Sets up Views.
      */
     private void setUpView() {
-        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
-        recyclerView = (RecyclerView) findViewById(R.id.list_files_recycler_view);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
-        emptyView = (TextView) findViewById(R.id.empty_view);
+        progressBar = findViewById(R.id.progressBar);
+        recyclerView = findViewById(R.id.list_files_recycler_view);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        emptyView = findViewById(R.id.empty_view);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -99,7 +100,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
      * Shows the Alert Dialogue for create a new file or logout.
      */
     private void showAlertDialogue() {
-        final CharSequence sequences[] = new CharSequence[]{"New message", "Logout"};
+        final CharSequence[] sequences = new CharSequence[]{"New message", "Logout"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
         builder.setItems(sequences, (dialog, which) -> {
             if (sequences[which].equals("New message")) {
@@ -136,7 +137,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
         conversationInfoArrayList = activityDBOperations.getAllConversations();
         Collections.sort(conversationInfoArrayList);
 
-        ArrayList<String> displayTexts = new ArrayList<>();
+       /* ArrayList<String> displayTexts = new ArrayList<>();
         final int[] count = {conversationInfoArrayList.size()};
         final int[] convoIndex = {0};
         final Handler.Callback[] decryptConvoSubjects = {message -> false};
@@ -165,11 +166,11 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
 
         Handler.Callback decryptTextCallback = message -> {
             // if failure was called, don't continue with the list
-            if (message.getData().getBoolean(Constants.WAS_AUTHENTICATION_CANCELLED)) {
+            *//*if (message.getData().getBoolean(Constants.WAS_AUTHENTICATION_CANCELLED)) {
                 setUpRecyclerViewWhenFailure.handleMessage(null);
-            }
+            }*//*
             // text decryption was successful
-            else {
+            //else {
                 String decryptedText = message.getData().getString(Constants.DECRYPTED_TEXT);
                 if (decryptedText == null || decryptedText.isEmpty()) {
                     displayTexts.add(conversationInfoArrayList.get(convoIndex[0]).getSubject());
@@ -186,7 +187,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
                 } else {
                     decryptConvoSubjects[0].handleMessage(null);
                 }
-            }
+            //}
 
             return false;
         };
@@ -196,10 +197,56 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
             BayunApplication.rcCryptManager.decryptText(conversationInfoArrayList.get(convoIndex[0])
                     .getSubject(), decryptTextCallback);
             return false;
-        };
+        };*/
 
-        decryptConvoSubjects[0].handleMessage(null);
+        final int[] count = {conversationInfoArrayList.size()};
 
+        if (count[0] > 0) {
+            for (int i = 0; i < conversationInfoArrayList.size(); i++) {
+                int finalI = i;
+
+                new Thread(() -> {
+                    Handler.Callback callback = message -> {
+                        count[0]--;
+
+                        String decryptedText = message.getData().getString(Constants.DECRYPTED_TEXT);
+                        if (decryptedText != null && !decryptedText.isEmpty()) {
+                            ConversationInfo removedConvo = conversationInfoArrayList.remove(finalI);
+                            removedConvo.setSubject(decryptedText);
+                            conversationInfoArrayList.add(finalI, removedConvo);
+                        }
+
+                        // all messaged were decrypted.
+                        if (count[0] == 0) {
+                            runOnUiThread(() -> {
+                                progressBar.setVisibility(View.GONE);
+                                // set recycler view with the list received
+                                recyclerView.scrollToPosition(conversationInfoArrayList.size() - 1);
+                                messagesAdapter.notifyDataSetChanged();
+                            });
+                        }
+
+                        return false;
+                    };
+
+                    BayunApplication.rcCryptManager.decryptText(conversationInfoArrayList.get(finalI).getSubject(),
+                            callback);
+                }).start();
+            }
+        }
+        else {
+            setEmptyView();
+        }
+
+    }
+
+    /**
+     * When data is not available, we show the no data found message.
+     */
+    private void setEmptyView() {
+        recyclerView.setVisibility(View.GONE);
+        emptyView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
     }
 
     /**
@@ -250,7 +297,7 @@ public class ListMessagesActivity extends AbstractActivity implements SwipeRefre
     private void logout() {
         BayunApplication.tinyDB.clear();
         activityDBOperations.deleteAll();
-        BayunApplication.bayunCore.deauthenticate();
+        BayunApplication.bayunCore.logout();
         Intent intent = new Intent(ListMessagesActivity.this, RegisterActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

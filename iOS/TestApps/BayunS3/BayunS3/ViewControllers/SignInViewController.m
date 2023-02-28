@@ -1,5 +1,5 @@
 //
-// Copyright 2014-2016 Amazon.com,
+// Copyright 2023-2023 Amazon.com,
 // Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Amazon Software License (the "License").
@@ -23,22 +23,41 @@
 #import "DLAVAlertView.h"
 
 @interface SignInViewController ()<UITextFieldDelegate>
+
+@property (nonatomic, assign) BOOL signInWithBayunOnly;
 @property (weak, nonatomic) IBOutlet UITextField *password;
 @property (weak, nonatomic) IBOutlet UITextField *username;
 @property (strong, nonatomic) IBOutlet UITextField *companyNameTextfield;
+@property (weak, nonatomic) IBOutlet UIButton *signInWithPwdBtn;
 @property (strong,nonatomic) NSString *defaultCompanyName;
-
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *signInTopConstraintToUsername;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *signInTopConstraintToPwd;
 @property (nonatomic, strong) AWSTaskCompletionSource<AWSCognitoIdentityPasswordAuthenticationDetails*>* passwordAuthenticationCompletion;
+@property (weak, nonatomic) IBOutlet UIButton *signInWithBayunButton;
 @property (nonatomic) BOOL isKeyboardVisible;
 @property (nonatomic) CGFloat keyBoardHeight;
 @end
 
 @implementation SignInViewController
 
+- (IBAction)signInWithBayunBtnIsPressed:(UIButton *)sender {
+  
+  if (sender.isSelected) {
+    self.signInWithBayunOnly = false;
+  } else {
+    self.signInWithBayunOnly = true;
+  }
+  [sender setSelected:!sender.isSelected];
+}
+
+
 -(void)viewDidLoad {
 
     [super viewDidLoad];
     [Utilities clearKeychainAndUserDefaults];
+    [self.signInWithPwdBtn setHidden:true];
+    self.signInTopConstraintToUsername.priority = 500;
+    self.signInTopConstraintToPwd.priority = 900;
     self.isKeyboardVisible = NO;
     self.username.delegate = self;
     self.password.delegate = self;
@@ -106,37 +125,86 @@
 }
 
 - (IBAction)signInPressed:(id)sender {
+  
+  AWSCognitoIdentityUserPool *pool = [AWSCognitoIdentityUserPool CognitoIdentityUserPoolForKey:@"UserPool"];
+  [SVProgressHUD show];
+  
+  
+  if (self.signInWithBayunOnly) {
+    BayunAppCredentials *appCredentials = [[BayunAppCredentials alloc] initWithAppId:kBayunAppId
+                                                                           appSecret:kBayunAppSecret
+                                                                             appSalt:kBayunApplicationSalt
+                                                                             baseURL:kBayunBaseURL];
     
-    AWSCognitoIdentityUserPool *pool = [AWSCognitoIdentityUserPool CognitoIdentityUserPoolForKey:@"UserPool"];
-    [SVProgressHUD show];
-    [[SecureAuthentication sharedInstance] signInPool:pool username:self.username.text password:self.password.text withBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserSession*> * _Nonnull task) {
+    void(^successBlock)(void) = ^{
+      [[NSUserDefaults standardUserDefaults] setBool:true forKey:kIsUserLoggedIn];
+      dispatch_async( dispatch_get_main_queue(), ^{
+        [SVProgressHUD dismiss];
+        self.usernameText = nil;
         
+        //Set Encryption Policy to Default in the default value of Dropdown Menu
+        [[NSUserDefaults standardUserDefaults] setInteger:BayunEncryptionPolicyDefault forKey:kSelectedEncryptionPolicy];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        [self performSegueWithIdentifier:@"ListFilesSegue" sender:nil];
+      });
+    };
+    
+    [[BayunCore sharedInstance] loginWithCompanyName:self.defaultCompanyName
+                                   companyEmployeeId:self.username.text
+                                            password:self.password.text
+                                  autoCreateEmployee:true
+                           securityQuestionsCallback:nil
+                                  passphraseCallback:nil
+                                 bayunAppCredentials:appCredentials
+                                             success:^{
+      
+      [[BayunCore sharedInstance] unlockText:@"CwABAAAAEBuBLw5XRT4KKtj2Edgf0UAIAAIAAAACCAADAAAAAggABAAAAAALAAUAAAAQlcyNy3DfP3bLqVxMXjU3GwgACAAAAAMKAAoAAAAAPTfvfAgACwAAAAAA" success:^(NSString *text) {
+        NSLog(@"unlocked text : %@", text);
+      } failure:^(BayunError error) {
+        
+      }];
+      //Bayun Authentication Successful
+      successBlock();
+    } failure:^(BayunError errorCode) {
+      [SVProgressHUD dismiss];
+      NSString *errorStr = [Utilities errorStringForBayunError:errorCode];
+      [self showErrorMessage:errorStr];
+    }];
+  } else {
+      
+      [[SecureAuthentication sharedInstance] signInPool:pool
+                                               username:self.username.text
+                                               password:self.password.text
+                                              withBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserSession*> * _Nonnull task) {
+    
         dispatch_async(dispatch_get_main_queue(), ^{
+          [SVProgressHUD dismiss];
+          NSError *error = task.error;
+          if(error){
             [SVProgressHUD dismiss];
-            NSError *error = task.error;
-            if(error){
-                [SVProgressHUD dismiss];
-                if ([[error.userInfo valueForKey:@"NSLocalizedDescription"] isEqualToString:kErrorMsgDevicePasscodeNotSet]) {
-                    [self showErrorMessage:kErrorMsgDevicePasscodeNotSet];
-                } else  if ([[error.userInfo valueForKey:@"NSLocalizedDescription"] isEqualToString:kErrorMsgInvalidAnswers]) {
-                    [self showErrorMessage:kErrorMsgInvalidAnswers];
-                } else  if ([error.userInfo valueForKey:@"message"] != nil) {
-                    [self showErrorMessage:[error.userInfo valueForKey:@"message"]];
-                }  else {
-                    [self showErrorMessage:[error.userInfo valueForKey:@"NSLocalizedDescription"]];
-                }
-            } else {
-                self.usernameText = nil;
-            
-                //Set Encryption Policy to Default in the default value of Dropdown Menu
-                [[NSUserDefaults standardUserDefaults] setInteger:BayunEncryptionPolicyDefault forKey:kSelectedEncryptionPolicy];
-                [[NSUserDefaults standardUserDefaults] synchronize];
-                
-                [self performSegueWithIdentifier:@"ListFilesSegue" sender:nil];
+            if ([[error.userInfo valueForKey:@"NSLocalizedDescription"] isEqualToString:kErrorMsgDevicePasscodeNotSet]) {
+              [self showErrorMessage:kErrorMsgDevicePasscodeNotSet];
+            } else  if ([[error.userInfo valueForKey:@"NSLocalizedDescription"] isEqualToString:kErrorMsgInvalidAnswers]) {
+              [self showErrorMessage:kErrorMsgInvalidAnswers];
+            } else  if ([error.userInfo valueForKey:@"message"] != nil) {
+              [self showErrorMessage:[error.userInfo valueForKey:@"message"]];
+            }  else {
+              [self showErrorMessage:[error.userInfo valueForKey:@"NSLocalizedDescription"]];
             }
+          } else {
+            self.usernameText = nil;
+    
+            //Set Encryption Policy to Default in the default value of Dropdown Menu
+            [[NSUserDefaults standardUserDefaults] setInteger:BayunEncryptionPolicyDefault forKey:kSelectedEncryptionPolicy];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+    
+            [self performSegueWithIdentifier:@"ListFilesSegue" sender:nil];
+          }
         });
         return nil;
-    }];
+      }];
+  }
 }
 
 - (void) showErrorMessage:(NSString*)errorMessage {
@@ -237,4 +305,6 @@
 
 
 
+- (IBAction)loginWithPwdButton:(id)sender {
+}
 @end

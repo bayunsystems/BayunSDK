@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		127DF80104BC2855A87DAA26 /* Pods_BayunS3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 702E43ACA23516CD2818E520 /* Pods_BayunS3.framework */; };
+		1E1974B02914FD8F007B7625 /* SecureAWSS3TransferUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E1974AF2914FD8F007B7625 /* SecureAWSS3TransferUtility.m */; };
 		1E3467081F4ECAFE005049BF /* SignInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E3467071F4ECAFE005049BF /* SignInViewController.m */; };
 		1E34670A1F4ECBAB005049BF /* CognitoLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E3467091F4ECBAB005049BF /* CognitoLogo.png */; };
 		1E3467101F503406005049BF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E34670F1F503406005049BF /* AppDelegate.m */; };
-		1E44B1891F8CC67300600AE2 /* SecureAWSS3TransferUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E44B1881F8CC67300600AE2 /* SecureAWSS3TransferUtility.m */; };
 		1E63D69C1F6BFE2E004B3E08 /* SecureAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E63D69B1F6BFE2E004B3E08 /* SecureAuthentication.m */; };
 		1E648FB11D252A3200A53D85 /* SVIndefiniteAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E648FA81D252A3200A53D85 /* SVIndefiniteAnimatedView.m */; };
 		1E648FB21D252A3200A53D85 /* SVProgressAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E648FAA1D252A3200A53D85 /* SVProgressAnimatedView.m */; };
@@ -18,8 +19,9 @@
 		1E648FB41D252A3200A53D85 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E648FAE1D252A3200A53D85 /* SVProgressHUD.m */; };
 		1E648FB51D252A3200A53D85 /* SVRadialGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E648FB01D252A3200A53D85 /* SVRadialGradientLayer.m */; };
 		1E6BBAE41D2146BD0025AE2D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1E6BBAE31D2146BD0025AE2D /* Images.xcassets */; };
+		1E718F812851132D00420578 /* Bayun.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E718F7F285111F600420578 /* Bayun.framework */; };
+		1E718F822851132E00420578 /* Bayun.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1E718F7F285111F600420578 /* Bayun.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1E83AE181D41FBD200469E3C /* SecureAWSS3Service.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E83AE131D41FBD200469E3C /* SecureAWSS3Service.m */; };
-		1E83AE191D41FBD200469E3C /* SecureAWSS3TransferManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E83AE151D41FBD200469E3C /* SecureAWSS3TransferManager.m */; };
 		1E8DCBBF1E6D6FAC004D42B0 /* GroupsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E8DCBBE1E6D6FAC004D42B0 /* GroupsViewController.m */; };
 		1E9A8D641F4D8E4300FA494D /* SignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A8D631F4D8E4300FA494D /* SignUpViewController.m */; };
 		1E9A8D671F4D8E5F00FA494D /* ConfirmSignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9A8D661F4D8E5F00FA494D /* ConfirmSignUpViewController.m */; };
@@ -35,6 +37,8 @@
 		1EA792841E94CD2A0012E710 /* GroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA792831E94CD2A0012E710 /* GroupMembersViewController.m */; };
 		1EA792861E94EBD40012E710 /* Member.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EA792851E94EBD40012E710 /* Member.png */; };
 		1EBAC9E71E9254B3007F04FB /* GroupFilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EBAC9E61E9254B3007F04FB /* GroupFilesViewController.m */; };
+		1EC6B8AF2878774A007B485C /* unchecked-checkbox.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EC6B8AD2878773D007B485C /* unchecked-checkbox.png */; };
+		1EC6B8B02878774A007B485C /* checked-checkbox.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EC6B8AE2878774A007B485C /* checked-checkbox.png */; };
 		1ECAC2CD1E728873003C92A3 /* GroupIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 1ECAC2CC1E728873003C92A3 /* GroupIcon.png */; };
 		1ECAC2CF1E728ACE003C92A3 /* GroupIcon2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1ECAC2CE1E728ACE003C92A3 /* GroupIcon2.png */; };
 		1EF100321D22616F00952D33 /* ALAlertBanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EF100221D22616F00952D33 /* ALAlertBanner.m */; };
@@ -70,7 +74,6 @@
 		1EF3F3EB1D213923009D0B72 /* splashScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EF3F3C21D213923009D0B72 /* splashScreen.png */; };
 		1EF3F3EE1D213923009D0B72 /* CreateTextFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EF3F3CA1D213923009D0B72 /* CreateTextFileViewController.m */; };
 		1EF3F3EF1D213923009D0B72 /* ListFilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EF3F3CC1D213923009D0B72 /* ListFilesViewController.m */; };
-		542B172798DB4BE2ECD6DE03 /* libPods-BayunS3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 398421ED7A66E64887B3002D /* libPods-BayunS3.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,12 +94,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1E9DA093219AF79700C9172C /* Embed Frameworks */ = {
+		1E96D40C2785D86600BFE6BF /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				1E718F822851132E00420578 /* Bayun.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -104,13 +108,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1E1974AE2914FD8F007B7625 /* SecureAWSS3TransferUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureAWSS3TransferUtility.h; sourceTree = "<group>"; };
+		1E1974AF2914FD8F007B7625 /* SecureAWSS3TransferUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureAWSS3TransferUtility.m; sourceTree = "<group>"; };
 		1E3467061F4ECAFE005049BF /* SignInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignInViewController.h; sourceTree = "<group>"; };
 		1E3467071F4ECAFE005049BF /* SignInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignInViewController.m; sourceTree = "<group>"; };
 		1E3467091F4ECBAB005049BF /* CognitoLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CognitoLogo.png; sourceTree = "<group>"; };
 		1E34670E1F503406005049BF /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ViewControllers/AppDelegate.h; sourceTree = "<group>"; };
 		1E34670F1F503406005049BF /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = ViewControllers/AppDelegate.m; sourceTree = "<group>"; };
-		1E44B1871F8CC67300600AE2 /* SecureAWSS3TransferUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureAWSS3TransferUtility.h; sourceTree = "<group>"; };
-		1E44B1881F8CC67300600AE2 /* SecureAWSS3TransferUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureAWSS3TransferUtility.m; sourceTree = "<group>"; };
 		1E63D69A1F6BFE2E004B3E08 /* SecureAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureAuthentication.h; sourceTree = "<group>"; };
 		1E63D69B1F6BFE2E004B3E08 /* SecureAuthentication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureAuthentication.m; sourceTree = "<group>"; };
 		1E648FA71D252A3200A53D85 /* SVIndefiniteAnimatedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVIndefiniteAnimatedView.h; sourceTree = "<group>"; };
@@ -124,9 +128,9 @@
 		1E648FAF1D252A3200A53D85 /* SVRadialGradientLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVRadialGradientLayer.h; sourceTree = "<group>"; };
 		1E648FB01D252A3200A53D85 /* SVRadialGradientLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVRadialGradientLayer.m; sourceTree = "<group>"; };
 		1E6BBAE31D2146BD0025AE2D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		1E718F7F285111F600420578 /* Bayun.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bayun.framework; sourceTree = "<group>"; };
 		1E83AE121D41FBD200469E3C /* SecureAWSS3Service.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureAWSS3Service.h; sourceTree = "<group>"; };
 		1E83AE131D41FBD200469E3C /* SecureAWSS3Service.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureAWSS3Service.m; sourceTree = "<group>"; };
-		1E83AE151D41FBD200469E3C /* SecureAWSS3TransferManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecureAWSS3TransferManager.m; sourceTree = "<group>"; };
 		1E8DCBBD1E6D6FAC004D42B0 /* GroupsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupsViewController.h; sourceTree = "<group>"; };
 		1E8DCBBE1E6D6FAC004D42B0 /* GroupsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupsViewController.m; sourceTree = "<group>"; };
 		1E9A8D621F4D8E4300FA494D /* SignUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignUpViewController.h; sourceTree = "<group>"; };
@@ -150,12 +154,13 @@
 		1E9E50911E4B1D0E00CE1F38 /* DropDownView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DropDownView.xib; sourceTree = "<group>"; };
 		1E9E50921E4B1D0E00CE1F38 /* MKDropdownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKDropdownMenu.h; sourceTree = "<group>"; };
 		1E9E50931E4B1D0E00CE1F38 /* MKDropdownMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKDropdownMenu.m; sourceTree = "<group>"; };
-		1EA12A2E1FC40DEE00200605 /* SecureAWSS3TransferManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecureAWSS3TransferManager.h; sourceTree = "<group>"; };
 		1EA792821E94CD2A0012E710 /* GroupMembersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupMembersViewController.h; sourceTree = "<group>"; };
 		1EA792831E94CD2A0012E710 /* GroupMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupMembersViewController.m; sourceTree = "<group>"; };
 		1EA792851E94EBD40012E710 /* Member.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Member.png; sourceTree = "<group>"; };
 		1EBAC9E51E9254B3007F04FB /* GroupFilesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupFilesViewController.h; sourceTree = "<group>"; };
 		1EBAC9E61E9254B3007F04FB /* GroupFilesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupFilesViewController.m; sourceTree = "<group>"; };
+		1EC6B8AD2878773D007B485C /* unchecked-checkbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "unchecked-checkbox.png"; sourceTree = "<group>"; };
+		1EC6B8AE2878774A007B485C /* checked-checkbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checked-checkbox.png"; sourceTree = "<group>"; };
 		1ECAC2CB1E713527003C92A3 /* BayunS3-Test.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "BayunS3-Test.entitlements"; sourceTree = "<group>"; };
 		1ECAC2CC1E728873003C92A3 /* GroupIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GroupIcon.png; sourceTree = "<group>"; };
 		1ECAC2CE1E728ACE003C92A3 /* GroupIcon2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GroupIcon2.png; sourceTree = "<group>"; };
@@ -172,7 +177,7 @@
 		1EF1002B1D22616F00952D33 /* bannerNotify@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bannerNotify@2x.png"; sourceTree = "<group>"; };
 		1EF1002C1D22616F00952D33 /* bannerSuccess.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bannerSuccess.png; sourceTree = "<group>"; };
 		1EF1002D1D22616F00952D33 /* bannerSuccess@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bannerSuccess@2x.png"; sourceTree = "<group>"; };
-		1EF3F3601D213831009D0B72 /* BayunS3-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BayunS3-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1EF3F3601D213831009D0B72 /* BayunS3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BayunS3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EF3F3641D213831009D0B72 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1EF3F36D1D213831009D0B72 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1EF3F3701D213831009D0B72 /* BayunS3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BayunS3.xcdatamodel; sourceTree = "<group>"; };
@@ -210,7 +215,7 @@
 		1EF3F3CC1D213923009D0B72 /* ListFilesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListFilesViewController.m; sourceTree = "<group>"; };
 		1EF3F3F61D213E69009D0B72 /* BayunS3.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BayunS3.pch; sourceTree = "<group>"; };
 		1EF3F3F71D214229009D0B72 /* BayunS3.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BayunS3.entitlements; sourceTree = "<group>"; };
-		398421ED7A66E64887B3002D /* libPods-BayunS3.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BayunS3.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		702E43ACA23516CD2818E520 /* Pods_BayunS3.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BayunS3.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA4247B740D3AAF1C6C825BA /* Pods-BayunS3.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayunS3.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BayunS3/Pods-BayunS3.debug.xcconfig"; sourceTree = "<group>"; };
 		E256A017F4E966D6DA728607 /* Pods-BayunS3.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayunS3.release.xcconfig"; path = "Pods/Target Support Files/Pods-BayunS3/Pods-BayunS3.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -220,7 +225,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				542B172798DB4BE2ECD6DE03 /* libPods-BayunS3.a in Frameworks */,
+				1E718F812851132D00420578 /* Bayun.framework in Frameworks */,
+				127DF80104BC2855A87DAA26 /* Pods_BayunS3.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,14 +267,12 @@
 		1E83AE111D41FBD200469E3C /* SecureAWSS3 */ = {
 			isa = PBXGroup;
 			children = (
-				1E44B1871F8CC67300600AE2 /* SecureAWSS3TransferUtility.h */,
-				1E44B1881F8CC67300600AE2 /* SecureAWSS3TransferUtility.m */,
+				1E1974AE2914FD8F007B7625 /* SecureAWSS3TransferUtility.h */,
+				1E1974AF2914FD8F007B7625 /* SecureAWSS3TransferUtility.m */,
 				1E63D69A1F6BFE2E004B3E08 /* SecureAuthentication.h */,
 				1E63D69B1F6BFE2E004B3E08 /* SecureAuthentication.m */,
 				1E83AE121D41FBD200469E3C /* SecureAWSS3Service.h */,
 				1E83AE131D41FBD200469E3C /* SecureAWSS3Service.m */,
-				1EA12A2E1FC40DEE00200605 /* SecureAWSS3TransferManager.h */,
-				1E83AE151D41FBD200469E3C /* SecureAWSS3TransferManager.m */,
 			);
 			path = SecureAWSS3;
 			sourceTree = "<group>";
@@ -358,7 +362,7 @@
 		1EF3F3611D213831009D0B72 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1EF3F3601D213831009D0B72 /* BayunS3-Test.app */,
+				1EF3F3601D213831009D0B72 /* BayunS3.app */,
 				1EF3F37C1D213831009D0B72 /* BayunS3Tests.xctest */,
 				1EF3F3871D213831009D0B72 /* BayunS3UITests.xctest */,
 			);
@@ -441,6 +445,8 @@
 		1EF3F3B71D213923009D0B72 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				1EC6B8AE2878774A007B485C /* checked-checkbox.png */,
+				1EC6B8AD2878773D007B485C /* unchecked-checkbox.png */,
 				1E3467091F4ECBAB005049BF /* CognitoLogo.png */,
 				1EA792851E94EBD40012E710 /* Member.png */,
 				1ECAC2CE1E728ACE003C92A3 /* GroupIcon2.png */,
@@ -495,7 +501,8 @@
 		B62F3725D8B3392DBD827923 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				398421ED7A66E64887B3002D /* libPods-BayunS3.a */,
+				1E718F7F285111F600420578 /* Bayun.framework */,
+				702E43ACA23516CD2818E520 /* Pods_BayunS3.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -511,10 +518,8 @@
 				1EF3F35C1D213831009D0B72 /* Sources */,
 				1EF3F35D1D213831009D0B72 /* Frameworks */,
 				1EF3F35E1D213831009D0B72 /* Resources */,
-				F055F9EC9544E2DC46A1624E /* [CP] Embed Pods Frameworks */,
-				8906CDCD03543683D8C4273E /* [CP] Copy Pods Resources */,
 				1EACD3D220B2ECF600C9216D /* ShellScript */,
-				1E9DA093219AF79700C9172C /* Embed Frameworks */,
+				1E96D40C2785D86600BFE6BF /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -522,7 +527,7 @@
 			);
 			name = BayunS3;
 			productName = BayunS3;
-			productReference = 1EF3F3601D213831009D0B72 /* BayunS3-Test.app */;
+			productReference = 1EF3F3601D213831009D0B72 /* BayunS3.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1EF3F37B1D213831009D0B72 /* BayunS3Tests */ = {
@@ -572,8 +577,7 @@
 				TargetAttributes = {
 					1EF3F35F1D213831009D0B72 = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = 9Y95R85FXY;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
 								enabled = 0;
@@ -600,7 +604,7 @@
 			};
 			buildConfigurationList = 1EF3F35B1D213831009D0B72 /* Build configuration list for PBXProject "BayunS3" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -626,6 +630,8 @@
 				1EF3F3E51D213923009D0B72 /* backgroungImage-568h@2x.png in Resources */,
 				1EF3F3761D213831009D0B72 /* LaunchScreen.storyboard in Resources */,
 				1EF3F3E81D213923009D0B72 /* fileImage.png in Resources */,
+				1EC6B8AF2878774A007B485C /* unchecked-checkbox.png in Resources */,
+				1EC6B8B02878774A007B485C /* checked-checkbox.png in Resources */,
 				1EF3F3E31D213923009D0B72 /* app_icon.png in Resources */,
 				1EF3F3EB1D213923009D0B72 /* splashScreen.png in Resources */,
 				1EF100341D22616F00952D33 /* bannerAlert.png in Resources */,
@@ -682,22 +688,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "";
-		};
-		8906CDCD03543683D8C4273E /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BayunS3/Pods-BayunS3-resources.sh\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
 		};
 		D88AA58CAC1BAC909F8D26E9 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -715,21 +706,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F055F9EC9544E2DC46A1624E /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BayunS3/Pods-BayunS3-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -756,8 +732,6 @@
 				1E648FB51D252A3200A53D85 /* SVRadialGradientLayer.m in Sources */,
 				1E83AE181D41FBD200469E3C /* SecureAWSS3Service.m in Sources */,
 				1EF100321D22616F00952D33 /* ALAlertBanner.m in Sources */,
-				1E44B1891F8CC67300600AE2 /* SecureAWSS3TransferUtility.m in Sources */,
-				1E83AE191D41FBD200469E3C /* SecureAWSS3TransferManager.m in Sources */,
 				1EF100331D22616F00952D33 /* ALAlertBannerManager.m in Sources */,
 				1E9E50961E4B1D0E00CE1F38 /* DLAVAlertViewController.m in Sources */,
 				1EBAC9E71E9254B3007F04FB /* GroupFilesViewController.m in Sources */,
@@ -772,6 +746,7 @@
 				1EF3F3EE1D213923009D0B72 /* CreateTextFileViewController.m in Sources */,
 				1E9A8D641F4D8E4300FA494D /* SignUpViewController.m in Sources */,
 				1E9E50941E4B1D0E00CE1F38 /* DLAVAlertView.m in Sources */,
+				1E1974B02914FD8F007B7625 /* SecureAWSS3TransferUtility.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -832,8 +807,8 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -875,12 +850,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -891,8 +867,8 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libstdc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -928,11 +904,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -942,24 +920,47 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DA4247B740D3AAF1C6C825BA /* Pods-BayunS3.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				BITCODE_GENERATION_MODE = marker;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = "BayunS3/BayunS3-Test.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 9Y95R85FXY;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
+				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/BayunS3",
 				);
 				GCC_PREFIX_HEADER = BayunS3/BayunS3.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/AWSCognitoIdentityProvider\"",
+					"\"${PODS_ROOT}/Headers/Public/AWSCore\"",
+					"\"${PODS_ROOT}/Headers/Public/AWSS3\"",
+					"\"${PODS_ROOT}/Headers/Public/Reachability\"",
+				);
 				INFOPLIST_FILE = BayunS3/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/AWSCognitoIdentityProvider\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/AWSCore\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/AWSS3\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/Reachability\"",
+					"\"$(SRCROOT)/lib\"",
+					"$(PROJECT_DIR)/",
+				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-isystem",
@@ -972,11 +973,26 @@
 					"\"${PODS_ROOT}/Headers/Public/Reachability\"",
 					"-fembed-bitcode-marker",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bayunsystems.BayunS3-Dev";
-				PRODUCT_NAME = "BayunS3-Test";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"sqlite3\"",
+					"-l\"z\"",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+					"-framework",
+					"\"UIKit\"",
+					"-lstdc++",
+					"-lz",
+				);
+				PRODUCT_NAME = BayunS3;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "BayunS3-Dev";
-				SWIFT_VERSION = 4.0;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_INCLUDE_PATHS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "BayunS3/BayunS3-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -985,24 +1001,47 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E256A017F4E966D6DA728607 /* Pods-BayunS3.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				BITCODE_GENERATION_MODE = bitcode;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = "BayunS3/BayunS3-Test.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = 9Y95R85FXY;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
+				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/BayunS3",
 				);
 				GCC_PREFIX_HEADER = BayunS3/BayunS3.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/AWSCognitoIdentityProvider\"",
+					"\"${PODS_ROOT}/Headers/Public/AWSCore\"",
+					"\"${PODS_ROOT}/Headers/Public/AWSS3\"",
+					"\"${PODS_ROOT}/Headers/Public/Reachability\"",
+				);
 				INFOPLIST_FILE = BayunS3/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/AWSCognitoIdentityProvider\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/AWSCore\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/AWSS3\"",
+					"\"$PODS_CONFIGURATION_BUILD_DIR/Reachability\"",
+					"\"$(SRCROOT)/lib\"",
+					"$(PROJECT_DIR)/",
+				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-isystem",
@@ -1015,11 +1054,26 @@
 					"\"${PODS_ROOT}/Headers/Public/Reachability\"",
 					"-fembed-bitcode",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bayunsystems.BayunS3-Dev";
-				PRODUCT_NAME = "BayunS3-Test";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"sqlite3\"",
+					"-l\"z\"",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+					"-framework",
+					"\"UIKit\"",
+					"-lstdc++",
+					"-lz",
+				);
+				PRODUCT_NAME = BayunS3;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "BayunS3-Dev";
-				SWIFT_VERSION = 4.0;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_INCLUDE_PATHS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "BayunS3/BayunS3-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

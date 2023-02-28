@@ -211,8 +211,7 @@ public class Utility {
                 errorMessage = Constants.ERROR_USER_INACTIVE;
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_APP_NOT_LINKED)) {
-                errorMessage = "App not linked with Employee account. Please link the app through " +
-                        "admin panel.";
+                errorMessage = "Application is not linked with this Employee account. Login to Admin Panel and link the application.";
             }
             else if (error.equalsIgnoreCase(BayunError.ERROR_INVALID_APP_ID)) {
                 errorMessage = "App doesn't exist for given App Id.";
@@ -321,6 +320,20 @@ public class Utility {
             }
             else if ((error.equalsIgnoreCase(BayunError.ERROR_DUPLICATE_ENTRY_CREATED))) {
                 errorMessage = "Tried to create duplicate entry.";
+            } else if ((error.equalsIgnoreCase(BayunError.ERROR_LINK_USER_ACCOUNT))) {
+                errorMessage = "Login to Admin Panel to link this User Account with an existing Employee Account to continue using the SDK APIs.";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_NO_USER_ACCOUNT_WITHOUT_PASSWORD))) {
+                errorMessage = "There is no User Account to login without password.";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_USER_PASSWORD_VERIFICATION_ENABLED))) {
+                errorMessage = "There is no User Account to login without password.";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_EMPLOYEE_ALREADY_EXISTS))) {
+                errorMessage = "Employee already exist with this complayee";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_USER_ALREADY_EXISTS))) {
+                errorMessage = "User already exist with this complayee";
+            }else if ((error.equalsIgnoreCase(BayunError.ERROR_EMPLOYEE_APP_NOT_REGISTERED))) {
+                errorMessage = "Employee App Is Not Registered.";
+            }else if ((error.equalsIgnoreCase(BayunError.BAYUN_ERROR_REGISTRATION_FAILED_EMPLOYEE_APP_IS_NOT_APPROVED))) {
+                errorMessage = "Registration failed. Application is not approved, please contact your Admin for the application approval.";
             }
             else if((error.equalsIgnoreCase(BayunError.ERROR_INVALID_APP_SECRET))) {
                 if (BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_IS_BAYUN_LOGGED_IN)
@@ -342,7 +355,8 @@ public class Utility {
                 }
             }
             else {
-                errorMessage = Constants.ERROR_SOMETHING_WENT_WRONG;
+                errorMessage = error;
+                // errorMessage = Constants.ERROR_SOMETHING_WENT_WRONG;
             }
         }
         displayToast(errorMessage, Toast.LENGTH_SHORT);

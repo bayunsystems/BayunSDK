@@ -5,6 +5,25 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Sandbox keys -->
+    <string name="application_key_sandbox">enter_your_sandbox_application_key_here</string>
+    <string name="application_secret_key_sandbox">enter_your_sandbox_application_secret_key_here</string>
+
+
+    <!-- Production keys -->
+    <string name="application_key_prod">enter_your_production_application_key_here</string>
+    <string name="application_key_secret_prod">enter_your_production_application_secret_key_here</string>
+
+    <!-- Bayun Base URL-->
+    <string name="base_url">enter_your_bayun_base_url_here</string>
+
+    <!-- application id-->
+    <string name="app_id">enter_your_app_id_here</string>
+    <!-- application secret -->
+    <string name="app_secret">enter_your_app_secret_here</string>
+    <!-- application salt -->
+    <string name="app_salt">enter_your_application_salt_here</string>
+
     <!--list view file activity values-->
     <string name="more_options">More</string>
 

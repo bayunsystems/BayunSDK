@@ -28,8 +28,12 @@ public class Constants {
     public static final String FILE_SIZE_BYTE = "bytes";
     public static final String FILE_NAME_SPLIT_CHAR = "_";
     public static final int LIST_SIZE_EMPTY = 0;
-    public static final String COMPANY_NAME = "BayunS3Pool";
+   public static final String COMPANY_NAME = "TestCompany";
+  
 
+
+
+    public static final String GROUP_ID_EXTRA = "groupIdExtra";
     public static final String DOWNLOAD_FILE_NAME = "file_name";
     public static final String SHARED_PREFERENCES_GROUP_NAME = "group_name";
     public static final String FILE_ALREADY_EXIST = "file already exist";
@@ -56,4 +60,15 @@ public class Constants {
     public static final String MY_GROUPS_ARRAY = "BayunMyGroupsArray";
     public static final String UNJOINED_GROUPS_ARRAY = "BayunUnjoinedGroupsArray";
     public static final String GET_GROUP = "BayunGetGroup";
+    public static final String SUCCESS = "Success";
+    public static final String EMPLOYEE_PUBLIC_KEY = "employeePublicKey";
+
+
+    public static final String CODE_VERIFY_SECURITY_QUESTIONS = "VerifySecurityQuestions";
+    public static final String CODE_VERIFY_PASSPHRASE = "VerifyPassphrase";
+    public static final String CODE_SET_SECURITY_QUESTIONS = "SetSecurityQuestions";
+    public static final String CODE = "code";
+    public static final String SECURITY_QUESTIONS = "securityQuestions";
+    public static final String EMPLOYEE_PUBLICKEY = "employeePublicKey";
+
 }

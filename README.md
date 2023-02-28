@@ -8,32 +8,45 @@ The following sections give an overview of different components present in this 
 
 ## `BayunCoreSDK` Framework
 
-BayunCoreSDK provides a simple to use framework for locking/unlocking of different data-types for employees of a company, including files, text, and binary data. Developers can integrate this framework into any application to start protecting the application data. This core SDK forms the basis for all security and control functionality provided by Bayun. For sample usage of the SDK, see the different example apps in TestApps folder below to get started quickly. There are also different variants of the SDK for different OS environments as follows: 
-
-#### iOS
-
-- `BayunCore.h`: contains methods that can be used for encryption and decryption.
-- `BayunError.h`: contains the different errors thrown by the library.
-
+BayunCoreSDK provides a simple to use framework for locking/unlocking of different data-types for employees of a company, including files, text, and binary data. Developers can integrate this SDK into any application to start protecting the application data. This core SDK forms the basis for all security and control functionality provided by Bayun. For sample usage of the SDK, see the different example apps in TestApps folder below to get started quickly. There are also different variants of the SDK for different OS environments as follows: 
 
 #### Android
 
-- `BayunCore.java`: contains methods that can be used for encryption and decryption.
+- `BayunCore.java`: contains methods that can be used for locking and unlocking.
+
+#### C++
+
+- `BayunCore.h`: contains methods that can be used for locking and unlocking.
+
+#### iOS
+
+- `BayunCore.h`: contains methods that can be used for locking and unlocking.
+- `BayunError.h`: contains the different errors thrown by the library.
+
+
+#### JavaScript
+
+- `bayun.js`: contains methods that can be used for locking and unlocking.
 
 
 ## Bayun `S3Wrapper` SDK
 
 As the name suggests, it provides a wrapper on top of AWS S3's original SDK, to make life easy for developers storing any part of their application data on S3. It internally relies on BayunCoreSDK to do the actual locking or unlocking of objects, before uploading them to an S3 bucket, or after downloading them from a bucket respectively. The developer uses exactly similar API as provided by the original AWS S3 SDK, and the underlying calls take care of all encryption/decryption and key-management transparently, while keeping the user or enterprise IT in full control. The developer herself doesn't need to worry about any key-management, or even having any access to any customer data or encryption keys. For sample usage of the S3Wrapper SDK, see the BayunS3 TestApp below. 
 
-#### iOS
-
-- `SecureAWSS3Service.h` overrides `AWSS3Service.h` provided by Amazon
-- `SecureAWSS3TransferManager.h` overrides `AWSS3TransferManager.h`
 
 #### Android
 
 - `SecureAmazonS3Client` overrides `AmazonS3Client` provided by Amazon
 - `SecureTransferUtility` overrides `TransferUtility`
+
+#### iOS
+
+- `SecureAWSS3Service.h` overrides `AWSS3Service.h` provided by Amazon
+- `SecureAWSS3TransferUtility.h` overrides `AWSS3TransferUtility.h`
+
+#### JS
+
+- `secureS3` overrides `S3` provided by Amazon
 
 ## `TestApps` Sample Applications
 
@@ -41,12 +54,19 @@ A set of example applications that use the above SDKs to showcase common usage.
 
 #### `BayunRC`
 
-A sample application that uses BayunCoreSDK to provide end-to-end encryption for SMS messages. It uses RingCentral's APIs to send and receive secure "Pager" messages within the same organization. Users can login with their RingCentral phone-number and extension, and communicate securely with other extensions associated with the same main number, without RingCentral or anyone else having access to the message contents (including Bayun itself). RingCentral's own app sees these messages as garbled text.
-
-For detailed step-by-step instructions on how to build and run the iOS application, see the README file in the folder [iOS/TestApps/BayunRC](iOS/TestApps/BayunRC).
+A sample application in Android and iOS that uses BayunCoreSDK to provide end-to-end encryption for SMS messages. It uses RingCentral's APIs to send and receive secure "Pager" messages within the same organization. Users can login with their RingCentral phone-number and extension, and communicate securely with other extensions associated with the same main number, without RingCentral or anyone else having access to the message contents (including Bayun itself). RingCentral's own app sees these messages as garbled text.
 
 
 #### `BayunS3`
 
-Sample application that uses overridden methods from S3Wrapper SDK for secure storage onto AWS S3. The app itself works exactly similar to the case of an app using the original AWS S3 SDK directly. However, the wrapper SDK automatically encrypts a file before uploading it to the S3 bucket and decrypts it after downloading it, without the application having to deal with encryption keys, etc.
+Sample application in Android, iOS and JavaScript that uses overridden methods from S3Wrapper SDK for secure storage onto AWS S3. The app itself works exactly similar to the case of an app using the original AWS S3 SDK directly. However, the wrapper SDK automatically encrypts a file before uploading it to the S3 bucket and decrypts it after downloading it, without the application having to deal with encryption keys, etc.
+
+## Bayun SDKs references to the Developer Guides
+
+### `Android` - https://bayun.gitbook.io/bayuncoresdk-android/
+### `C++` - https://bayun.gitbook.io/bayuncoresdk-cpp/
+### `iOS` - https://bayun.gitbook.io/bayuncoresdk-ios/
+### `JavaScript` - https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/
+
+
 

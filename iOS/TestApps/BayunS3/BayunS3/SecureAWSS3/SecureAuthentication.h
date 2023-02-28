@@ -1,40 +1,51 @@
 //
 //  SecureAuthentication.h
-//  CognitoYourUserPoolsSample
-//
-//  Created by Preeti Gaur on 07/09/17.
-//  Copyright © 2017 Bayun Systems, Inc. All rights reserved.
+//  Copyright © 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import "AWSCognitoIdentityProvider.h"
 
 typedef NS_ENUM(NSInteger, SecureAuthenticationErrorType) {
-    SecureAuthenticationErrorUnknown,
-    SecureAuthenticationErrorFailed,
-    SecureAuthenticationErrorInvalidPassword,
-    SecureAuthenticationErrorPasscodeAuthenticationCanceledByUser,
-    SecureAuthenticationErrorOneOrMoreIncorrectAnswers,
-    SecureAuthenticationErrorInvalidPassphrase,
-    SecureAuthenticationErrorInvalidAppId,
-    SecureAuthenticationErrorInvalidCompanyName,
-    SecureAuthenticationErrorInvalidCredentials,
-    SecureAuthenticationErrorAccessDenied,
-    SecureAuthenticationErrorInvalidAppSecret,
-    SecureAuthenticationErrorNotSupported,
-    SecureAuthenticationErrorInternetConnection,
-    SecureAuthenticationErrorAppNotLinked,
-    SecureAuthenticationErrorUserInActive,
-    SecureAuthenticationErrorDevicePasscodeNotSet,
-    SecureAuthenticationErrorSomethingWentWrong,
-    SecureAuthenticationErrorNoInternetConnection
+  SecureAuthenticationErrorUnknown,
+  SecureAuthenticationErrorFailed,
+  SecureAuthenticationErrorInvalidPassword,
+  SecureAuthenticationErrorPasscodeAuthenticationCanceledByUser,
+  SecureAuthenticationErrorOneOrMoreIncorrectAnswers,
+  SecureAuthenticationErrorInvalidPassphrase,
+  SecureAuthenticationErrorInvalidAppId,
+  SecureAuthenticationErrorInvalidCompanyName,
+  SecureAuthenticationErrorInvalidCredentials,
+  SecureAuthenticationErrorAccessDenied,
+  SecureAuthenticationErrorInvalidAppSecret,
+  SecureAuthenticationErrorNotSupported,
+  SecureAuthenticationErrorInternetConnection,
+  SecureAuthenticationErrorAppNotLinked,
+  SecureAuthenticationErrorUserInActive,
+  SecureAuthenticationErrorDevicePasscodeNotSet,
+  SecureAuthenticationErrorSomethingWentWrong,
+  SecureAuthenticationErrorNoInternetConnection,
+  SecureAuthenticationErrorCouldNotConnectToServer,
+  SecureAuthenticationErrorEmployeeDoesNotExists,
+  SecureAuthenticationErrorEmployeeAlreadyExists,
+  SecureAuthenticationErrorEmployeeAccountHasPasswordEnabled,
+  SecureAuthenticationErrorUserAlreadyExists,
+  SecureAuthenticationErrorLinkEmployeeUserAccount,
+  SecureAuthenticationErrorUserAccountHasPasswordEnabled,
+  SecureAuthenticationErrorEmployeeNotLinkedToApp,
+  SecureAuthenticationErrorUserIsNotRegistered,
+  SecureAuthenticationErrorEmployeeAppNotRegistered,
+  SecureAuthenticationErrorEmployeeAuthorizationIsPending,
+  SecureAuthenticationErrorRegistrationFailedAppNotApproved
 };
 
 @interface SecureAuthentication : NSObject
 
 @property (nonatomic,strong) NSString *companyName;
+@property (nonatomic,strong) NSString *email;
 @property (nonatomic,strong) NSString *appId;
 @property (nonatomic,strong) NSString *appSecret;
+@property (nonatomic,strong) NSString *appSalt;
 
 + (instancetype)sharedInstance;
 
@@ -43,6 +54,7 @@ typedef NS_ENUM(NSInteger, SecureAuthenticationErrorType) {
        password: (NSString*)password
  userAttributes: (NSArray<AWSCognitoIdentityUserAttributeType *> *)userAttributes
  validationData: (NSArray<AWSCognitoIdentityUserAttributeType *> *)validationData
+registerBayunWithPwd:(BOOL)registerBayunWithPwd
       withBlock:(AWSContinuationBlock)block;
 
 - (void)confirmSignUpForUser:(AWSCognitoIdentityUser*)user

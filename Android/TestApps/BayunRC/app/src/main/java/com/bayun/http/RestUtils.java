@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import com.bayun.app.BayunApplication;
 import com.bayun.util.Constants;
 import com.bayun.util.Utility;
-import com.squareup.okhttp.OkHttpClient;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -39,7 +38,7 @@ class RestUtils {
             .setRequestInterceptor(requestInterceptor)
             .setLogLevel(Constants.RETROFIT_LOG_LEVEL)
             .setErrorHandler(new ErrorHandler())
-            .setClient(new BayunClient(new OkHttpClient()))
+            .setClient(new BayunClient())
             .build();
 
     private static final RestAdapter nonRestAdapter = new RestAdapter.Builder()
@@ -62,7 +61,7 @@ class RestUtils {
             .setRequestInterceptor(requestInterceptor)
             .setLogLevel(Constants.RETROFIT_LOG_LEVEL)
             .setErrorHandler(new ErrorHandler())
-            .setClient(new BayunClient(new OkHttpClient()))
+            .setClient(new BayunClient())
             .build();
 
     private static final RestAdapter nonRestSandboxAdapter = new RestAdapter.Builder()

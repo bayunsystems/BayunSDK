@@ -1,7 +1,6 @@
 package com.bayun.http;
 
-
-import com.bayun.http.model.*;
+import com.bayun.http.model.Extension;
 import com.bayun.http.model.ExtensionListInfo;
 import com.bayun.http.model.LoginInfo;
 import com.bayun.http.model.MessageInfo;
@@ -35,6 +34,7 @@ import retrofit.http.Query;
 
 
     @GET("/restapi/v1.0/account/~/extension/~/message-store?messageType=Pager")
+   // void getMessageList( Callback<MessageListInfo> callback);
     void getMessageList(@Query("dateFrom") String date, Callback<MessageListInfo> callback);
 
     @GET("/restapi/v1.0/account/~/extension")

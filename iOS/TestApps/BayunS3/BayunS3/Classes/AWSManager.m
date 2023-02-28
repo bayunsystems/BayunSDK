@@ -3,15 +3,13 @@
 //  BayunS3
 //
 //  Created by Preeti Gaur on 02/06/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "AWSManager.h"
-#import "SecureAWSS3TransferManager.h"
+#import "SecureAWSS3TransferUtility.h"
 #import "SecureAWSS3Service.h"
 #import <MobileCoreServices/MobileCoreServices.h>
-#import "SecureAWSS3TransferManager.h"
-
 
 @implementation AWSManager
 
@@ -25,69 +23,82 @@
 }
 
 - (void) setEncryptionPolicy:(BayunEncryptionPolicy)policy {
-    [SecureAWSS3TransferManager defaultS3TransferManager].encryptionPolicy = policy;
+    [SecureAWSS3TransferUtility defaultS3TransferUtility].encryptionPolicy = policy;
 }
 
 - (void) setKeyGenerationPolicy:(BayunKeyGenerationPolicy)policy {
-    [SecureAWSS3TransferManager defaultS3TransferManager].keyGenerationPolicy = policy;
+  [SecureAWSS3TransferUtility defaultS3TransferUtility].keyGenerationPolicy = policy;
 }
 
 - (void) setGroupId:(NSString*)groupId {
-    [SecureAWSS3TransferManager defaultS3TransferManager].groupId = groupId;
+  [SecureAWSS3TransferUtility defaultS3TransferUtility].groupId = groupId;
 }
 
 /**
  Uploads a file to Amazon S3 bucket.
  @param filePath Local Path of the file to be uploaded.
  */
-- (void)uploadFile:(NSURL*)fileURL bucketName:(NSString*)bucketName
+- (void)uploadFile:(NSURL*)fileURL
+        bucketName:(NSString*)bucketName
            success:(void (^)(void))success
            failure:(void (^)(NSError*))failure{
-    __weak typeof(self) weakSelf = self;
+  __weak typeof(self) weakSelf = self;
     
-    //create the AWSS3TransferManagerUploadRequest
-    
-    AWSS3TransferManagerUploadRequest *uploadRequest = [AWSS3TransferManagerUploadRequest new];
-    uploadRequest.bucket = bucketName;
-    uploadRequest.key = [fileURL lastPathComponent];
-    uploadRequest.body = fileURL;
-    
-    uploadRequest.uploadProgress =  ^(int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if([weakSelf.delegate respondsToSelector:@selector(s3UploadProgress:)])
-                [weakSelf.delegate s3UploadProgress:(float)totalBytesSent/(float)totalBytesExpectedToSend];
-        });
-    };
-    
-    //Create the SecureAWSS3TransferManager object
-    SecureAWSS3TransferManager *transferManager = [SecureAWSS3TransferManager defaultS3TransferManager];
-    
-    weakSelf.isUploadRunning = YES;
-    
-    // call the SecureAWSS3TransferManager upload method with the uploadRequest , AWSExecutor (responsible for determining how the continuation block will be run) and the completion block (taking the executor and the completion block as parameters to have synchronous secure upload request)
-    [transferManager upload:uploadRequest continueWithExecutor:[AWSExecutor mainThreadExecutor]  withBlock:^id(AWSTask *task) {
-        
-        if (task.error) {
-            
-            if ([[task.error.userInfo valueForKey:@"Message"] isEqualToString:@"The specified bucket does not exist"]) {
-                [self createS3BucketWithName:bucketName success:^{
-                    [self uploadFile:fileURL bucketName:bucketName success:success failure:failure];
-                } failure:failure];
-            } else {
-                //Upload Failed
-                //[OPTIONAL] The following error handling conditions are optional and client app may apply checks against the SecureAWSS3TransferManagerErrorType according to its requirement
-                
-                if (failure) {
-                    failure(task.error);
-                }
-            }
-        } else {
-            if (success) {
-                success();
-            }
+  SecureAWSS3TransferUtility *transferUtility = [SecureAWSS3TransferUtility defaultS3TransferUtility];
+  
+  AWSS3TransferUtilityUploadExpression *expression = [AWSS3TransferUtilityUploadExpression new];
+  expression.progressBlock = ^(AWSS3TransferUtilityTask *task, NSProgress *progress) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if([weakSelf.delegate respondsToSelector:@selector(s3UploadProgress:)]) {
+        [weakSelf.delegate s3UploadProgress:progress.fractionCompleted];
+      }
+    });
+  };
+  
+  
+  AWSS3TransferUtilityUploadCompletionHandlerBlock completionHandler = ^(AWSS3TransferUtilityUploadTask *task, NSError *error) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (error) {
+        //weakSelf.statusLabel.text = @"Failed to Upload";
+      } else {
+        if (success) {
+          success();
         }
-        return nil;
-    }];
+      }
+    });
+  };
+  
+  NSString *fileExtension = [fileURL pathExtension];
+  NSString *UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
+  NSString *contentType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)UTI, kUTTagClassMIMEType);
+  
+  [[transferUtility uploadFile:fileURL bucket:bucketName key:[fileURL lastPathComponent] contentType:contentType expression:expression completionHandler:completionHandler] continueWithBlock:^id(AWSTask *task) {
+    
+    if (task.error) {
+      
+      if ([[task.error.userInfo valueForKey:@"Message"] isEqualToString:@"The specified bucket does not exist"]) {
+        [self createS3BucketWithName:bucketName success:^{
+          [self uploadFile:fileURL bucketName:bucketName success:success failure:failure];
+        } failure:failure];
+      } else {
+        //Upload Failed
+        //[OPTIONAL] The following error handling conditions are optional and client app may apply checks against the SecureAWSS3TransferManagerErrorType according to its requirement
+        
+        if (failure) {
+          failure(task.error);
+        }
+      }
+    } else {
+      if (success) {
+        success();
+      }
+    }
+    return nil;
+  }];
+  
+  weakSelf.isUploadRunning = YES;
+  
+  // call the SecureAWSS3TransferManager upload method with the uploadRequest , AWSExecutor (responsible for determining how the continuation block will be run) and the completion block (taking the executor and the completion block as parameters to have synchronous secure upload request)
 }
 
 /**
@@ -106,37 +117,53 @@
     }
     
     __weak typeof(self) weakSelf = self;
-    
-    //create the AWSS3TransferManagerDownloadRequest
-    AWSS3TransferManagerDownloadRequest *downloadRequest = [AWSS3TransferManagerDownloadRequest new];
-    downloadRequest.bucket = bucketName;
-    downloadRequest.key = [fileURL lastPathComponent];
-    downloadRequest.downloadingFileURL = fileURL;
-    downloadRequest.downloadProgress  = ^(int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if([weakSelf.delegate respondsToSelector:@selector(s3DownloadProgress:)])
-                [weakSelf.delegate s3DownloadProgress:(float)totalBytesWritten/(float)totalBytesExpectedToWrite];
-        });
-    };
-    
-    //Create the SecureAWSS3TransferManager object
-    SecureAWSS3TransferManager *transferManager = [SecureAWSS3TransferManager defaultS3TransferManager];
-    
-    // call the SecureAWSS3TransferManager download method with the downloadRequest , AWSExecutor (responsible for determining how the continuation block will be run) and the completion block(taking the executor and the completion block as parameters to have synchronous secure download request)
-    [transferManager download:downloadRequest continueWithExecutor:[AWSExecutor mainThreadExecutor]  withBlock:^id(AWSTask *task) {
+  
+  //Configure AWSServiceManager defaultServiceConfiguration
+  SecureAWSS3TransferUtility *transferUtility = [SecureAWSS3TransferUtility defaultS3TransferUtility];
+  
+  AWSS3TransferUtilityDownloadCompletionHandlerBlock completionHandler = ^(AWSS3TransferUtilityDownloadTask *task, NSURL *location, NSData *data, NSError *error) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [SVProgressHUD dismiss];
+      if (error) {
+      }
+      if (data) {
+        UIImage *image = [UIImage imageWithData:data];
+        if (success) {
+          success();
+        }
+      }
+      
+      if (location) {
+        if (success) {
+          success();
+        }
+      }
+    });
+  };
+  
+  //Create the TransferUtility expression and add the progress block to it.
+  //This would be needed to report on progress tracking
+  AWSS3TransferUtilityDownloadExpression *expression = [AWSS3TransferUtilityDownloadExpression new];
+  expression.progressBlock = ^(AWSS3TransferUtilityTask *task, NSProgress *progress) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if([weakSelf.delegate respondsToSelector:@selector(s3DownloadProgress:)])
+        [weakSelf.delegate s3DownloadProgress:progress.fractionCompleted];
+    });
+  };
+  
+  [[transferUtility downloadToURL:fileURL bucket:bucketName key:[fileURL lastPathComponent] expression:expression completionHander:completionHandler] continueWithBlock:^id(AWSTask *task){
         //Download Completed
         if (task.error){
-            if (failure) {
-                failure(task.error);
-            }
+          if (failure) {
+            failure(task.error);
+          }
         } else {
-            if (success) {
-                success();
-            }
+          if (success) {
+            success();
+          }
         }
         return nil;
-    }];
-    
+  }];
 }
 
 /**
@@ -289,8 +316,6 @@
  Cancels all of the upload and download requests.
  */
 - (void)s3CancelAll {
-    SecureAWSS3TransferManager *transferManager = [SecureAWSS3TransferManager defaultS3TransferManager];
-    [transferManager cancelAll];
 }
 
 

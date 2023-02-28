@@ -10,16 +10,17 @@
 
         <ImageView
             android:id="@+id/activity_create_view_file_back_image_view"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:onClick="backButtonImageClick"
-            android:src="@drawable/ic_ab_back_holo_dark_am" />
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="5dp"
+            android:src="@drawable/ic_ab_back_holo_dark_am"
+            />
 
         <TextView
             android:id="@+id/activity_view_file_fileName_text"
@@ -52,7 +53,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/activity_view_file_navigation_bar"
-        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/rounded_corner_edit_text"
         android:gravity="start"
         android:padding="5dp"
@@ -73,4 +77,6 @@
             android:layout_centerInParent="true" />
 
     </RelativeLayout>
+
+
 </RelativeLayout>

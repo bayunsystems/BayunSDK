@@ -1,0 +1,7 @@
+# Mac crap
+.DS_Store
+BayunRC.xcodeproj/xcuserdata/
+BayunRC.xcodeproj/project.xcworkspace/xcuserdata/
+build/
+Podfile.lock
+Pods

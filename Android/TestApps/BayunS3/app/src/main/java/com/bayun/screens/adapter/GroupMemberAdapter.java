@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bayun.R;
+import com.bayun_module.GroupMember;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 
 public class GroupMemberAdapter extends RecyclerView.Adapter<GroupMemberAdapter.ViewHolder>{
-    public static List<HashMap> list;
+    public static List<GroupMember> list;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView employeeId;
@@ -30,7 +31,7 @@ public class GroupMemberAdapter extends RecyclerView.Adapter<GroupMemberAdapter.
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public GroupMemberAdapter(List<HashMap> list) {
+    public GroupMemberAdapter(List<GroupMember> list) {
         GroupMemberAdapter.list = list;
     }
 
@@ -49,8 +50,8 @@ public class GroupMemberAdapter extends RecyclerView.Adapter<GroupMemberAdapter.
     public void onBindViewHolder(GroupMemberAdapter.ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        String companyName = (String) list.get(position).get("companyName");
-        String employeeId = (String) list.get(position).get("companyEmployeeId");
+        String companyName = list.get(position).companyName;
+        String employeeId =  list.get(position).companyEmployeeId;
         holder.companyName.setText(companyName);
         holder.employeeId.setText(employeeId);
     }

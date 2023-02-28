@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.bayun">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,10 +13,17 @@
         android:name=".app.BayunApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
-        android:theme="@style/AppTheme">
-        <activity android:name=".screens.RegisterActivity">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        tools:replace="android:allowBackup"
+
+        >
+
+        <activity android:name=".screens.RegisterActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -24,8 +32,9 @@
         <activity
             android:name=".screens.ConversationViewActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <service android:name="com.bayun_module.BayunBackgroundService"/>
-        <activity android:name="com.bayun_module.EmptyActivity" />
+       
+
+       
     </application>
 
 </manifest>

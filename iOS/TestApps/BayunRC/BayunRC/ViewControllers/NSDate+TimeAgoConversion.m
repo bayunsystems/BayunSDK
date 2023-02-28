@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 17/06/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "NSDate+TimeAgoConversion.h"
@@ -25,6 +25,14 @@
     
     int minutes;
     
+//    if(deltaSeconds < 5)
+//    {
+//        return @"Just now";
+//    }
+//    else if(deltaSeconds < 60)
+//    {
+//        return [self stringFromFormat:@"%%d %@seconds ago" withValue:deltaSeconds];
+//    }
     if(deltaSeconds < 60)
     {
         return @"few seconds ago";

@@ -4,14 +4,23 @@
     <!-- app name -->
     <string name="app_name">BayunS3-Test</string>
 
-    <!-- AWS keys -->
+    <!-- AWS S3 keys -->
     <string name="aws_access_key">enter_your_aws_access_key_here</string>
     <string name="aws_secret_key">enter_your_aws_secret_key_here</string>
 
-    <!-- app id -->
-    <string name="app_id">enter_your_app_id_here</string>
-    <!-- app secret -->
-    <string name="app_secret">enter_your_app_secret_here</string>
+    base_url
+    <!-- Bayun Base URL -->
+    <string name="base_url">enter_your_bayun_base_url_here</string>
+
+    <!-- Bayun Application Id -->
+    <string name="app_id">enter_your_bayun_application_id_here</string>
+    <!--Bayun Application Secret -->
+    <string name="app_secret">enter_your_bayun_application_secret_here</string>
+    <!--Bayun Application Salt -->
+    <string name="app_salt">enter_your_bayun_application_salt_here</string>
+
+
+
 
     <!-- login activity values -->
     <string name="company_name">Company</string>

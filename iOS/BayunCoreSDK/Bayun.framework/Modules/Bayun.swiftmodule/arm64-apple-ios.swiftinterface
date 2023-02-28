@@ -1,0 +1,53 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
+// swift-module-flags: -target arm64-apple-ios9.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -Onone -module-name Bayun
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+@_exported import Bayun
+import Foundation
+import Swift
+import UIKit
+import _Concurrency
+import _StringProcessing
+public struct GF256 : Swift.Equatable, Swift.CustomDebugStringConvertible {
+  public var debugDescription: Swift.String {
+    get
+  }
+  public enum Errors : Swift.Error {
+    case missingExponent(Swift.Int)
+    case missingLogarithm(Swift.Int)
+    case divideByZero
+  }
+}
+public func == (a: Bayun.GF256, b: Bayun.GF256) -> Swift.Bool
+@objc @objcMembers public class Secret : ObjectiveC.NSObject {
+  @objc final public let shares: Swift.UInt8
+  @objc final public let threshold: Swift.UInt8
+  @objc final public let data: Foundation.Data
+  @objc public init(data: Foundation.Data, threshold: Swift.Int, shares: Swift.Int) throws
+  @objc public func split() throws -> [Bayun.Share]
+  @objc public func combine(shares: [Bayun.Share]) throws -> Foundation.Data
+  @objc deinit
+}
+public enum Errors : Swift.Error {
+  case unsupportedLength
+  case thresholdLargerThanShares
+  case thresholdTooLow
+  case splitOnZero
+  case shareDataLengthMismatch
+  case shareDataTooShort
+  public static func == (a: Bayun.Errors, b: Bayun.Errors) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @objcMembers public class Share : ObjectiveC.NSObject {
+  @objc public init(point: Swift.UInt8, bytes: [Swift.UInt8])
+  @objc public init(data: Foundation.Data) throws
+  @objc public var data: Foundation.Data {
+    @objc get
+  }
+  @objc deinit
+}
+extension Bayun.Errors : Swift.Equatable {}
+extension Bayun.Errors : Swift.Hashable {}

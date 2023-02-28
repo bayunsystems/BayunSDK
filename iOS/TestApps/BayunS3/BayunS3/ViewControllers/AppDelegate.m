@@ -3,20 +3,17 @@
 //  BayunS3
 //
 //  Created by Preeti Gaur on 27/06/16.
-//  Copyright © 2016 Bayun Systems, Inc. All rights reserved.
+//  Copyright © 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "AppDelegate.h"
 #import "ListFilesViewController.h"
 #import <Reachability/Reachability.h>
+#import "AWSS3/AWSS3TransferUtility.h"
 #import <AWSCore/AWSCore.h>
-#import <AWSCognito/AWSCognito.h>
 #import "AWSCognitoIdentityUserPool.h"
 #import "SecureAuthentication.h"
 #import <Bayun/BayunCore.h>
-
-
-
 
 @interface AppDelegate ()
 
@@ -32,10 +29,18 @@
     
     // Override point for customization after application launch.
     
-    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:3/255.0f green:97/255.0f blue:134/255.0f alpha:1.0]];
-    
+  [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+  [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+  [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:3/255.0f green:97/255.0f blue:134/255.0f alpha:1.0]];
+
+  if (@available(iOS 15.0, *)) {
+    UINavigationBarAppearance *navBarAppearance = [[UINavigationBarAppearance alloc] init];
+    [navBarAppearance configureWithOpaqueBackground];
+    navBarAppearance.backgroundColor = [UIColor colorWithRed:3/255.0f green:97/255.0f blue:134/255.0f alpha:1.0];
+    [UINavigationBar appearance].standardAppearance = navBarAppearance;
+    [UINavigationBar appearance].scrollEdgeAppearance = [UINavigationBar appearance].standardAppearance;
+  }
+        
     
     Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -44,12 +49,6 @@
                                                object:nil];
     [networkReachability startNotifier];
     self.isNetworkReachable = networkReachability.currentReachabilityStatus;
-    
-    UINavigationController *navigationController;
-  
-    NSDictionary *textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,nil];
-    [navigationController.navigationBar setTitleTextAttributes:textTitleOptions];
-    [navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:3/255.0f green:97/255.0f blue:134/255.0f alpha:1.0]];
     
     [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
     
@@ -65,26 +64,34 @@
     AWSCognitoIdentityUserPool *pool = [AWSCognitoIdentityUserPool CognitoIdentityUserPoolForKey:@"UserPool"];
     pool.delegate = self;
     
-    
     //Configure AWSServiceManager defaultServiceConfiguration
     AWSCognitoCredentialsProvider *credentialsProvider = [[AWSCognitoCredentialsProvider alloc]
                                                           initWithRegionType:CognitoIdentityUserPoolRegion
                                                           identityPoolId:CognitoIdentityPoolId];
     
-    AWSServiceConfiguration *awsServiceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion
-                                                                                   credentialsProvider:credentialsProvider];
+    AWSServiceConfiguration *awsServiceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:CognitoIdentityUserPoolRegion credentialsProvider:credentialsProvider];
     
     [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = awsServiceConfiguration;
+
+    AWSS3TransferUtilityConfiguration *tuConfig = [AWSS3TransferUtilityConfiguration new];
+    tuConfig.timeoutIntervalForResource = 200;
+  
+    [AWSS3TransferUtility registerS3TransferUtilityWithConfiguration:awsServiceConfiguration transferUtilityConfiguration:tuConfig forKey:@"UserPool"];
+
     [SecureAuthentication sharedInstance].companyName = kDefaultCompanyName;
     [SecureAuthentication sharedInstance].appId =  kBayunAppId;
     [SecureAuthentication sharedInstance].appSecret = kBayunAppSecret;
-    
+    [SecureAuthentication sharedInstance].appSalt = kBayunApplicationSalt;
+  
+  if(![[NSUserDefaults standardUserDefaults] boolForKey:kIsUserLoggedIn]) {
+    [self startPasswordAuthentication];
+  }
     return YES;
 }
 
 //set up password authentication ui to retrieve username and password from the user
 -(id<AWSCognitoIdentityPasswordAuthentication>) startPasswordAuthentication {
-    
+  NSLog(@"startPasswordAuthentication");
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
     if(!self.navigationController){
@@ -102,6 +109,7 @@
         //display login screen if it isn't already visibile
         if(!(self.navigationController.isViewLoaded && self.navigationController.view.window))
         {
+          self.navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
             [self.window.rootViewController presentViewController:self.navigationController animated:YES completion:nil];
         }
     });

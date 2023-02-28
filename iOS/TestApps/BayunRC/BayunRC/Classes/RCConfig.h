@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 02/07/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 
@@ -13,8 +13,11 @@
 #define kApplicationSecretKeySandbox    @"Your Sandbox Secret Key"
 #define kApplicationKeyProd             @"Your Production Application Key"
 #define kApplicationSecretKeyProd       @"Your Production Secret Key"
+
+#define kBaseURL                        @"Bayun Base URL"
 #define kBayunAppId                     @"Bayun AppId"
-#define kAppSecret                      @"Bayun AppSecret"
+#define kBayunAppSecret                 @"Bayun AppSecret"
+#define kBayunAppSalt                   @"Bayun AppSalt"
 
 #define kRCLoginURL                     @"/restapi/oauth/token"
 #define kRCGetMessageList               @"/restapi/v1.0/account/~/extension/~/message-store?messageType=Pager"
@@ -22,4 +25,3 @@
 #define kRCGetExtensionsList            @"/restapi/v1.0/account/~/extension"
 
 #define kTimeToRefreshConversationView  10.0
-

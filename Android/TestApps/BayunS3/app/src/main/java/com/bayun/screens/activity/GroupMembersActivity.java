@@ -15,7 +15,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bayun.R;
 import com.bayun.S3wrapper.SecureTransferUtility;
 import com.bayun.app.BayunApplication;
 import com.bayun.screens.adapter.GroupMemberAdapter;
@@ -23,6 +22,9 @@ import com.bayun.screens.helper.DividerItemDecoration;
 import com.bayun.util.Constants;
 import com.bayun.util.RecyclerItemClickListener;
 import com.bayun.util.Utility;
+import com.bayun.R;
+import com.bayun_module.Group;
+import com.bayun_module.GroupMember;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,13 +35,13 @@ import java.util.HashMap;
  * Created by Akriti on 8/24/2017.
  */
 
-public class GroupMembersActivity extends AppCompatActivity implements RecyclerItemClickListener.OnItemClickListener{
+public class GroupMembersActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private TextView emptyView;
     private GroupMemberAdapter groupMemberAdapter;
     private RecyclerView recyclerView;
-    private ArrayList<HashMap> membersList;
+    private ArrayList<GroupMember> membersList;
     private String groupId, groupName;
     private RelativeLayout progressBar;
 
@@ -47,9 +49,9 @@ public class GroupMembersActivity extends AppCompatActivity implements RecyclerI
         @Override
         public boolean handleMessage(Message message) {
             runOnUiThread(() -> progressBar.setVisibility(View.GONE));
-            HashMap responseMap = (HashMap) message.getData().getSerializable(Constants.GET_GROUP);
-            groupName = (String) responseMap.get("name");
-            membersList = (ArrayList<HashMap>) responseMap.get("groupMembers");
+            Group responseMap = (Group) message.getData().getSerializable(Constants.GET_GROUP);
+            groupName =  responseMap.groupName;
+            membersList = responseMap.groupMembers;
             setListView();
 
             return false;
@@ -76,7 +78,51 @@ public class GroupMembersActivity extends AppCompatActivity implements RecyclerI
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
-        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, this));
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView,
+                new RecyclerItemClickListener.ClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+                        String companyName =  membersList.get(position).companyName;
+                        String employeeId =  membersList.get(position).companyEmployeeId;
+                        String message = "Do you want to remove " + employeeId + " from the group?";
+
+                        Utility.decisionAlert(GroupMembersActivity.this, "Remove member?", message,
+                                getString(R.string.yes), getString(R.string.no), (dialog, which) -> {
+                                    //callback for removing a member from group api call
+                                    Handler.Callback removeMemberSuccessCallback = new Handler.Callback() {
+                                        @Override
+                                        public boolean handleMessage(Message message) {
+                                            runOnUiThread(() -> {
+                                                progressBar.setVisibility(View.GONE);
+                                                Utility.displayToast("Member Removed.", Toast.LENGTH_LONG);
+                                                membersList.remove(position);
+                                                setListView();
+                                            });
+                                            return false;
+                                        }
+                                    };
+
+                                    runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
+
+
+                                    GroupMember groupMember = new GroupMember();
+                                    groupMember.companyName = companyName;
+                                    groupMember.companyEmployeeId = employeeId;
+
+                                    BayunApplication.bayunCore.removeFromGroup(groupId, groupMember,removeMemberSuccessCallback,
+                                            Utility.getDefaultFailureCallback(GroupMembersActivity.this,
+                                                    progressBar));
+                                    //update recyclerview
+                                    dialog.cancel();
+                                },
+                                (dialog, which) -> dialog.cancel());
+                    }
+                }));
         groupMemberAdapter = new GroupMemberAdapter(membersList);
         recyclerView.setAdapter(groupMemberAdapter);
         setListView();
@@ -120,7 +166,7 @@ public class GroupMembersActivity extends AppCompatActivity implements RecyclerI
         });
     }
 
-    @Override
+    /*@Override
     public void onItemClick(View childView, int position) {
 
     }
@@ -161,5 +207,5 @@ public class GroupMembersActivity extends AppCompatActivity implements RecyclerI
                     dialog.cancel();
                 },
                 (dialog, which) -> dialog.cancel());
-    }
+    }*/
 }

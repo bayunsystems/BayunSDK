@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 02/06/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -42,4 +42,7 @@ extern NSString *const kErrorMsgDevicePasscodeNotSet;
 extern NSString *const kErrorMsgPasscodeAuthenticationFailed;
 extern NSString *const kErrorBayunAuthenticationIsNeeded;
 extern NSString *const kErrorMsgAdminRegistrationIncomplete;
+extern NSString *const kErrorMsgEmployeeAppIsNotRegistered;
+extern NSString *const kErrorRegistrationFailedAppNotApproved;
+
 @end

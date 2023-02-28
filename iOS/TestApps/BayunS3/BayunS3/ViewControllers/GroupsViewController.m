@@ -3,7 +3,7 @@
 //  BayunS3
 //
 //  Created by Preeti Gaur on 06/03/17.
-//  Copyright © 2017 bayun. All rights reserved.
+//  Copyright © 2023 bayun. All rights reserved.
 //
 
 #import "GroupsViewController.h"
@@ -14,19 +14,17 @@
 #import <Bayun/BayunCore.h>
 #import "GroupFilesViewController.h"
 
-
-
 @interface GroupsViewController () <UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate,UITextFieldDelegate,MKDropdownMenuDataSource, MKDropdownMenuDelegate>
 
 @property (strong,nonatomic) UILabel *createGroupLabel;
 @property (strong,nonatomic) UITextField *groupNameTextField;
-@property (strong, nonatomic) NSArray *userGroups;
-@property (strong, nonatomic) NSArray *publicGroups;
+@property (strong, nonatomic) NSArray<Group*> *userGroups;
+@property (strong, nonatomic) NSArray<Group*> *publicGroups;
 @property (strong,nonatomic) MKDropdownMenu *dropDownMenu;
 @property (strong,nonatomic) NSArray *groupTypes;
 @property (nonatomic) NSUInteger selectedGroupTypeRow;
 @property (strong,nonatomic) NSString *selectedGroupType;
-@property (strong,nonatomic) NSDictionary *selectedGroup;
+@property (strong,nonatomic) Group *selectedGroup;
 
 @end
 
@@ -65,7 +63,7 @@
 }
 
 - (void) setUpView {
-    NSArray *groups;
+    NSArray<Group*> *groups;
     if (self.segmentControl.selectedSegmentIndex == 0) {
         groups =  self.userGroups;
     } else {
@@ -85,7 +83,7 @@
 
 - (void) getUserGroups {
     [SVProgressHUD show];
-    [[BayunCore sharedInstance] getMyGroups:^(NSArray *myGroups) {
+    [[BayunCore sharedInstance] getMyGroups:^(NSArray<Group*> *myGroups) {
         [SVProgressHUD dismiss];
         self.userGroups = myGroups;
         [self setUpView];
@@ -96,7 +94,7 @@
 
 - (void) getPublicGroups {
     [SVProgressHUD show];
-    [[BayunCore sharedInstance] getUnjoinedPublicGroups:^(NSArray *publicGroups) {
+    [[BayunCore sharedInstance] getUnjoinedPublicGroups:^(NSArray<Group*> *publicGroups) {
         [SVProgressHUD dismiss];
         self.publicGroups = publicGroups;
         [self setUpView];
@@ -120,6 +118,10 @@
             [SVProgressHUD showErrorWithStatus:kErrorMsgPasscodeAuthenticationFailed];
         }
             
+    } else if (error == BayunErrorPasscodeAuthenticationCanceledByUser) {
+        [SVProgressHUD showErrorWithStatus:kErrorMsgPasscodeAuthenticationFailed];
+    } else if (error == BayunErrorReAuthenticationNeeded) {
+        [SVProgressHUD dismiss];
         [Utilities logoutUser:self.user];
     } else {
         [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
@@ -190,8 +192,11 @@
                 
             } failure:^(BayunError bayunError) {
                 
-                    [self showMessageForError:bayunError];
-        
+                if (bayunError == BayunErrorUserInActive) {
+                    [SVProgressHUD showErrorWithStatus:kPermissionDenied];
+                } else {
+                    [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
+                }
                
             }];
             
@@ -283,7 +288,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] ;
     }
     
-    NSDictionary *group;
+    Group *group;
     
     if (self.segmentControl.selectedSegmentIndex == 0) {
         group= [self.userGroups objectAtIndex:indexPath.row];
@@ -291,9 +296,8 @@
         group= [self.publicGroups objectAtIndex:indexPath.row];
     }
     
-    
-    if (![[group objectForKey:@"name"] isEqualToString:@""]) {
-        cell.textLabel.text = [group objectForKey:@"name"];
+    if (![group.groupName isEqualToString:@""]) {
+        cell.textLabel.text = group.groupName;
     } else {
         cell.textLabel.text = @"Untitled";
     }
@@ -310,7 +314,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    NSDictionary *group;
+    Group *group;
     
     if (self.segmentControl.selectedSegmentIndex == 0) {
         group= [self.userGroups objectAtIndex:indexPath.row];
@@ -351,7 +355,7 @@
                                         style:UIAlertActionStyleDefault
                                         handler:^(UIAlertAction * action) {
                                             
-                                            NSDictionary *group;
+                                            Group *group;
                                             
                                             if (self.segmentControl.selectedSegmentIndex == 0) {
                                                 group= [self.userGroups objectAtIndex:indexPath.row];
@@ -359,7 +363,7 @@
                                                 group= [self.publicGroups objectAtIndex:indexPath.row];
                                             }
                                             
-                                            [[BayunCore sharedInstance] deleteGroup:[group valueForKey:@"id"] success:^{
+                                            [[BayunCore sharedInstance] deleteGroup:group.groupId success:^{
                                                 
                                                 [self getUserGroups];
                                                 [SVProgressHUD showSuccessWithStatus:kGroupDeleted];
@@ -410,36 +414,37 @@
     [alertView show];
 }
 
-- (void)showAlertViewToJoinPublicGroup
-{
-    UIAlertController * alert = [UIAlertController
-                                 alertControllerWithTitle:@""
-                                 message:kConfirmationMsgToJoinPublicGroup
-                                 preferredStyle:UIAlertControllerStyleAlert];
+- (void)showAlertViewToJoinPublicGroup {
+  UIAlertController * alert = [UIAlertController
+                               alertControllerWithTitle:@""
+                               message:kConfirmationMsgToJoinPublicGroup
+                               preferredStyle:UIAlertControllerStyleAlert];
+  
+  //Add Buttons
+  UIAlertAction* yesButton = [UIAlertAction
+                              actionWithTitle:@"Yes"
+                              style:UIAlertActionStyleDefault
+                              handler:^(UIAlertAction * action) {
     
-    //Add Buttons
-    UIAlertAction* yesButton = [UIAlertAction
-                                actionWithTitle:@"Yes"
-                                style:UIAlertActionStyleDefault
-                                handler:^(UIAlertAction * action) {
-                                    
-                                    [[BayunCore sharedInstance] joinPublicGroup:[self.selectedGroup valueForKey:@"id"] success:^{
-                                        [self getPublicGroups];
-                                        [SVProgressHUD showSuccessWithStatus:kGroupJoined];
-                                    } failure:^(BayunError error) {
-                                        [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
-                                    }];
-                                }];
-    
-    UIAlertAction* noButton = [UIAlertAction
-                               actionWithTitle:@"Cancel"
-                               style:UIAlertActionStyleDefault
-                               handler:nil];
-    
-    [alert addAction:yesButton];
-    [alert addAction:noButton];
-    
-    [self presentViewController:alert animated:YES completion:nil];
+    [[BayunCore sharedInstance] joinPublicGroup:self.selectedGroup.groupId
+                             creatorCompanyName:self.selectedGroup.creatorCompanyName creatorCompanyEmployeeId:self.selectedGroup.creatorCompanyEmployeeId
+                                        success:^{
+      [self getPublicGroups];
+      [SVProgressHUD showSuccessWithStatus:kGroupJoined];
+    } failure:^(BayunError error) {
+      [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
+    }];
+  }];
+  
+  UIAlertAction* noButton = [UIAlertAction
+                             actionWithTitle:@"Cancel"
+                             style:UIAlertActionStyleDefault
+                             handler:nil];
+  
+  [alert addAction:yesButton];
+  [alert addAction:noButton];
+  
+  [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {

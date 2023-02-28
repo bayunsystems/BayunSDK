@@ -1,22 +1,29 @@
 package com.bayun.screens.activity;
 
+import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
+
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bayun.R;
+import com.bayun.app.BayunApplication;
 import com.bayun.app.NotificationCenter;
 import com.bayun.aws.AWSS3Manager;
 import com.bayun.util.Constants;
 import com.bayun.util.Utility;
+import com.bayun.R;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Objects;
 
 import static java.util.ResourceBundle.clearCache;
 
@@ -33,6 +41,7 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
     private String fileName = "",savedText = "";
     private EditText fileEditText;
     private RelativeLayout progressbar;
+    private String bucketName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +56,6 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.AWS_UPLOAD_COMPLETE);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.ACCESS_DENIED);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.TRANSFER_FAILED);
-
         viewFile();
     }
 
@@ -55,18 +63,26 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
      * Sets up Views.
      */
     private void setUpView() {
-        progressbar = (RelativeLayout) findViewById(R.id.progressBar);
+        progressbar = findViewById(R.id.progressBar);
         progressbar.setVisibility(View.VISIBLE);
-        //fileProgressDialog = Utility.createFileProgressDialog(this, "Downloading...");
-        TextView fileNameText = (TextView) findViewById(R.id.activity_view_file_fileName_text);
-        textView = (TextView) findViewById(R.id.activity_view_file_edit_text);
-        fileEditText = (EditText) findViewById(R.id.activity_view_file_edit_text_view);
+        TextView fileNameText = findViewById(R.id.activity_view_file_fileName_text);
+        textView = findViewById(R.id.activity_view_file_edit_text);
+        fileEditText = findViewById(R.id.activity_view_file_edit_text_view);
         fileEditText.setFocusableInTouchMode(false);
         fileEditText.setFocusable(false);
         Intent intent = getIntent();
-        fileName = intent.getExtras().getString(Constants.DOWNLOAD_FILE_NAME, Constants.EMPTY_STRING);
+        fileName = Objects.requireNonNull(intent.getExtras()).getString(Constants.DOWNLOAD_FILE_NAME, Constants.EMPTY_STRING);
         fileNameText.setText(fileName);
         savedText = fileEditText.getText().toString();
+
+        String groupId = intent.getExtras().getString(Constants.GROUP_ID_EXTRA);
+        if (groupId != null && !groupId.isEmpty()) {
+            bucketName = "bayun-group-" + groupId;
+            bucketName = bucketName.toLowerCase();
+        }
+        else {
+            bucketName = BayunApplication.tinyDB.getString(Constants.S3_BUCKET_NAME);
+        }
     }
 
     /**
@@ -99,7 +115,7 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
      */
     public void viewFile() {
         runOnUiThread(() -> progressbar.setVisibility(View.VISIBLE));
-        AWSS3Manager.getInstance().downloadFile(fileName);
+        AWSS3Manager.getInstance().downloadFile(fileName, bucketName);
     }
 
     /**
@@ -155,20 +171,32 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
             dismissDialog();
             try {
                 runOnUiThread(() -> {
-                    if (isFileImage()) {
-                        finish();
-                        Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_VIEW);
-                        intent.setDataAndType(Uri.fromFile(getFile()), "image");
-                        startActivity(intent);
-                    }
-                    else {
+                    if((getFile().getName()).toLowerCase().endsWith(".txt")){
                         String fileText = readFile();
                         //Read data fetched from the file
                         fileEditText.setVisibility(View.VISIBLE);
                         fileEditText.setText(fileText);
                         savedText = fileEditText.getText().toString();
+                    } else  {
+                        finish();
+                        Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), "com.bayun.bayuns3.fileprovider", getFile());
+                        grantUriPermission("com.bayun.bayuns3.fileprovider", contentUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setData(contentUri);
+                        intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        //support from Android 4.1 (API level 16) to Android 5.1 (API level 22) inclusive
+                        intent.setClipData(ClipData.newRawUri("", contentUri));
+                        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(intent);
                     }
+                   /* else {
+                        String fileText = readFile();
+                        //Read data fetched from the file
+                        fileEditText.setVisibility(View.VISIBLE);
+                        fileEditText.setText(fileText);
+                        savedText = fileEditText.getText().toString();
+                    }*/
                 });
             } catch (Exception e) {
                 Utility.displayToast(e.getMessage(), Toast.LENGTH_SHORT);
@@ -234,8 +262,7 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
         if (fileText.equalsIgnoreCase(Constants.EMPTY_STRING)) {
             Utility.messageAlertForCertainDuration(ViewFileActivity.this, Constants.FILE_EMPTY);
         } else {
-            //fileProgressDialog.show();
-            AWSS3Manager.getInstance().writeFile(fileEditText.getText().toString(),fileName);
+            AWSS3Manager.getInstance().writeFile(fileEditText.getText().toString(), fileName, bucketName);
 
         }
     }
@@ -251,13 +278,14 @@ public class ViewFileActivity extends AbstractActivity implements NotificationCe
      * Show dialog on press back button.
      */
     public void showDialog() {
-        Utility.decisionAlert(ViewFileActivity.this, getString(R.string.dialog_title), "", getString(R.string.yes), getString(R.string.no), (dialog, which) -> {
-            dialog.cancel();
-            saveFile();
-        }, (dialog, which) -> {
-            dialog.cancel();
-            finish();
-        });
+        Utility.decisionAlert(ViewFileActivity.this, getString(R.string.dialog_title),
+                "", getString(R.string.yes), getString(R.string.no), (dialog, which) -> {
+                    dialog.cancel();
+                    saveFile();
+                }, (dialog, which) -> {
+                    dialog.cancel();
+                    finish();
+                });
     }
 
     @NonNull

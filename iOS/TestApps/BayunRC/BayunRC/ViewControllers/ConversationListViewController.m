@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 02/06/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "ConversationListViewController.h"
@@ -282,16 +282,20 @@
                 [cell.messageLabel setText:decryptedText];
             });
         } failure:^(BayunError bayunError) {
-          __block BayunError error =  bayunError;
-          if (error == BayunErrorReAuthenticationNeeded ||
-              error == BayunErrorPasscodeAuthenticationCanceledByUser ||
-              error == BayunErrorInvalidAppSecret) {
-            self.isUserAuthenticated = NO;
-            AppDelegate  *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-            [appDelegate logoutWithMessage:kErrorBayunAuthenticationIsNeeded];
-          } else {
-            [cell.messageLabel setText:conversation.lastMessage.subject];
-          }
+            __block BayunError error =  bayunError;
+            //dispatch_async(dispatch_get_main_queue(), ^(void) {
+                if (error == BayunErrorReAuthenticationNeeded ||
+                    error == BayunErrorPasscodeAuthenticationCanceledByUser ||
+                    error == BayunErrorInvalidAppSecret) {
+                    self.isUserAuthenticated = NO;
+                    AppDelegate  *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                    [appDelegate logoutWithMessage:kErrorBayunAuthenticationIsNeeded];
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^(void) {
+                        [cell.messageLabel setText:conversation.lastMessage.subject];
+                    });
+                }
+            //});
         }];
     }
     return cell;

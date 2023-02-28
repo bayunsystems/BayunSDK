@@ -11,11 +11,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
@@ -24,7 +29,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bayun.R;
 import com.bayun.S3wrapper.SecureAuthentication;
 import com.bayun.app.BayunApplication;
 import com.bayun.app.NotificationCenter;
@@ -36,6 +40,7 @@ import com.bayun.util.Constants;
 import com.bayun.util.FileUtils;
 import com.bayun.util.RecyclerItemClickListener;
 import com.bayun.util.Utility;
+import com.bayun.R;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,7 +54,7 @@ import static com.bayun.aws.AWSS3Manager.getInstance;
 
 
 public class ListFilesActivity extends AbstractActivity implements NotificationCenter.NotificationCenterDelegate,
-        SwipeRefreshLayout.OnRefreshListener, RecyclerItemClickListener.OnItemClickListener {
+        SwipeRefreshLayout.OnRefreshListener {
 
     private RecyclerView recyclerView;
     private FilesAdapter filesAdapter;
@@ -58,13 +63,27 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
     private static final int PICKFILE_RESULT_CODE = 1;
     private static final int PERMISSION_REQUEST_CODE = 200;
     private RelativeLayout progressBar;
-    File file;
+    private File file;
+    private String bucketName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_file);
+
+
+
+        bucketName = BayunApplication.tinyDB.getString(Constants.S3_BUCKET_NAME).toLowerCase();
+
+
+        if (Utility.isNetworkAvailable()) {
+            getInstance().createBucketOnS3(bucketName);
+        } else {
+            Utility.messageAlertForCertainDuration(ListFilesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
+        }
+
         setUpView();
+
 
         // add observer to notify activity
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.AWS_UPLOAD_COMPLETE);
@@ -74,16 +93,42 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.S3_BUCKET_EXIST);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.S3_BUCKET_FILE_EXIST);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.S3_BUCKET_FILE_NOT_EXIST);
-        String companyName = BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_COMPANY_NAME);
-        String bucketName = "bayun-test-" + companyName;
-        bucketName = bucketName.toLowerCase();
-        BayunApplication.tinyDB.putString(Constants.S3_BUCKET_NAME, bucketName);
-        if (Utility.isNetworkAvailable()) {
+
+
+       /* if (Utility.isNetworkAvailable()) {
             getInstance().createBucketOnS3(bucketName);
         } else {
             Utility.messageAlertForCertainDuration(ListFilesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
-        }
-        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, this));
+        }*/
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView,
+                new RecyclerItemClickListener.ClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        if (Utility.isNetworkAvailable()) {
+                            if (getInstance().fileList().size() != 0) {
+                                String fileName = getInstance().fileList().get(position).getFileName();
+                                Intent intent = new Intent(ListFilesActivity.this, ViewFileActivity.class);
+                                intent.putExtra(Constants.DOWNLOAD_FILE_NAME, fileName);
+                                startActivity(intent);
+                            }
+                        } else {
+                            Utility.messageAlertForCertainDuration(ListFilesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
+                        }
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+                        if (Utility.isNetworkAvailable()) {
+                            if (BayunApplication.bayunCore.isEmployeeActive())
+                                deleteListItemDialog(position);
+                            else {
+                                Utility.displayToast(Constants.ERROR_USER_INACTIVE, Toast.LENGTH_LONG);
+                            }
+                        } else {
+                            Utility.messageAlertForCertainDuration(ListFilesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
+                        }
+                    }
+                }));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!checkPermission()) {
                 ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
@@ -95,18 +140,20 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
      * Sets up Views.
      */
     private void setUpView() {
-        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBar);
         runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
-        recyclerView = (RecyclerView) findViewById(R.id.list_files_recycler_view);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
-        emptyView = (TextView) findViewById(R.id.empty_view);
+        recyclerView = findViewById(R.id.list_files_recycler_view);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        emptyView = findViewById(R.id.empty_view);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
         swipeRefreshLayout.setOnRefreshListener(this);
-        filesAdapter = new FilesAdapter(ListFilesActivity.this, getInstance().fileList());
+        filesAdapter = new FilesAdapter(getInstance().fileList());
         recyclerView.setAdapter(filesAdapter);
+
+
     }
 
     /**
@@ -138,7 +185,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
      * Show Dialog for file picker.
      */
     public void showDialogFilePicker() {
-        final CharSequence sequences[] = new CharSequence[]{"Upload", "Groups", "Encryption Policy",
+        final CharSequence[] sequences = new CharSequence[]{"Upload", "Groups", "Encryption Policy",
                 "Key Generation Policy", "Logout"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
         builder.setTitle("Options");
@@ -161,6 +208,10 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
                 SecureAuthentication.getInstance().signOut(CognitoHelper.getPool().getUser(CognitoHelper.getUserId()));
                 if (getInstance().fileList() != null && getInstance().fileList().size() != 0)
                     getInstance().fileList().clear();
+
+
+
+
             }
             else if (sequences[which].equals("Encryption Policy")) {
                 showDialogEncryptionPolicy();
@@ -172,11 +223,13 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         builder.show();
     }
 
+
+
     /**
      * Shows dialog for upload file options - upload or create a new file
      */
     private void showDialogUploadFile() {
-        final CharSequence sequences[] = new CharSequence[] {"Create a New File", "Choose From Library"};
+        final CharSequence[] sequences = new CharSequence[]{"Create a New File", "Choose From Library"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
         builder.setTitle("Upload a File");
         builder.setItems(sequences, (dialog, which) -> {
@@ -295,12 +348,14 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
             dismissDialog();
         } else if (id == NotificationCenter.S3_BUCKET_EXIST) {
             getListFromS3Bucket();
+            dismissDialog();
         } else if (id == NotificationCenter.S3_BUCKET_FILE_EXIST) {
             dismissDialog();
             Utility.displayToast(Constants.FILE_ALREADY_EXIST, Toast.LENGTH_SHORT);
-        } else if (id == NotificationCenter.S3_BUCKET_FILE_NOT_EXIST) {
+        }
+        else if (id == NotificationCenter.S3_BUCKET_FILE_NOT_EXIST) {
             if (file != null)
-                getInstance().uploadFile(file);
+                getInstance().uploadFile(file, bucketName);
         } else if (id == NotificationCenter.S3_BUCKET_ERROR) {
             Utility.displayToast(getResources().getString(R.string.s3Error), Toast.LENGTH_SHORT);
             dismissDialog();
@@ -315,7 +370,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         runOnUiThread(() -> {
             if (Utility.isNetworkAvailable()) {
                 progressBar.setVisibility(View.VISIBLE);
-                getInstance().getListOfObjects();
+                getInstance().getListOfObjects(bucketName);
             } else {
                 Utility.messageAlertForCertainDuration(ListFilesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
             }
@@ -357,12 +412,12 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
                     ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
                 } else {
                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                    intent.setType("file/*");
+                    intent.setType("*/*");
                     startActivityForResult(intent, PICKFILE_RESULT_CODE);
                 }
             } else {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("file/*");
+                intent.setType("*/*");
                 startActivityForResult(intent, PICKFILE_RESULT_CODE);
             }
         } else {
@@ -431,7 +486,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            getInstance().Exists(file.getName());
+            getInstance().Exists(file.getName(), bucketName);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -446,7 +501,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         runOnUiThread(() -> progressBar.setVisibility(View.GONE));
     }
 
-    @Override
+   /* @Override
     public void onItemClick(View childView, int position) {
         if (Utility.isNetworkAvailable()) {
             if (getInstance().fileList().size() != 0) {
@@ -471,7 +526,7 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         } else {
             Utility.messageAlertForCertainDuration(ListFilesActivity.this, Constants.ERROR_INTERNET_OFFLINE);
         }
-    }
+    }*/
 
     /**
      * Delete file from S3 Bucket.
@@ -483,7 +538,8 @@ public class ListFilesActivity extends AbstractActivity implements NotificationC
         String message = "Delete" + " " + fileName + " " + "permanently?";
         Utility.decisionAlert(ListFilesActivity.this, getString(R.string.dialog_delete_title), message,
                 getString(R.string.yes), getString(R.string.no), (dialog, which) -> {
-                    getInstance().deleteFileFromS3(getInstance().fileList().get(position).getFileName());
+                    getInstance().deleteFileFromS3(getInstance().fileList().get(position).getFileName(),
+                            bucketName);
                     getInstance().fileList().remove(position);
                     filesAdapter.notifyItemRemoved(position);
                     dialog.cancel();

@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 11/06/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 
@@ -109,7 +109,14 @@
  Returns App Secret
  */
 + (NSString*)appSecret {
-    return kAppSecret;
+    return kBayunAppSecret;
+}
+
+/**
+ Returns App Secret
+ */
++ (NSString*)appSalt {
+  return kBayunAppSalt;
 }
 
 /**
@@ -204,6 +211,10 @@
  Returns the formatted time stamp string
  */
 +(NSMutableAttributedString*)getTimestamp:(NSDate*)date fontSize:(CGFloat)fontSize {
+    if (!date) {
+        return [[NSMutableAttributedString alloc] initWithString:@""];
+    }
+    
     UIFont *lightFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:fontSize];
     NSMutableAttributedString * string ;
     NSString *d;

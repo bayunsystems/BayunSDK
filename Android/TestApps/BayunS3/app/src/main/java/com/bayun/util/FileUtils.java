@@ -29,6 +29,8 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
+
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -288,11 +290,74 @@ public class FileUtils {
             // DownloadsProvider
             else if (isDownloadsDocument(uri)) {
 
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    final String id;
+                    Cursor cursor = null;
+                    try {
+                        cursor = context.getContentResolver().query(uri, new String[]{MediaStore.MediaColumns.DISPLAY_NAME}, null, null, null);
+                        if (cursor != null && cursor.moveToFirst()) {
+                            String fileName = cursor.getString(0);
+                            String path = Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName;
+                            if (!TextUtils.isEmpty(path)) {
+                                return path;
+                            }
+                        }
+                    } finally {
+                        if (cursor != null)
+                            cursor.close();
+                    }
+                    id = DocumentsContract.getDocumentId(uri);
+                    if (!TextUtils.isEmpty(id)) {
+                        if (id.startsWith("raw:")) {
+                            return id.replaceFirst("raw:", "");
+                        }
+                        String[] contentUriPrefixesToTry = new String[]{
+                                "content://downloads/public_downloads",
+                                "content://downloads/my_downloads"
+                        };
+                        for (String contentUriPrefix : contentUriPrefixesToTry) {
+                            try {
+                                final Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
+
+                         /*   final Uri contentUri = ContentUris.withAppendedId(
+                                    Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));*/
+
+                                return getDataColumn(context, contentUri, null, null);
+                            } catch (NumberFormatException e) {
+                                //In Android 8 and Android P the id is not a number
+                                return uri.getPath().replaceFirst("^/document/raw:", "").replaceFirst("^raw:", "");
+                            }
+                        }
+
+
+                    }
+
+                }
+                else {
+                    Uri contentUri = null;
+                    final String id = DocumentsContract.getDocumentId(uri);
+                    final boolean isOreo = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+                    if (id.startsWith("raw:")) {
+                        return id.replaceFirst("raw:", "");
+                    }
+                    try {
+                        contentUri = ContentUris.withAppendedId(
+                                Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                    if (contentUri != null) {
+                        return getDataColumn(context, contentUri, null, null);
+                    }
+                }
+/*
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
 
-                return getDataColumn(context, contentUri, null, null);
+                return getDataColumn(context, contentUri, null, null);*/
             }
             // MediaProvider
             else if (isMediaDocument(uri)) {

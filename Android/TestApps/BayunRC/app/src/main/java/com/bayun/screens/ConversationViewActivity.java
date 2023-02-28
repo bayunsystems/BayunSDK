@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -45,7 +47,7 @@ public class ConversationViewActivity extends AbstractActivity {
     private static Handler handler = new Handler();
     private RelativeLayout progressBar;
     private static boolean isActivityInFocus = false;
-    int flag = 0;
+    private int flag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,8 @@ public class ConversationViewActivity extends AbstractActivity {
                 if (messageId.equalsIgnoreCase(Constants.EMPTY_STRING))
                     messageId = activityDBOperations.getConversationId(extensionNumber);
                 getConversationList(messageId);
+            }else {
+                progressBar.setVisibility(View.GONE);
             }
             return false;
         };
@@ -97,7 +101,6 @@ public class ConversationViewActivity extends AbstractActivity {
         });
 
         //getConversationList(messageId);
-
     }
 
     /**
@@ -112,12 +115,12 @@ public class ConversationViewActivity extends AbstractActivity {
      * Sets up Views.
      */
     private void setUpView() {
-        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
-        senderName = (TextView) findViewById(R.id.sender_name);
-        sendButton = (Button) findViewById(R.id.send);
-        recyclerView = (RecyclerView) findViewById(R.id.list_files_recycler_view);
-        messageEditText = (EditText) findViewById(R.id.editText1);
-        emptyView = (TextView) findViewById(R.id.empty_view);
+        progressBar = findViewById(R.id.progressBar);
+        senderName = findViewById(R.id.sender_name);
+        sendButton = findViewById(R.id.send);
+        recyclerView = findViewById(R.id.list_files_recycler_view);
+        messageEditText = findViewById(R.id.editText1);
+        emptyView = findViewById(R.id.empty_view);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -196,7 +199,7 @@ public class ConversationViewActivity extends AbstractActivity {
             Handler.Callback callback = msg -> {
                 String encryptedText = msg.getData().getString(Constants.ENCRYPTED_TEXT);
 
-                if (msg.getData().getBoolean(Constants.WAS_AUTHENTICATION_CANCELLED) || encryptedText.isEmpty()) {
+                if (encryptedText != null && encryptedText.isEmpty()) {
                     Utility.displayToast("Message could not be sent.", Toast.LENGTH_SHORT);
                 } else {
                     flag = 1;
@@ -255,73 +258,40 @@ public class ConversationViewActivity extends AbstractActivity {
                 emptyView.setVisibility(View.GONE);
             });
 
-            ArrayList<String> displayTexts = new ArrayList<>();
             final int[] count = {messageInfoArrayList.size()};
-            final int[] msgIndex = {0};
-            final Handler.Callback[] decryptConvoSubjects = {message -> false};
 
-            Handler.Callback setUpRecyclerViewWhenSuccess = message -> {
-                // update convo list with the display texts
-                for (int i = 0; i < messageInfoArrayList.size(); i++) {
-                    messageInfoArrayList.get(i).setSubject(displayTexts.get(i));
-                }
+            for (int i = 0; i < messageInfoArrayList.size(); i++) {
+                int finalI = i;
 
-                runOnUiThread(() -> {
-                    progressBar.setVisibility(View.GONE);
-                    // set recycler view with the list received
-                    recyclerView.scrollToPosition(messageInfoArrayList.size() - 1);
-                    conversationAdapter.notifyDataSetChanged();
-                    handler.postDelayed(runnable, 10000);
-                });
-                return false;
-            };
+                new Thread(() -> {
+                    Handler.Callback callback = message -> {
+                        count[0]--;
 
-            Handler.Callback setUpRecyclerViewWhenFailure = message -> {
-                runOnUiThread(() -> {
-                    progressBar.setVisibility(View.GONE);
-                    // set recycler view with the list received
-                    recyclerView.scrollToPosition(messageInfoArrayList.size() - 1);
-                    conversationAdapter.notifyDataSetChanged();
-                });
-                return false;
-            };
+                        String decryptedText = message.getData().getString(Constants.DECRYPTED_TEXT);
+                        if (decryptedText != null && !decryptedText.isEmpty()) {
+                            MessageInfo removedMsg = messageInfoArrayList.remove(finalI);
+                            removedMsg.setSubject(decryptedText);
+                            messageInfoArrayList.add(finalI, removedMsg);
+                        }
 
-            Handler.Callback decryptTextCallback = message -> {
-                // if failure was called, don't continue with the list
-                if (message.getData().getBoolean(Constants.WAS_AUTHENTICATION_CANCELLED)) {
-                    setUpRecyclerViewWhenFailure.handleMessage(null);
-                }
-                // text decryption was successful
-                else {
-                    String decryptedText = message.getData().getString(Constants.DECRYPTED_TEXT);
-                    if (decryptedText == null || decryptedText.isEmpty()) {
-                        displayTexts.add(messageInfoArrayList.get(msgIndex[0]).getSubject());
-                    }
-                    else {
-                        displayTexts.add(decryptedText);
-                    }
-                    count[0]--;
-                    msgIndex[0]++;
+                        // all messaged were decrypted.
+                        if (count[0] == 0) {
+                            runOnUiThread(() -> {
+                                progressBar.setVisibility(View.GONE);
+                                // set recycler view with the list received
+                                recyclerView.scrollToPosition(messageInfoArrayList.size() - 1);
+                                conversationAdapter.notifyDataSetChanged();
+                                handler.postDelayed(runnable, 10000);
+                            });
+                        }
 
-                    // if all messages have been decrypted
-                    if (count[0] == 0) {
-                        setUpRecyclerViewWhenSuccess.handleMessage(null);
-                    } else {
-                        decryptConvoSubjects[0].handleMessage(null);
-                    }
-                }
+                        return false;
+                    };
 
-                return false;
-            };
-
-            // decrypt the conversation subjects
-            decryptConvoSubjects[0] = message -> {
-                BayunApplication.rcCryptManager.decryptText(messageInfoArrayList.get(msgIndex[0])
-                        .getSubject(), decryptTextCallback);
-                return false;
-            };
-
-            decryptConvoSubjects[0].handleMessage(null);
+                    BayunApplication.rcCryptManager.decryptText(messageInfoArrayList.get(finalI).getSubject(),
+                            callback);
+                }).start();
+            }
 
             return null;
         }
@@ -357,15 +327,12 @@ public class ConversationViewActivity extends AbstractActivity {
         }
     }*/
 
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (Utility.isNetworkAvailable() && isActivityInFocus) {
-                getMessage(getLastModifiedTime());
-            }
-
-            //handler.postDelayed(this, 20000);
+    private Runnable runnable = () -> {
+        if (Utility.isNetworkAvailable() && isActivityInFocus) {
+            getMessage(getLastModifiedTime());
         }
+
+        //handler.postDelayed(this, 20000);
     };
 
     @Override

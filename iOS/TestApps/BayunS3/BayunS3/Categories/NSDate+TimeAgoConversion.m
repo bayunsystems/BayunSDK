@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 17/06/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "NSDate+TimeAgoConversion.h"

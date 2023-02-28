@@ -1,12 +1,9 @@
 //
 //  SecureAWSS3TransferManager.h
-//  
-//
-//  Created by Preeti-Gaur on 11/18/15.
-//  Copyright © 2016 Bayun Systems, Inc. All rights reserved.
+//  Copyright © 2022 Bayun Systems, Inc. All rights reserved.
 //
 
-#import "AWSS3TransferManager.h"
+//#import "AWSS3TransferManager.h"
 #import <AWSTask.h>
 #import <Bayun/BayunCore.h>
 

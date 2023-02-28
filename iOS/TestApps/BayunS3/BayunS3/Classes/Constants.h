@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 02/06/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -70,8 +70,10 @@ extern NSString *const CognitoIdentityUserPoolAppClientId;
 extern NSString *const CognitoIdentityUserPoolAppClientSecret;
 extern NSString *const CognitoIdentityPoolId;
 
+extern NSString *const kBayunBaseURL;
 extern NSString *const kBayunAppId;
 extern NSString *const kBayunAppSecret;
 extern NSString *const kDefaultCompanyName;
+extern NSString *const kBayunApplicationSalt;
 
 @end

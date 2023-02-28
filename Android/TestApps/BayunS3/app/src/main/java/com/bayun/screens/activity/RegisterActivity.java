@@ -4,10 +4,15 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.core.content.ContextCompat;
+
+import android.os.Handler;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,11 +26,11 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.Auth
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
-import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.util.CognitoHelper;
 import com.bayun.util.Constants;
 import com.bayun.util.Utility;
+import com.bayun.R;
 
 import java.util.Locale;
 
@@ -34,6 +39,8 @@ public class RegisterActivity extends AbstractActivity {
     // Screen fields
     private EditText inUsername;
     private EditText inPassword;
+    private CheckBox chb_login_with_bayun_only;
+
 
     // User Details
     private String username;
@@ -46,7 +53,10 @@ public class RegisterActivity extends AbstractActivity {
     AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
         @Override
         public void onSuccess(CognitoUserSession cognitoUserSession, CognitoDevice device) {
-            CognitoHelper.setCurrSession(cognitoUserSession);
+            if(!chb_login_with_bayun_only.isChecked() && cognitoUserSession != null){
+                CognitoHelper.setCurrSession(cognitoUserSession);
+            }
+
             runOnUiThread(() -> progressBar.setVisibility(View.GONE));
 
             // if already logged in do not save company name again, as it might overwrite it with the default company name.
@@ -115,7 +125,8 @@ public class RegisterActivity extends AbstractActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        progressBar = (RelativeLayout) findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBar);
+
 
         // Initialize
         CognitoHelper.init(getApplicationContext());
@@ -129,12 +140,13 @@ public class RegisterActivity extends AbstractActivity {
      *  Initialize app views.
      */
     private void setUpViews() {
+        chb_login_with_bayun_only = (CheckBox) findViewById(R.id.chb_login_with_bayun_only);
         inUsername = (EditText) findViewById(R.id.editTextUserId);
         inUsername.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 if(s.length() == 0) {
-                    TextView label = (TextView) findViewById(R.id.textViewUserIdLabel);
+                    TextView label = findViewById(R.id.textViewUserIdLabel);
                     label.setText(R.string.Username);
                     inUsername.setBackground(ContextCompat.getDrawable(RegisterActivity.this,
                             R.drawable.text_border_selector));
@@ -143,14 +155,14 @@ public class RegisterActivity extends AbstractActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                TextView label = (TextView) findViewById(R.id.textViewUserIdMessage);
+                TextView label = findViewById(R.id.textViewUserIdMessage);
                 label.setText("");
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if(s.length() == 0) {
-                    TextView label = (TextView) findViewById(R.id.textViewUserIdLabel);
+                    TextView label = findViewById(R.id.textViewUserIdLabel);
                     label.setText("");
                 }
             }
@@ -170,14 +182,14 @@ public class RegisterActivity extends AbstractActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                TextView label = (TextView) findViewById(R.id.textViewUserPasswordMessage);
+                TextView label = findViewById(R.id.textViewUserPasswordMessage);
                 label.setText("");
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if(s.length() == 0) {
-                    TextView label = (TextView) findViewById(R.id.textViewUserPasswordLabel);
+                    TextView label = findViewById(R.id.textViewUserPasswordLabel);
                     label.setText("");
                 }
             }
@@ -188,13 +200,14 @@ public class RegisterActivity extends AbstractActivity {
      * Get the current user
      */
     private void findCurrent() {
-        CognitoUser user = CognitoHelper.getPool().getCurrentUser();
+        authenticationHandler.onSuccess(null, null);
+       /*  CognitoUser user = CognitoHelper.getPool().getCurrentUser();
         username = user.getUserId();
-        if(username != null) {
+       if(username != null) {
             CognitoHelper.setUserId(username);
             inUsername.setText(user.getUserId());
             user.getSessionInBackground(authenticationHandler);
-        }
+        }*/
     }
 
     /**
@@ -251,18 +264,60 @@ public class RegisterActivity extends AbstractActivity {
         CognitoHelper.setUserId(username);
 
         password = inPassword.getText().toString();
-        if(password == null || password.length() < 1) {
+       /* if(password == null || password.length() < 1) {
             TextView label = (TextView) findViewById(R.id.textViewUserPasswordMessage);
             label.setText(inPassword.getHint()+" cannot be empty");
             inPassword.setBackground(ContextCompat.getDrawable(RegisterActivity.this,
                     R.drawable.text_border_error));
             return;
-        }
+        }*/
 
         runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
 
-        BayunApplication.secureAuthentication.signIn(RegisterActivity.this, username, password,
-                CognitoHelper.getPool().getUser(username), authenticationHandler);
+        if(chb_login_with_bayun_only.isChecked()){
+            // Bayun login success Callback
+            Handler.Callback bayunAuthSuccess = msg -> {
+                String bucketName = "bayun-test-" + companyName;
+                bucketName = bucketName.toLowerCase();
+                BayunApplication.tinyDB.putString(Constants.S3_BUCKET_NAME, bucketName);
+
+                BayunApplication.tinyDB
+                        .putString(Constants.SHARED_PREFERENCES_IS_BAYUN_LOGGED_IN,
+                                Constants.YES);
+                authenticationHandler.onSuccess(null, null);
+                return false;
+            };
+
+            // Bayun login failure Callback
+            Handler.Callback bayunAuthFailure = msg -> {
+                Exception exception = new Exception(msg.getData().getString(Constants.ERROR));
+                CognitoHelper.getPool().getUser(username).signOut();
+                authenticationHandler.onFailure(exception);
+                return false;
+            };
+
+            // Bayun login authorizeEmployeeCallback  Callback
+            Handler.Callback authorizeEmployeeCallback = msg -> {
+                String employeePublicKey = msg.getData().getString(Constants.EMPLOYEE_PUBLICKEY);
+                Exception exception = new Exception("Employee Authorization is Pending");
+                authenticationHandler.onFailure(exception);
+                return false;
+            };
+
+//            // login with Bayun
+            if(!TextUtils.isEmpty(password)){
+                BayunApplication.bayunCore.loginWithPassword(RegisterActivity.this,companyName,username,
+                        password,false,authorizeEmployeeCallback,null,null,bayunAuthSuccess, bayunAuthFailure);
+            }else {
+                BayunApplication.bayunCore.loginWithoutPassword(RegisterActivity.this,companyName,username,
+                        null,null,bayunAuthSuccess, bayunAuthFailure);
+            }
+
+        }else {
+            BayunApplication.secureAuthentication.signIn(RegisterActivity.this, username, password,
+                    CognitoHelper.getPool().getUser(username), authenticationHandler);
+        }
+
     }
 
     /**

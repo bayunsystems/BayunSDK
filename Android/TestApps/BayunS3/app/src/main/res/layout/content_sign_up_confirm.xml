@@ -149,16 +149,16 @@
         android:id="@+id/space_confirm_2" />
 
     <Button
+        android:id="@+id/confirm_button"
         android:layout_width="match_parent"
         android:layout_height="@dimen/activity_button_height"
+        android:layout_below="@id/space_confirm_2"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_selector"
         android:text="Confirm"
         android:textAllCaps="false"
         android:textColor="@color/white"
-        android:textSize="@dimen/activity_button_text_size"
-        android:id="@+id/confirm_button"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/space_confirm_2"
-        android:background="@drawable/button_selector" />
+        android:textSize="@dimen/activity_button_text_size" />
 
     <Space
         android:layout_width="match_parent"

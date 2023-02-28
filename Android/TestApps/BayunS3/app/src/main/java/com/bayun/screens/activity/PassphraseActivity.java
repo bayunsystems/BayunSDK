@@ -12,10 +12,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bayun.R;
 import com.bayun.app.BayunApplication;
 import com.bayun.util.Constants;
 import com.bayun.util.Utility;
+import com.bayun.R;
 
 
 public class PassphraseActivity extends AbstractActivity {

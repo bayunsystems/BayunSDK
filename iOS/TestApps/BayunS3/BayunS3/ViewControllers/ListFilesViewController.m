@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 02/06/2015.
-//  Copyright (c) 2015 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "ListFilesViewController.h"
@@ -21,9 +21,9 @@
 #import "DLAVAlertView.h"
 #import "MKDropdownMenu.h"
 #import <Bayun/BayunCore.h>
-#import "SecureAWSS3TransferManager.h"
 #import "SecureAuthentication.h"
 #import "GroupsViewController.h"
+#import "SecureAWSS3TransferUtility.h"
 
 @interface ListFilesViewController ()<AWSManagerDelegate, UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate ,UIDocumentPickerDelegate,UIDocumentMenuDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,QLPreviewControllerDataSource,QLPreviewControllerDelegate,UIDocumentInteractionControllerDelegate,MKDropdownMenuDataSource, MKDropdownMenuDelegate>
 
@@ -48,6 +48,8 @@
 @property (nonatomic, strong) AWSCognitoIdentityUser * user;
 @property (nonatomic,strong) AWSCognitoIdentityUserGetDetailsResponse * response;
 @property (nonatomic, strong) AWSCognitoIdentityUserPool * pool;
+
+@property (nonatomic, assign) BOOL * isCognitoLogin;
 
 @end
 
@@ -100,12 +102,16 @@ typedef NS_ENUM(NSUInteger, DropDownMenuTag) {
                                               object:nil];
     [self.navigationItem setHidesBackButton:YES];
     
+  if (self.isCognitoLogin) {
     self.pool = [AWSCognitoIdentityUserPool CognitoIdentityUserPoolForKey:@"UserPool"];
     //on initial load set the user and refresh to get attributes
     if(!self.user)
-        self.user = [self.pool currentUser];
-   
+      self.user = [self.pool currentUser];
+    
     [self refresh];
+  } else {
+    [self createS3Bucket];
+  }
 }
 
 -(void) refresh {
@@ -130,6 +136,8 @@ typedef NS_ENUM(NSUInteger, DropDownMenuTag) {
     self.selectedEncryptionPolicyRow = [[NSUserDefaults standardUserDefaults] integerForKey:kSelectedEncryptionPolicy];
     self.selectedKeyGenPolicyRow = [[NSUserDefaults standardUserDefaults] integerForKey:kSelectedKeyGenPolicy];
     [self.navigationItem setHidesBackButton:YES];
+  
+  
 }
 
 - (void)didReceiveMemoryWarning {
@@ -224,13 +232,14 @@ typedef NS_ENUM(NSUInteger, DropDownMenuTag) {
 }
 
 - (void)uploadFileAtPath:(NSURL*)filePath {
+    
     [[AWSManager sharedInstance] uploadFile:filePath bucketName:self.bucketName success:^{
         dispatch_async(dispatch_get_main_queue(), ^{
             [SVProgressHUD dismiss];
         });
         [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeClear];
         [self getS3BucketObjects];
-        
+
     } failure:^(NSError *error) {
         [self endRefreshing];
         [self showMessageForAWSError:error.code];
@@ -307,18 +316,18 @@ typedef NS_ENUM(NSUInteger, DropDownMenuTag) {
     }];
 }
 
-- (void)showMessageForAWSError :(SecureAWSS3TransferManagerErrorType) errorType {
-    if (errorType == SecureAWSS3TransferManagerErrorUserInactive) {
+- (void)showMessageForAWSError :(SecureAWSS3TransferUtilityErrorType) errorType {
+  if (errorType == SecureAWSS3TransferUtilityErrorUserInactive) {
         [SVProgressHUD showErrorWithStatus:kErrorMsgUserInActive];
-    } else if (errorType == SecureAWSS3TransferManagerErrorAccessDenied) {
+  } else if (errorType == SecureAWSS3TransferUtilityErrorAccessDenied) {
         [SVProgressHUD showErrorWithStatus:kErrorMsgAccessDenied];
-    } else if (errorType == SecureAWSS3TransferManagerErrorNoInternetConnection) {
+  } else if (errorType == SecureAWSS3TransferUtilityErrorNoInternetConnection) {
         [SVProgressHUD showErrorWithStatus:kErrorMsgInternetConnection];
-    } else if (errorType == SecureAWSS3TransferManagerErrorUnlockingFailed) {
+  } else if (errorType == SecureAWSS3TransferUtilityErrorUnlockingFailed) {
         [SVProgressHUD showErrorWithStatus:kErrorMsgFileDecryptionFailed];
     } else if(errorType == SecureAWSS3TransferErrorReAuthenticationNeeded ||
               errorType == SecureAWSS3TransferErrorPasscodeAuthenticationCanceledByUser ||
-              errorType == SecureAWSS3TransferManagerErrorInvalidAppSecret) {
+              errorType == SecureAWSS3TransferUtilityErrorInvalidAppSecret) {
        
         if (errorType == BayunErrorInvalidAppSecret) {
             [SVProgressHUD showErrorWithStatus:kErrorMsgInvalidAppSecret];
@@ -327,7 +336,11 @@ typedef NS_ENUM(NSUInteger, DropDownMenuTag) {
         } else if (errorType == SecureAWSS3TransferErrorPasscodeAuthenticationCanceledByUser){
             [SVProgressHUD showErrorWithStatus:kErrorMsgPasscodeAuthenticationFailed];
         }
+    } else if (errorType == SecureAWSS3TransferErrorPasscodeAuthenticationCanceledByUser) {
+        [SVProgressHUD showErrorWithStatus:kErrorMsgPasscodeAuthenticationFailed];
+    } else if(errorType == SecureAWSS3TransferErrorReAuthenticationNeeded) {
         [Utilities logoutUser:self.user];
+        [SVProgressHUD dismiss];
     } else  {
         [SVProgressHUD showErrorWithStatus:kErrorMsgSomethingWentWrong];
     }
@@ -366,22 +379,30 @@ typedef NS_ENUM(NSUInteger, DropDownMenuTag) {
 }
 
 -(void)logout {
+  if (self.isCognitoLogin) {
     [[self.user getDetails] continueWithBlock:^id _Nullable(AWSTask<AWSCognitoIdentityUserGetDetailsResponse *> * _Nonnull task) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if(task.error){
-                [Utilities  clearKeychainAndUserDefaults];
-                [[BayunCore sharedInstance] deauthenticate];
-                [SVProgressHUD showErrorWithStatus:task.error.userInfo[NSLocalizedDescriptionKey]];
-                [self.navigationController setToolbarHidden:YES];
-            }else {
-                self.response = task.result;
-                self.title = self.user.username;
-                [self.tableView reloadData];
-                [self.navigationController setToolbarHidden:NO];
-            }
-        });
-        return nil;
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if(task.error){
+          [Utilities  clearKeychainAndUserDefaults];
+          [[BayunCore sharedInstance] logout];
+          [SVProgressHUD showErrorWithStatus:task.error.userInfo[NSLocalizedDescriptionKey]];
+          [self.navigationController setToolbarHidden:YES];
+        }else {
+          self.response = task.result;
+          self.title = self.user.username;
+          [self.tableView reloadData];
+          [self.navigationController setToolbarHidden:NO];
+        }
+      });
+      return nil;
     }];
+  } else {
+    [[BayunCore sharedInstance] logout];
+    [[NSUserDefaults standardUserDefaults] setBool:false forKey:kIsUserLoggedIn];
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate] ;
+    [appDelegate startPasswordAuthentication];
+  }
+    
 }
 
 - (void)presentDocumentPicker {
@@ -616,7 +637,6 @@ typedef NS_ENUM(NSUInteger, DropDownMenuTag) {
             [[AWSManager sharedInstance] setEncryptionPolicy:self.selectedEncryptionPolicyRow];
             [[AWSManager sharedInstance] setGroupId:nil];
             [self uploadFileAtPath:[NSURL fileURLWithPath:filePath]];
-            
         } failureBlock:nil];
     }];
 }

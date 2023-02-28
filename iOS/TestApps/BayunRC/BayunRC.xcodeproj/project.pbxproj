@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E0211B7299F83F400740798 /* Bayun.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E0211B6299F83F400740798 /* Bayun.framework */; };
+		1E0211B8299F83F400740798 /* Bayun.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1E0211B6299F83F400740798 /* Bayun.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1E1926101D1D3232009F07EC /* RCCryptManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E19260F1D1D3232009F07EC /* RCCryptManager.m */; };
 		1E8F9A441F3DA1E800A9DE2E /* CTCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E8F9A431F3DA1E800A9DE2E /* CTCheckbox.m */; };
 		1EA9C88B1D1BDFF600BCFCB9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EA9C88A1D1BDFF600BCFCB9 /* main.m */; };
@@ -112,6 +114,7 @@
 		1EADA2931D1BE05A00B669B4 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2311D1BE05A00B669B4 /* User.m */; };
 		1EADA29B1D1BE24300B669B4 /* BayunRC.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1EADA2991D1BE24300B669B4 /* BayunRC.xcdatamodeld */; };
 		1EADA2A11D1BE99500B669B4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EADA2A01D1BE99500B669B4 /* Images.xcassets */; };
+		52405711057A27EFA041D278 /* libPods-BayunRC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C3616846EE2C84FADA826A /* libPods-BayunRC.a */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -131,14 +134,34 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		1E1926041D1C050F009F07EC /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				1E0211B8299F83F400740798 /* Bayun.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		1E0211B6299F83F400740798 /* Bayun.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bayun.framework; sourceTree = "<group>"; };
 		1E19260E1D1D3232009F07EC /* RCCryptManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCCryptManager.h; sourceTree = "<group>"; };
 		1E19260F1D1D3232009F07EC /* RCCryptManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCCryptManager.m; sourceTree = "<group>"; };
-		1E4BF9021DFEA4B100C57E27 /* BayunRC.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BayunRC.entitlements; sourceTree = "<group>"; };
+		1E7236FD298ABB9300760C39 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = lib/libcrypto.a; sourceTree = "<group>"; };
+		1E7236FE298ABB9300760C39 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = lib/libcurl.a; sourceTree = "<group>"; };
+		1E7236FF298ABB9300760C39 /* libjsoncpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjsoncpp.a; path = lib/libjsoncpp.a; sourceTree = "<group>"; };
+		1E723700298ABB9300760C39 /* libDatadogCPP.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libDatadogCPP.a; path = lib/libDatadogCPP.a; sourceTree = "<group>"; };
+		1E723701298ABB9300760C39 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = lib/libssl.a; sourceTree = "<group>"; };
+		1E723707298ABB9900760C39 /* libopentracing.1.5.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopentracing.1.5.1.dylib; path = lib/libopentracing.1.5.1.dylib; sourceTree = "<group>"; };
 		1E8F9A411F3DA1E800A9DE2E /* CTCheckbox-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CTCheckbox-Prefix.pch"; sourceTree = "<group>"; };
 		1E8F9A421F3DA1E800A9DE2E /* CTCheckbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTCheckbox.h; sourceTree = "<group>"; };
 		1E8F9A431F3DA1E800A9DE2E /* CTCheckbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTCheckbox.m; sourceTree = "<group>"; };
-		1EA9C8861D1BDFF600BCFCB9 /* BayunRC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BayunRC.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1EA9C8861D1BDFF600BCFCB9 /* BayunRC-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BayunRC-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EA9C88A1D1BDFF600BCFCB9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1EA9C88C1D1BDFF600BCFCB9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		1EA9C88D1D1BDFF600BCFCB9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -336,9 +359,22 @@
 		1EADA2941D1BE10E00B669B4 /* BayunRC.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BayunRC.pch; sourceTree = "<group>"; };
 		1EADA29A1D1BE24300B669B4 /* Bayun.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bayun.xcdatamodel; sourceTree = "<group>"; };
 		1EADA2A01D1BE99500B669B4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		1EAE1FD121A3D9AC007712A0 /* BayunRC.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = BayunRC.entitlements; sourceTree = SOURCE_ROOT; };
+		32C3616846EE2C84FADA826A /* libPods-BayunRC.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BayunRC.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7DA6DC605999445B15CF6454 /* Pods-BayunRC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayunRC.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BayunRC/Pods-BayunRC.debug.xcconfig"; sourceTree = "<group>"; };
+		B354C96ADD361C15D41DB905 /* Pods-BayunRC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayunRC.release.xcconfig"; path = "Pods/Target Support Files/Pods-BayunRC/Pods-BayunRC.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1EA9C8831D1BDFF600BCFCB9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1E0211B7299F83F400740798 /* Bayun.framework in Frameworks */,
+				52405711057A27EFA041D278 /* libPods-BayunRC.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1EA9C89F1D1BDFF600BCFCB9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -369,18 +405,19 @@
 		1EA9C87D1D1BDFF600BCFCB9 = {
 			isa = PBXGroup;
 			children = (
-				1E4BF9021DFEA4B100C57E27 /* BayunRC.entitlements */,
 				1EA9C8881D1BDFF600BCFCB9 /* BayunRC */,
 				1EA9C8A51D1BDFF600BCFCB9 /* BayunRCTests */,
 				1EA9C8B01D1BDFF600BCFCB9 /* BayunRCUITests */,
 				1EA9C8871D1BDFF600BCFCB9 /* Products */,
+				8F7DF9789F1B0B8E88B7240C /* Frameworks */,
+				9A56BC8E5F1A88DCC33F17B3 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
 		1EA9C8871D1BDFF600BCFCB9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1EA9C8861D1BDFF600BCFCB9 /* BayunRC.app */,
+				1EA9C8861D1BDFF600BCFCB9 /* BayunRC-Test.app */,
 				1EA9C8A21D1BDFF600BCFCB9 /* BayunRCTests.xctest */,
 				1EA9C8AD1D1BDFF600BCFCB9 /* BayunRCUITests.xctest */,
 			);
@@ -390,6 +427,7 @@
 		1EA9C8881D1BDFF600BCFCB9 /* BayunRC */ = {
 			isa = PBXGroup;
 			children = (
+				1EAE1FD121A3D9AC007712A0 /* BayunRC.entitlements */,
 				1EADA2A01D1BE99500B669B4 /* Images.xcassets */,
 				1EADA15A1D1BE05A00B669B4 /* Classes */,
 				1EADA1651D1BE05A00B669B4 /* CustomCells */,
@@ -784,6 +822,30 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		8F7DF9789F1B0B8E88B7240C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1E0211B6299F83F400740798 /* Bayun.framework */,
+				1E723707298ABB9900760C39 /* libopentracing.1.5.1.dylib */,
+				1E7236FD298ABB9300760C39 /* libcrypto.a */,
+				1E7236FE298ABB9300760C39 /* libcurl.a */,
+				1E723700298ABB9300760C39 /* libDatadogCPP.a */,
+				1E7236FF298ABB9300760C39 /* libjsoncpp.a */,
+				1E723701298ABB9300760C39 /* libssl.a */,
+				32C3616846EE2C84FADA826A /* libPods-BayunRC.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9A56BC8E5F1A88DCC33F17B3 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				7DA6DC605999445B15CF6454 /* Pods-BayunRC.debug.xcconfig */,
+				B354C96ADD361C15D41DB905 /* Pods-BayunRC.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -791,8 +853,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1EA9C8B61D1BDFF600BCFCB9 /* Build configuration list for PBXNativeTarget "BayunRC" */;
 			buildPhases = (
+				99247C8AA69B1C33C630F3DA /* [CP] Check Pods Manifest.lock */,
 				1EA9C8821D1BDFF600BCFCB9 /* Sources */,
+				1EA9C8831D1BDFF600BCFCB9 /* Frameworks */,
 				1EA9C8841D1BDFF600BCFCB9 /* Resources */,
+				1E1926041D1C050F009F07EC /* Embed Frameworks */,
+				1ED3567D20592164004B09D6 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -800,7 +866,7 @@
 			);
 			name = BayunRC;
 			productName = BayunRC;
-			productReference = 1EA9C8861D1BDFF600BCFCB9 /* BayunRC.app */;
+			productReference = 1EA9C8861D1BDFF600BCFCB9 /* BayunRC-Test.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1EA9C8A11D1BDFF600BCFCB9 /* BayunRCTests */ = {
@@ -845,25 +911,26 @@
 		1EA9C87E1D1BDFF600BCFCB9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0910;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = bayun;
 				TargetAttributes = {
 					1EA9C8851D1BDFF600BCFCB9 = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = RL8J62A42V;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
 					1EA9C8A11D1BDFF600BCFCB9 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = RL8J62A42V;
 						TestTargetID = 1EA9C8851D1BDFF600BCFCB9;
 					};
 					1EA9C8AC1D1BDFF600BCFCB9 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = RL8J62A42V;
 						TestTargetID = 1EA9C8851D1BDFF600BCFCB9;
 					};
 				};
@@ -873,6 +940,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 				de,
@@ -960,6 +1028,40 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1ED3567D20592164004B09D6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "xattr -rc .\n";
+		};
+		99247C8AA69B1C33C630F3DA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BayunRC-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1EA9C8821D1BDFF600BCFCB9 /* Sources */ = {
@@ -1112,28 +1214,20 @@
 		1EA9C8B41D1BDFF600BCFCB9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1159,6 +1253,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "BayunRC-Test";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1168,28 +1263,20 @@
 		1EA9C8B51D1BDFF600BCFCB9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1208,6 +1295,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "BayunRC-Test";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1217,53 +1305,91 @@
 		};
 		1EA9C8B71D1BDFF600BCFCB9 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7DA6DC605999445B15CF6454 /* Pods-BayunRC.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = BayunRC.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = RL8J62A42V;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BayunRC/BayunRC.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = BAYUN_RC_SANDBOX;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/AFNetworking\"",
+					"\"${PODS_ROOT}/Headers/Public/JSQSystemSoundPlayer\"",
+					"\"${PODS_ROOT}/Headers/Public/Reachability\"",
+					"/Users/preeti/bayun-iOS-Cognito-DF/BayunRC/include",
+				);
 				INFOPLIST_FILE = "BayunRC/BayunRC-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bayun.BayunRC-Test";
-				PRODUCT_NAME = BayunRC;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/AFNetworking\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/JSQSystemSoundPlayer\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Reachability\"",
+					"/Users/preeti/bayun-iOS-Cognito-DF/BayunRC/lib",
+					"$(PROJECT_DIR)/lib",
+				);
+				PRODUCT_NAME = "BayunRC-Test";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
 		1EA9C8B81D1BDFF600BCFCB9 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B354C96ADD361C15D41DB905 /* Pods-BayunRC.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = BayunRC.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = RL8J62A42V;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BayunRC/BayunRC.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = BAYUN_RC_SANDBOX;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/AFNetworking\"",
+					"\"${PODS_ROOT}/Headers/Public/JSQSystemSoundPlayer\"",
+					"\"${PODS_ROOT}/Headers/Public/Reachability\"",
+					"/Users/preeti/bayun-iOS-Cognito-DF/BayunRC/include",
+				);
 				INFOPLIST_FILE = "BayunRC/BayunRC-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bayun.BayunRC-Test";
-				PRODUCT_NAME = BayunRC;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/AFNetworking\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/JSQSystemSoundPlayer\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Reachability\"",
+					"/Users/preeti/bayun-iOS-Cognito-DF/BayunRC/lib",
+					"$(PROJECT_DIR)/lib",
+				);
+				PRODUCT_NAME = "BayunRC-Test";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1271,11 +1397,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = RL8J62A42V;
 				INFOPLIST_FILE = BayunRCTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bayun.BayunRCTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BayunRC.app/BayunRC";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BayunRC-Test.app/BayunRC-Test";
 			};
 			name = Debug;
 		};
@@ -1283,17 +1410,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = RL8J62A42V;
 				INFOPLIST_FILE = BayunRCTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bayun.BayunRCTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BayunRC.app/BayunRC";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BayunRC-Test.app/BayunRC-Test";
 			};
 			name = Release;
 		};
 		1EA9C8BD1D1BDFF600BCFCB9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEVELOPMENT_TEAM = RL8J62A42V;
 				INFOPLIST_FILE = BayunRCUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bayun.BayunRCUITests;
@@ -1305,6 +1434,7 @@
 		1EA9C8BE1D1BDFF600BCFCB9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEVELOPMENT_TEAM = RL8J62A42V;
 				INFOPLIST_FILE = BayunRCUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bayun.BayunRCUITests;

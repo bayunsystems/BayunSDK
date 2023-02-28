@@ -1,16 +1,17 @@
 package com.bayun.screens.adapter;
 
-import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.bayun.R;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bayun.aws.AWSS3Manager;
 import com.bayun.aws.model.FileInfo;
 import com.bayun.util.Constants;
+import com.bayun.R;
 
 import java.util.List;
 
@@ -26,18 +27,19 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
         ViewHolder(View v) {
             super(v);
-            fileNameTextView = (TextView) v.findViewById(R.id.file_name_item);
-            fileDateTextView = (TextView) v.findViewById(R.id.file_name_date_item);
-            fileSizeTextView = (TextView) v.findViewById(R.id.file_name_size_item);
+            fileNameTextView = v.findViewById(R.id.file_name_item);
+            fileDateTextView = v.findViewById(R.id.file_name_date_item);
+            fileSizeTextView = v.findViewById(R.id.file_name_size_item);
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public FilesAdapter(Context context, List<FileInfo> fileInfoList) {
+    public FilesAdapter(List<FileInfo> fileInfoList) {
         FilesAdapter.fileInfoList = fileInfoList;
     }
 
     // Create new views (invoked by the layout manager)
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent,
                                          int viewType) {
@@ -50,7 +52,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         if(AWSS3Manager.getInstance().fileList().size()!=0)
@@ -65,10 +67,10 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
             long size = fileInfoList.get(position).getSize();
             if (size > Constants.FILE_SIZE) {
                 size = size / 1024;
-                holder.fileSizeTextView.setText(Constants.BLANK_SPACE + String.valueOf(size) + Constants.BLANK_SPACE + Constants.FILE_SIZE_KB);
+                holder.fileSizeTextView.setText(Constants.BLANK_SPACE + size + Constants.BLANK_SPACE + Constants.FILE_SIZE_KB);
 
             } else {
-                holder.fileSizeTextView.setText(Constants.BLANK_SPACE + String.valueOf(size) + Constants.BLANK_SPACE + Constants.FILE_SIZE_BYTE);
+                holder.fileSizeTextView.setText(Constants.BLANK_SPACE + size + Constants.BLANK_SPACE + Constants.FILE_SIZE_BYTE);
             }
         }
 
@@ -81,7 +83,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
     }
 
     //convert string into upper case
-    public String convertStringIntoUppercase(String fileName) {
+     private String convertStringIntoUppercase(String fileName) {
         StringBuffer res = new StringBuffer();
         String[] strArr = fileName.split(Constants.FILE_NAME_SPLIT_CHAR);
         for (String str : strArr) {
