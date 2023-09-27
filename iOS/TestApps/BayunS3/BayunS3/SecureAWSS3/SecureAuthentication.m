@@ -59,6 +59,7 @@ registerBayunWithPwd:(BOOL)registerBayunWithPwd
       
       if (registerBayunWithPwd) {
         [[BayunCore sharedInstance] registerWithCompanyName:self.companyName
+                                           uiViewController:self
                                           companyEmployeeId:username
                                                    password:password
                                         bayunAppCredentials:appCredentials
@@ -77,6 +78,7 @@ registerBayunWithPwd:(BOOL)registerBayunWithPwd
       } else {
         
         [[BayunCore sharedInstance] registerWithCompanyName:self.companyName
+                                           uiViewController:self
                                           companyEmployeeId:username
                                                       email:self.email
                                         isCompanyOwnedEmail:true
@@ -120,7 +122,9 @@ registerBayunWithPwd:(BOOL)registerBayunWithPwd
               
               if (self.registerBayunWithPassword) {
                 
-                [[BayunCore sharedInstance] registerWithCompanyName:self.companyName companyEmployeeId:user.username password:self.userPassword bayunAppCredentials:appCredentials authorizeEmployeeCallback:^(NSString *employeePublicKey) {
+                [[BayunCore sharedInstance] registerWithCompanyName:self.companyName
+                                                   uiViewController:self
+                                                  companyEmployeeId:user.username password:self.userPassword bayunAppCredentials:appCredentials authorizeEmployeeCallback:^(NSString *employeePublicKey) {
                   NSLog(@"employeePublicKey : %@",employeePublicKey);
                   //Authorization of employeePublicKey is Pending
                   [self executeBlock:block withBayunError:BayunErrorEmployeeAuthorizationIsPending];
@@ -133,6 +137,7 @@ registerBayunWithPwd:(BOOL)registerBayunWithPwd
               } else {
                 
                 [[BayunCore sharedInstance] registerWithCompanyName:self.companyName
+                                                   uiViewController:self
                                                   companyEmployeeId:user.username
                                                               email:self.email
                                                 isCompanyOwnedEmail:true
@@ -178,6 +183,7 @@ registerBayunWithPwd:(BOOL)registerBayunWithPwd
                                                                                    baseURL:kBayunBaseURL];
           
           [[BayunCore sharedInstance] loginWithCompanyName:self.companyName
+                                          uiViewController:self
                                          companyEmployeeId:username
                                                   password:password
                                         autoCreateEmployee:true

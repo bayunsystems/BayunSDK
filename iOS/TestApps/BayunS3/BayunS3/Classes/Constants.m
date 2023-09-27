@@ -66,11 +66,14 @@ NSString *const CognitoIdentityUserPoolAppClientId = @"Your Cognito Identity Use
 NSString *const CognitoIdentityUserPoolAppClientSecret = @"Your Cognito Identity UserPoolAppClientSecret";
 NSString *const CognitoIdentityPoolId = @"Your Cognito IdentityPoolId";
 
+
 NSString *const kBayunBaseURL = @"Your Bayun Base URL";
 NSString *const kBayunAppId = @"Your Bayun AppId";
 NSString *const kBayunApplicationSalt = @"Your Bayun Application Salt";
 NSString *const kBayunAppSecret = @"Your Bayun AppSecret";
-
 NSString *const kDefaultCompanyName = @"TestCompany";
+
+
+
 
 @end

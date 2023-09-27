@@ -226,7 +226,7 @@
   if (self.registerWithBayunOnly) {
     [SVProgressHUD show];
     void (^successBlock)(void) = ^{
-      [[NSUserDefaults standardUserDefaults] setBool:true forKey:kIsUserLoggedIn];
+      [[NSUserDefaults standardUserDefaults] setBool:false forKey:kIsUserLoggedIn];
       dispatch_async(dispatch_get_main_queue(), ^{
         [SVProgressHUD dismiss];
         //return to signin screen
@@ -244,6 +244,7 @@
     
     if (![password isEqual:[NSNull null]] && ![password isEqualToString:@""]) {
       [[BayunCore sharedInstance] registerWithCompanyName:self.defaultCompanyName
+                                         uiViewController:self
                                         companyEmployeeId:self.username.text
                                                  password:password
                                       bayunAppCredentials:appCredentials
@@ -272,6 +273,7 @@
       if (![email isEqual:[NSNull null]] && ![email isEqualToString:@""] &&
           ![username isEqual:[NSNull null]] && ![username isEqualToString:@""]) {
         [[BayunCore sharedInstance] registerWithCompanyName:self.defaultCompanyName
+                                           uiViewController:self
                                           companyEmployeeId:username
                                                       email:email
                                         isCompanyOwnedEmail:true

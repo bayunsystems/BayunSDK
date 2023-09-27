@@ -1,0 +1,12 @@
+<resources>
+
+
+    <string name="app_name">HelloWorld</string>
+    <string name="baseurl">https://www.digilockbox.com/</string>
+    <string name="appId">enter_bayun_application_id</string>
+    <string name="appSecret">enter_bayun_application_secret</string>
+    <string name="appSalt">enter_bayun_application_salt</string>
+
+
+
+</resources>

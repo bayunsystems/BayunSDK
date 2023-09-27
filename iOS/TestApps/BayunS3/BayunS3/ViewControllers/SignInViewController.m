@@ -151,6 +151,7 @@
     };
     
     [[BayunCore sharedInstance] loginWithCompanyName:self.defaultCompanyName
+                                    uiViewController:self
                                    companyEmployeeId:self.username.text
                                             password:self.password.text
                                   autoCreateEmployee:true
@@ -159,11 +160,11 @@
                                  bayunAppCredentials:appCredentials
                                              success:^{
       
-      [[BayunCore sharedInstance] unlockText:@"CwABAAAAEBuBLw5XRT4KKtj2Edgf0UAIAAIAAAACCAADAAAAAggABAAAAAALAAUAAAAQlcyNy3DfP3bLqVxMXjU3GwgACAAAAAMKAAoAAAAAPTfvfAgACwAAAAAA" success:^(NSString *text) {
-        NSLog(@"unlocked text : %@", text);
-      } failure:^(BayunError error) {
-        
-      }];
+//      [[BayunCore sharedInstance] unlockText:@"CwABAAAAEBuBLw5XRT4KKtj2Edgf0UAIAAIAAAACCAADAAAAAggABAAAAAALAAUAAAAQlcyNy3DfP3bLqVxMXjU3GwgACAAAAAMKAAoAAAAAPTfvfAgACwAAAAAA" success:^(NSString *text) {
+//        NSLog(@"unlocked text : %@", text);
+//      } failure:^(BayunError error) {
+//
+//      }];
       //Bayun Authentication Successful
       successBlock();
     } failure:^(BayunError errorCode) {
