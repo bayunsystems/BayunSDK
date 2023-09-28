@@ -1,0 +1,11 @@
+framework module Bayun {
+  umbrella header "Bayun.h"
+
+  export *
+  module * { export * }
+}
+
+module Bayun.Swift {
+  header "Bayun-Swift.h"
+  requires objc
+}

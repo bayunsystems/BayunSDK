@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "1BD3D615-E8D0-41AB-96B6-C037128F57E9"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "488E8BF3-055D-4FB8-A5DC-578C0DA8A79D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "HelloworldSwift/ViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "67"
+            endingLineNumber = "67"
+            landmarkName = "loginWithPassword(compEmpId:password:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "488E8BF3-055D-4FB8-A5DC-578C0DA8A79D - 573b2ff55db72791"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "66"
+                  endingLineNumber = "66"
+                  offsetFromSymbolStart = "1176">
+               </Location>
+               <Location
+                  uuid = "488E8BF3-055D-4FB8-A5DC-578C0DA8A79D - 133fee6fdefd3885"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "66"
+                  endingLineNumber = "66"
+                  offsetFromSymbolStart = "484">
+               </Location>
+               <Location
+                  uuid = "488E8BF3-055D-4FB8-A5DC-578C0DA8A79D - bae46f8afa48e6fd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (__C.BayunError) -&gt; () in Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "67"
+                  endingLineNumber = "67"
+                  offsetFromSymbolStart = "76">
+               </Location>
+               <Location
+                  uuid = "488E8BF3-055D-4FB8-A5DC-578C0DA8A79D - bae46f8afa48e69a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (__C.BayunError) -&gt; () in Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "66"
+                  endingLineNumber = "66"
+                  offsetFromSymbolStart = "76">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "43DE4AF4-F124-4540-802F-D087FF5E3876"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "HelloworldSwift/ViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
+            landmarkName = "loginWithPassword(compEmpId:password:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "43DE4AF4-F124-4540-802F-D087FF5E3876 - 573b2ff55db72791"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "66"
+                  endingLineNumber = "66"
+                  offsetFromSymbolStart = "1176">
+               </Location>
+               <Location
+                  uuid = "43DE4AF4-F124-4540-802F-D087FF5E3876 - 133fee6fdefd3885"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "66"
+                  endingLineNumber = "66"
+                  offsetFromSymbolStart = "484">
+               </Location>
+               <Location
+                  uuid = "43DE4AF4-F124-4540-802F-D087FF5E3876 - bae46f8afa48e6fd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (__C.BayunError) -&gt; () in Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "67"
+                  endingLineNumber = "67"
+                  offsetFromSymbolStart = "76">
+               </Location>
+               <Location
+                  uuid = "43DE4AF4-F124-4540-802F-D087FF5E3876 - 573b2ff55db727b0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "65"
+                  endingLineNumber = "65"
+                  offsetFromSymbolStart = "1176">
+               </Location>
+               <Location
+                  uuid = "43DE4AF4-F124-4540-802F-D087FF5E3876 - 133fee6fdefd38a4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "65"
+                  endingLineNumber = "65"
+                  offsetFromSymbolStart = "484">
+               </Location>
+               <Location
+                  uuid = "43DE4AF4-F124-4540-802F-D087FF5E3876 - bae46f8afa48e69a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (__C.BayunError) -&gt; () in Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "66"
+                  endingLineNumber = "66"
+                  offsetFromSymbolStart = "76">
+               </Location>
+               <Location
+                  uuid = "43DE4AF4-F124-4540-802F-D087FF5E3876 - 573b2ff55db727b0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "65"
+                  endingLineNumber = "65"
+                  offsetFromSymbolStart = "1164">
+               </Location>
+               <Location
+                  uuid = "43DE4AF4-F124-4540-802F-D087FF5E3876 - 573b2ff55db72791"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Helloworld.ViewController.loginWithPassword(compEmpId: Swift.String, password: Swift.String) -&gt; ()"
+                  moduleName = "Helloworld"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/rahul/Desktop/BayunTask/DemoForGit/Helloworldios/HelloworldSwift/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "66"
+                  endingLineNumber = "66"
+                  offsetFromSymbolStart = "1164">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
