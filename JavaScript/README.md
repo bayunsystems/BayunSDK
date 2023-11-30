@@ -15,5 +15,26 @@ These should be kept secure. You MUST register every new app with Bayun, and use
 
 Checkout [Developer Guide](https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/).
 
+## ESLint Error Resolution
 
+If you are encountering ESLint-related errors in your project, you can choose one of the following solutions:
+
+### Solution 1: Modify `bayun.js`
+
+To address ESLint issues within the `bayun.js` file, follow these steps:
+
+1. Open the `bayun.js` file in your project.
+2. Add the following lines at the beginning of the file:
+
+    ```javascript
+    /* eslint-disable no-unused-expressions */
+    /* eslint-disable no-restricted-globals */
+    /* eslint-disable no-mixed-operators */
+    /* eslint-disable no-undef */
+    /* eslint-disable no-fallthrough */
+    ```
+
+### Solution 2: Remove ESLint from Bayun SDK
+
+If your application is using the Bayun SDK and you prefer not to enforce ESLint rules, you can consider removing ESLint from your app.
 
