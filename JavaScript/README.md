@@ -34,7 +34,6 @@ To address ESLint issues within the `bayun.js` file, follow these steps:
     /* eslint-disable no-fallthrough */
     ```
 
-### Solution 2: Remove ESLint from Bayun SDK
+### Solution 2: Remove ESLint from the project
 
 If your application is using the Bayun SDK and you prefer not to enforce ESLint rules, you can consider removing ESLint from your app.
-
