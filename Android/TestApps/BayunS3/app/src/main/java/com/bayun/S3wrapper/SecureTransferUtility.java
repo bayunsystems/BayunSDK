@@ -61,7 +61,7 @@ public class SecureTransferUtility extends TransferUtility {
     public SecureTransferUtility(AmazonS3 s3, Context context) {
         super(s3, context);
         this.context = context;
-        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.app_id),
+        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.bayun_server_public_key),context.getResources().getString(R.string.app_id),
                 context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt),BayunApplication.isDeviceLock);
 
     }
@@ -196,7 +196,7 @@ public class SecureTransferUtility extends TransferUtility {
                 @Override
                 public void onStateChanged(int id, TransferState state) {
                     if (state.equals(TransferState.COMPLETED)) {
-                        BayunCore bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.app_id),
+                        BayunCore bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.bayun_server_public_key),context.getResources().getString(R.string.app_id),
                                 context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt),BayunApplication.isDeviceLock);;
                         try {
                             Handler.Callback unlockSuccess = msg -> {

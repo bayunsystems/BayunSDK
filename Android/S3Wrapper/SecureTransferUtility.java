@@ -112,8 +112,6 @@ public class SecureTransferUtility extends TransferUtility {
     public TransferObserver secureDownload(String bucket, String key, File file,
                                            TransferListener transferListener) {
         TransferObserver transferObserver = super.download(bucket, key, file);
-        //SecureTransferObserver secureTransferObserver = new SecureTransferObserver(transferObserver, context);
-        //secureTransferObserver.setFileType("download");
         setDownloadTransferListener(transferListener, transferObserver);
         return transferObserver;
     }
@@ -167,7 +165,6 @@ public class SecureTransferUtility extends TransferUtility {
      */
     public static String getGroupId() {
         return BayunApplication.tinyDB.getString(Constants.SHARED_PREFERENCES_GROUP_ID_BEING_VIEWED);
-        //return groupId;
     }
 
     /**

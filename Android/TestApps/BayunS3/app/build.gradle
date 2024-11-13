@@ -55,6 +55,25 @@ android {
 }
 
 dependencies {
+    implementation files('src/main/java/com/bayun/libs/Bayun-debug.aar')  //implementation files('../Bayun/Bayun.aar')
+    // For Bayun SDK
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.1'
+    implementation 'com.github.tony19:logback-android:2.0.0'
+    implementation 'androidx.biometric:biometric:1.0.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'com.yakivmospan:scytale:1.0.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.3.61"
+
+    //Supported Conginito SDK version
+    api 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.56.0'
+    //Supported AWS SDK version
+    api 'com.amazonaws:aws-android-sdk-s3:2.56.0'
+    //All Other
     api 'androidx.appcompat:appcompat:1.1.0'
     api 'com.google.android.material:material:1.0.0'
     api 'com.github.siyamed:android-shape-imageview:0.9.1'

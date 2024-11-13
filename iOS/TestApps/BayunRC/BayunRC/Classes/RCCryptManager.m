@@ -3,7 +3,7 @@
 //  BayunRC
 //
 //  Created by Preeti Gaur on 24/06/16.
-//  Copyright © 2023 Bayun Systems, Inc. All rights reserved.
+//  Copyright © 2022 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "RCCryptManager.h"

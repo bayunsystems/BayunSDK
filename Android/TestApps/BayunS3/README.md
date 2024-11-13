@@ -1,6 +1,6 @@
 ## BayunS3
 
-BayunS3 is a sample application that uses overridden methods from AWSS3 SDK for secure storage onto AWS S3. For details, see [Documentation](https://bayun.gitbook.io/bayun-awss3-wrapper-android-programming-guide/).
+BayunS3 is a sample application that uses overridden methods from AWSS3 SDK for secure storage onto AWS S3. For details, see [Documentation](https://www.bayunsystems.com/resources/awss3_wrapper_android/bayuns3.html).
 
 **Instructions for use :**
 
@@ -34,7 +34,7 @@ BayunS3 is a sample application that uses overridden methods from AWSS3 SDK for 
 7. You will need your AWSS3 access key and secret key.
    Place the access key and secret key in the strings.xml file.
 
-8. You are provided with an appId when your app is registered with Bayun, see  [Registering a new App](https://bayun.gitbook.io/bayuncoresdk-android/2-getting-started#2.3-register-a-new-application).
+8. You are provided with an appId when your app is registered with Bayun, see  [Registering a new App](https://www.bayunsystems.com/resources/core_sdk_android/getting_started.html).
    In the strings.xml file, replace value of "base_url", "app_id", "app_salt" and "app_secret" with your Bayun Base URL, Application Id, Application Salt and Bayun App Secret.
 
 9. You will need your userPoolId, clientId, clientSecret, cognitoRegion. Place them under the defined variables in class "CognitoHelper".

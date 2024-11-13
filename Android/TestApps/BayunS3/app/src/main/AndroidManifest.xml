@@ -69,6 +69,10 @@
         <activity android:name=".screens.activity.CognitoRegisterUserActivity" />
         <activity android:name=".screens.activity.SignUpConfirmActivity" />
 
+        <!-- Declare Bayun SDK's background service -->
+        <service android:name="com.bayun_module.BayunBackgroundService"/>
+        <!-- Declare Bayun SDK's background activity for screen locks -->
+        <activity android:name="com.bayun_module.EmptyActivity"/>
 
     </application>
 

@@ -55,7 +55,8 @@ registerBayunWithPwd:(BOOL)registerBayunWithPwd
       BayunAppCredentials *appCredentials = [[BayunAppCredentials alloc] initWithAppId:self.appId
                                                                              appSecret:self.appSecret
                                                                                appSalt:self.appSalt
-                                                                               baseURL:kBayunBaseURL];
+                                                                               baseURL:kBayunBaseURL
+                                                                  bayunServerPublicKey:kBayunServerKey ];
       
       if (registerBayunWithPwd) {
         [[BayunCore sharedInstance] registerWithCompanyName:self.companyName
@@ -118,7 +119,9 @@ registerBayunWithPwd:(BOOL)registerBayunWithPwd
               BayunAppCredentials *appCredentials = [[BayunAppCredentials alloc] initWithAppId:self.appId
                                                                                      appSecret:self.appSecret
                                                                                        appSalt:self.appSalt
-                                                                                       baseURL:kBayunBaseURL];
+                                                                                       baseURL:kBayunBaseURL
+                                                                          bayunServerPublicKey:kBayunServerKey
+              ];
               
               if (self.registerBayunWithPassword) {
                 
@@ -180,7 +183,9 @@ registerBayunWithPwd:(BOOL)registerBayunWithPwd
           BayunAppCredentials *appCredentials = [[BayunAppCredentials alloc] initWithAppId:self.appId
                                                                                  appSecret:self.appSecret
                                                                                    appSalt:self.appSalt
-                                                                                   baseURL:kBayunBaseURL];
+                                                                                   baseURL:kBayunBaseURL
+                                                                      bayunServerPublicKey:kBayunServerKey
+          ];
           
           [[BayunCore sharedInstance] loginWithCompanyName:self.companyName
                                           uiViewController:self

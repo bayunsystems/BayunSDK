@@ -28,7 +28,7 @@ public class Constants {
     public static final String FILE_SIZE_BYTE = "bytes";
     public static final String FILE_NAME_SPLIT_CHAR = "_";
     public static final int LIST_SIZE_EMPTY = 0;
-   public static final String COMPANY_NAME = "TestCompany";
+   public static final String COMPANY_NAME = "29Augc1";
   
 
 

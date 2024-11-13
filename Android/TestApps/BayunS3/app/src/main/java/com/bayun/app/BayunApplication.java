@@ -32,9 +32,10 @@ public class BayunApplication extends Application {
         appContext = getApplicationContext();
         settings = getSharedPreferences(Constants.APP_NAME, MODE_PRIVATE);
         tinyDB = new TinyDB(settings);
+
         bayunCore =
-                new BayunCore(appContext,  getResources().getString(R.string.base_url), getResources().getString(R.string.app_id),
-                getResources().getString(R.string.app_secret), getResources().getString(R.string.app_salt), BayunApplication.isDeviceLock);
+                new BayunCore(appContext,  getResources().getString(R.string.base_url),getResources().getString(R.string.bayun_server_public_key), getResources().getString(R.string.app_id),
+                getResources().getString(R.string.app_secret), getResources().getString(R.string.app_salt), BayunApplication.isDeviceLock );
         applicationHandler = new Handler(appContext.getMainLooper());
         secureAuthentication = SecureAuthentication.getInstance();
         secureAuthentication.setContext(appContext);

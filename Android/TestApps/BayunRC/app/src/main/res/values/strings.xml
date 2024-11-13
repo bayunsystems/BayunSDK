@@ -24,6 +24,10 @@
     <!-- application salt -->
     <string name="app_salt">enter_your_application_salt_here</string>
 
+
+
+
+
     <!--list view file activity values-->
     <string name="more_options">More</string>
 

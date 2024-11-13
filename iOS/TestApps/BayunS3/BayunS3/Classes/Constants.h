@@ -75,5 +75,6 @@ extern NSString *const kBayunAppId;
 extern NSString *const kBayunAppSecret;
 extern NSString *const kDefaultCompanyName;
 extern NSString *const kBayunApplicationSalt;
+extern NSString *const kBayunServerKey;
 
 @end

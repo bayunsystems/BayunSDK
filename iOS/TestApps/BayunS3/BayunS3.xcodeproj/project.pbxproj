@@ -577,7 +577,6 @@
 				TargetAttributes = {
 					1EF3F35F1D213831009D0B72 = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = 9Y95R85FXY;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
@@ -932,7 +931,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 9Y95R85FXY;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -988,7 +987,6 @@
 					"-lstdc++",
 					"-lz",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bayunsystems.BayunS3-Dev";
 				PRODUCT_NAME = BayunS3;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1014,7 +1012,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 9Y95R85FXY;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1070,7 +1068,6 @@
 					"-lstdc++",
 					"-lz",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bayunsystems.BayunS3-Dev";
 				PRODUCT_NAME = BayunS3;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

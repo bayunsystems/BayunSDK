@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 14/07/2015.
-//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2022 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "ExtensionListViewController.h"

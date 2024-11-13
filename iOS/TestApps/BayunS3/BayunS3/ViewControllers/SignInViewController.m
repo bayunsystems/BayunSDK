@@ -134,7 +134,9 @@
     BayunAppCredentials *appCredentials = [[BayunAppCredentials alloc] initWithAppId:kBayunAppId
                                                                            appSecret:kBayunAppSecret
                                                                              appSalt:kBayunApplicationSalt
-                                                                             baseURL:kBayunBaseURL];
+                                                                             baseURL:kBayunBaseURL
+                                                                bayunServerPublicKey:kBayunServerKey
+    ];
     
     void(^successBlock)(void) = ^{
       [[NSUserDefaults standardUserDefaults] setBool:true forKey:kIsUserLoggedIn];

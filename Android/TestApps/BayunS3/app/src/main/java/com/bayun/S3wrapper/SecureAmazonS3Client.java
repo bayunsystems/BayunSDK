@@ -79,7 +79,7 @@ public class  SecureAmazonS3Client extends AmazonS3Client {
      */
     public SecureAmazonS3Client(AWSCredentials awsCredentials, Context context) {
         super(awsCredentials);
-        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.app_id),
+        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.bayun_server_public_key),context.getResources().getString(R.string.app_id),
                 context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt), BayunApplication.isDeviceLock);;
     }
 
@@ -98,7 +98,7 @@ public class  SecureAmazonS3Client extends AmazonS3Client {
      */
     public SecureAmazonS3Client(AWSCredentials awsCredentials, ClientConfiguration clientConfiguration, Context context) {
         super(awsCredentials, clientConfiguration);
-        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.app_id),
+        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.bayun_server_public_key),context.getResources().getString(R.string.app_id),
                 context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt),BayunApplication.isDeviceLock);
 
     }
@@ -114,7 +114,7 @@ public class  SecureAmazonS3Client extends AmazonS3Client {
      */
     public SecureAmazonS3Client(AWSCredentialsProvider credentialsProvider, Context context) {
         super(credentialsProvider);
-        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.app_id),
+        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.bayun_server_public_key),context.getResources().getString(R.string.app_id),
                 context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt),BayunApplication.isDeviceLock);
 
     }
@@ -134,7 +134,7 @@ public class  SecureAmazonS3Client extends AmazonS3Client {
     public SecureAmazonS3Client(AWSCredentialsProvider credentialsProvider,
                                 ClientConfiguration clientConfiguration, Context context) {
         super(credentialsProvider, clientConfiguration);
-        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.app_id),
+        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.bayun_server_public_key),context.getResources().getString(R.string.app_id),
                 context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt),BayunApplication.isDeviceLock);
 
     }
@@ -155,7 +155,7 @@ public class  SecureAmazonS3Client extends AmazonS3Client {
     public SecureAmazonS3Client(AWSCredentialsProvider credentialsProvider,
                                 ClientConfiguration clientConfiguration, HttpClient httpClient, Context context) {
         super(credentialsProvider, clientConfiguration, httpClient);
-        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url), context.getResources().getString(R.string.app_id),
+        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url), context.getResources().getString(R.string.bayun_server_public_key),context.getResources().getString(R.string.app_id),
                 context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt),BayunApplication.isDeviceLock);
 
     }
@@ -174,7 +174,7 @@ public class  SecureAmazonS3Client extends AmazonS3Client {
      */
     public SecureAmazonS3Client(ClientConfiguration clientConfiguration, Context context) {
         super(clientConfiguration);
-        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.app_id),
+        bayunCore = new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.bayun_server_public_key),context.getResources().getString(R.string.app_id),
                 context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt),BayunApplication.isDeviceLock);
 
     }

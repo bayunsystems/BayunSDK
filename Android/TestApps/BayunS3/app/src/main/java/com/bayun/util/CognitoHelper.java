@@ -45,19 +45,19 @@ public class CognitoHelper {
     /**
      * Add your pool id here
      */
-    private static final String userPoolId = "enter_your_pool_id_here";
+    private static final String userPoolId = "us-west-2_wc05llxMk";
 
     /**
      * Add you client id
      */
-    private static final String clientId = "enter_your_client_id_here";
+    private static final String clientId = "2e6i259bee11qmp59hc0456p8r";
 
     /**
      * App secret associated with your app id - if the App id does not have an associated App secret,
      * set the App secret to null.
      * e.g. clientSecret = null;
      */
-    private static final String clientSecret = "enter_your_client_secret_here";
+    private static final String clientSecret = "9f67vda7dn3tl9j2pe8qff7ntj0nch0jnc59mtce31ckovda73a";
 
     /**
      * Set Your User Pools region.

@@ -240,7 +240,9 @@
     BayunAppCredentials *appCredentials = [[BayunAppCredentials alloc] initWithAppId:kBayunAppId
                                                                            appSecret:kBayunAppSecret
                                                                              appSalt:kBayunApplicationSalt
-                                                                             baseURL:kBayunBaseURL];
+                                                                             baseURL:kBayunBaseURL
+                                                                bayunServerPublicKey:kBayunServerKey
+    ];
     
     if (![password isEqual:[NSNull null]] && ![password isEqualToString:@""]) {
       [[BayunCore sharedInstance] registerWithCompanyName:self.defaultCompanyName

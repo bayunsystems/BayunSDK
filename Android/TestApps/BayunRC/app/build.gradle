@@ -48,6 +48,18 @@ dependencies {
     implementation ('com.squareup.okhttp:okhttp:2.7.2'){
         exclude module:'okio'
     }
+    implementation files('../Bayun/Bayun.aar')
+
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.1'
+    implementation 'com.github.tony19:logback-android:2.0.0'
+    implementation 'androidx.biometric:biometric:1.0.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'com.yakivmospan:scytale:1.0.1'
 
 
 

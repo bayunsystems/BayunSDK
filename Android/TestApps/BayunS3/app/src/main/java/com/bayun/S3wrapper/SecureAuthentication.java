@@ -175,7 +175,7 @@ public class SecureAuthentication {
      */
     public void signOut(CognitoUser user) {
         // Sign out from Bayun
-        new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.app_id),
+        new BayunCore(context, context.getResources().getString(R.string.base_url),context.getResources().getString(R.string.bayun_server_public_key),context.getResources().getString(R.string.app_id),
                 context.getResources().getString(R.string.app_secret),context.getResources().getString(R.string.app_salt),BayunApplication.isDeviceLock).logout();
         // Sign out from Cognito Services
         // This has cleared all tokens and this user will have to go through the authentication

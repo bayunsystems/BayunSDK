@@ -3,7 +3,7 @@
 //  Bayun
 //
 //  Created by Preeti Gaur on 02/06/2015.
-//  Copyright (c) 2023 Bayun Systems, Inc. All rights reserved.
+//  Copyright (c) 2022 Bayun Systems, Inc. All rights reserved.
 //
 
 #import "Constants.h"
@@ -66,14 +66,11 @@ NSString *const CognitoIdentityUserPoolAppClientId = @"Your Cognito Identity Use
 NSString *const CognitoIdentityUserPoolAppClientSecret = @"Your Cognito Identity UserPoolAppClientSecret";
 NSString *const CognitoIdentityPoolId = @"Your Cognito IdentityPoolId";
 
-
 NSString *const kBayunBaseURL = @"Your Bayun Base URL";
 NSString *const kBayunAppId = @"Your Bayun AppId";
 NSString *const kBayunApplicationSalt = @"Your Bayun Application Salt";
 NSString *const kBayunAppSecret = @"Your Bayun AppSecret";
+NSString *const kBayunServerKey = @"Your Bayun Server Public Key";
 NSString *const kDefaultCompanyName = @"TestCompany";
-
-
-
 
 @end

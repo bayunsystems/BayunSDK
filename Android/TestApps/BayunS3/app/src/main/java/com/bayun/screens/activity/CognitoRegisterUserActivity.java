@@ -61,7 +61,6 @@ public class CognitoRegisterUserActivity extends AbstractActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cognito_register_user);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             // get back to main screen
