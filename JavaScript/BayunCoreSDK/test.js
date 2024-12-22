@@ -115,6 +115,56 @@ const registerFailureCallback = (error) => {
   console.error(error);
 };
 
+const newUserCredentialsCallback = (data) => {
+  if (data.sessionId) {
+    const authorizeEmployeeCallback = (data) => {
+      if (data.sessionId) {
+        if (
+          data.authenticationResponse ==
+          BayunCore.AuthenticateResponse.AUTHORIZATION_PENDING
+        ) {
+          // You can get employeePublicKey in data.employeePublicKey for it's authorization
+        }
+      }
+    };
+
+    const successCallback = (data) => {
+      //Employee Registered Successfully
+      //Login to continue.
+      console.log("yes", data);
+    };
+
+    const failureCallback = (error) => {
+      console.error(error);
+    };
+
+    //Take User Input for Security Questions and Answers
+    //Here securityQuestionsAnswers object is created just for reference
+    var securityQuestionsAnswers = [];
+    securityQuestionsAnswers.push({ question: "q", answer: "a" });
+    securityQuestionsAnswers.push({ question: "q", answer: "a" });
+    securityQuestionsAnswers.push({ question: "q", answer: "a" });
+    securityQuestionsAnswers.push({ question: "q", answer: "a" });
+    securityQuestionsAnswers.push({ question: "q", answer: "a" });
+
+    // Take User Input for optional passphrase
+    const passphrase = "1234";
+
+    // Take user Input for optional registerFaceId
+    const registerFaceId = false;
+
+    bayunCore.setNewUserCredentials(
+      data.sessionId,
+      securityQuestionsAnswers,
+      null, //passphrase,
+      registerFaceId,
+      authorizeEmployeeCallback,
+      successCallback,
+      failureCallback
+    );
+  }
+};
+
 /**
  * changePasswordSuccess executes after successfully password Change
  * @param {Any} data Data of employee status parameters
