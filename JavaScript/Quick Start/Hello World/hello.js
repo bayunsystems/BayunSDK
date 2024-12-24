@@ -26,8 +26,9 @@ function initBayunCore() {
     Constants.BAYUN_APP_SECRET,
     Constants.BAYUN_APP_SALT,
     localStorageMode,
-    Constants.ENABLE_FACE_RECOGNITION,
-    Constants.BASE_URL
+    Constants.BASE_URL,
+    Constants.BAYUN_SERVER_PUBLIC_KEY,
+    Constants.ENABLE_FACE_RECOGNITION
   );
   console.log("Instanciated BayunCore Object ", bayunCore);
 }
