@@ -308,6 +308,7 @@ function loginWithPassword() {
     companyEmployeeId,
     password,
     false, //autoCreateEmployee,
+    null,
     null, //securityQuestionsCallback,
     null, //passphraseCallback,
     onLoginSuccessCallback,
