@@ -1,6 +1,6 @@
 ## Getting Started
 
-Register as a developer on the Admin Panel(https://https://sandbox-bayun-admin-panel-d3218f3a5f42.herokuapp.com/).
+Register as a developer on the Admin Panel(https://sandbox-bayun-admin-panel-d3218f3a5f42.herokuapp.com/).
 
 On the admin panel, register an email address. You will be asked to set security questions and an optional passphrase and select Developer as an account role. After registering as a developer on Bayun, you can create an application in the developer console. You need to provide your App name.
 
