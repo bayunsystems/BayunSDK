@@ -11,7 +11,6 @@
  */
 const Constants = {
   BAYUN_APP_ID: "<Your App ID>", //Provided when an app is registered with Bayun on Developer Portal
-  BAYUN_APP_SALT: "<Your App Salt>", //Provided when an app is registered with Bayun on Developer Portal
   BAYUN_APP_SECRET: "<Your App Secret>", //Provided when an app is registered with Bayun on Developer Portal
 
   ENABLE_FACE_RECOGNITION: false,
@@ -30,7 +29,6 @@ function initBayunCore() {
   bayunCore = BayunCore.init({
     bayunAppId: Constants.BAYUN_APP_ID,
     bayunAppSecret: Constants.BAYUN_APP_SECRET,
-    bayunAppSalt: Constants.BAYUN_APP_SALT,
     localDataEncryptionMode: localStorageMode,
     baseURL: Constants.BASE_URL,
     bayunServerPublicKey: Constants.BAYUN_SERVER_PUBLIC_KEY,
