@@ -94,7 +94,7 @@ const registerSuccessCallback = (data) => {
   if (data.sessionId) {
     alert("Registered Successfully. Please login to continue.");
     // registerContainer.classList.add("hidden");
-    bayunCore.logout(getCookie("sessionId"));
+    bayunCore.logout({ sessionId: getCookie("sessionId") });
     console.log("sessionID: ", data.sessionId);
     sessionId = data.sessionId;
     clearSessionData();
@@ -151,15 +151,15 @@ const newUserCredentialsCallback = (data) => {
     // Take user Input for optional registerFaceId
     const registerFaceId = false;
 
-    bayunCore.setNewUserCredentials(
-      data.sessionId,
-      securityQuestionsAnswers,
-      null, //passphrase,
-      registerFaceId,
-      authorizeMemberCallback,
-      successCallback,
-      failureCallback
-    );
+    bayunCore.setNewUserCredentials({
+      sessionId: data.sessionId,
+      securityQuestions: securityQuestionsAnswers,
+      passphrase: null, // passphrase (optional)
+      registerFaceId: registerFaceId,
+      authorizeMemberCallback: authorizeMemberCallback,
+      successCallback: successCallback,
+      failureCallback: failureCallback,
+    });
   }
 };
 
@@ -253,13 +253,13 @@ function changePassword(
   changePasswordSuccess,
   changePasswordFailure
 ) {
-  bayunCore.changePassword(
-    sessionId,
-    currentPassword,
-    newPassword,
-    changePasswordSuccess,
-    changePasswordFailure
-  );
+  bayunCore.changePassword({
+    sessionId: sessionId,
+    currentPassword: currentPassword,
+    newPassword: newPassword,
+    successCallback: changePasswordSuccess,
+    failureCallback: changePasswordFailure,
+  });
 }
 
 /**
@@ -273,15 +273,16 @@ function changePassword(
   * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/3-authentication/4.1-register-with-password
   **/
 async function registerWithPassword() {
-  await bayunCore.registerMemberWithPassword(
-    getCookie("sessionId"), //window.sessionId,
-    orgName,
-    orgMemberId,
-    password,
-    authorizeMemberCallback,
-    registerSuccessCallback,
-    registerFailureCallback
-  );
+  await bayunCore.registerMemberWithPassword({
+    sessionId: getCookie("sessionId"), //window.sessionId,
+    orgName: orgName,
+    orgMemberId: orgMemberId,
+    password: password,
+    authorizeMemberCallback: authorizeMemberCallback,
+    successCallback: registerSuccessCallback,
+    failureCallback: registerFailureCallback,
+    localDataEncryptionMode: localStorageMode,
+  });
 }
 
 /**
@@ -300,18 +301,19 @@ async function registerWithPassword() {
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/3-authentication/4.3-login-with-password
  **/
 function loginWithPassword() {
-  bayunCore.loginWithPassword(
-    getCookie("sessionId"), //window.sessionId
-    orgName,
-    orgMemberId,
-    password,
-    false, //autoCreateMember,
-    null,
-    null, //securityQuestionsCallback,
-    null, //passphraseCallback,
-    onLoginSuccessCallback,
-    onLoginFailureCallback
-  );
+  bayunCore.loginWithPassword({
+    sessionId: getCookie("sessionId"), //window.sessionId
+    orgName: orgName,
+    orgMemberId: orgMemberId,
+    password: password,
+    autoCreateMember: false, //autoCreateMember,
+    authorizeMemberCallback: null,
+    securityQuestionsCallback: null,
+    passphraseCallback: null,
+    successCallback: onLoginSuccessCallback,
+    failureCallback: onLoginFailureCallback,
+    localDataEncryptionMode: localStorageMode,
+  });
 }
 
 /**
@@ -331,19 +333,20 @@ function loginWithPassword() {
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/3-authentication/4.2-register-without-password
  **/
 function registerWithoutPassword() {
-  bayunCore.registerMemberWithoutPassword(
-    getCookie("sessionId"), //window.sessionId,
-    orgName,
-    orgMemberId,
-    email,
-    true,
-    authorizeMemberCallback,
-    newUserCredentialsCallback,
-    null,
-    null,
-    registerSuccessCallback,
-    registerFailureCallback
-  );
+  bayunCore.registerMemberWithoutPassword({
+    sessionId: getCookie("sessionId"), //window.sessionId,
+    orgName: orgName,
+    orgMemberId: orgMemberId,
+    email: email,
+    isOrgOwnedEmail: true,
+    authorizeMemberCallback: authorizeMemberCallback,
+    newUserCredentialsCallback: newUserCredentialsCallback,
+    securityQuestionsCallback: null,
+    passphraseCallback: null,
+    successCallback: registerSuccessCallback,
+    failureCallback: registerFailureCallback,
+    localDataEncryptionMode: localStorageMode,
+  });
 }
 
 /**
@@ -359,15 +362,16 @@ function registerWithoutPassword() {
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/3-authentication/4.4-login-without-password
  **/
 function loginWithoutPassword() {
-  bayunCore.loginWithoutPassword(
-    getCookie("sessionId"), //window.sessionId,
-    orgName,
-    orgMemberId,
-    null,
-    null,
-    onLoginSuccessCallback,
-    onLoginFailureCallback
-  );
+  bayunCore.loginWithoutPassword({
+    sessionId: getCookie("sessionId"), //window.sessionId,
+    orgName: orgName,
+    orgMemberId: orgMemberId,
+    securityQuestionsCallback: null,
+    passphraseCallback: null,
+    successCallback: onLoginSuccessCallback,
+    failureCallback: onLoginFailureCallback,
+    localDataEncryptionMode: localStorageMode,
+  });
 }
 
 /**
@@ -379,7 +383,11 @@ function loginWithoutPassword() {
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/groups/create-group
  */
 async function createGroup(sessionId, groupName, groupType) {
-  const group = await bayunCore.createGroup(sessionId, groupName, groupType);
+  const group = await bayunCore.createGroup({
+    sessionId: sessionId,
+    groupName: groupName,
+    groupType: groupType,
+  });
   roomId = group.groupId;
   console.log("roomId : ", roomId);
 }
@@ -392,7 +400,7 @@ async function createGroup(sessionId, groupName, groupType) {
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/groups/delete-group
  */
 async function deleteGroup(sessionId, roomId) {
-  await bayunCore.deleteGroup(sessionId, roomId);
+  await bayunCore.deleteGroup({ sessionId: sessionId, groupId: roomId });
 }
 
 /**
@@ -402,7 +410,7 @@ async function deleteGroup(sessionId, roomId) {
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/groups/get-my-groups
  */
 async function getMyGroups(sessionId) {
-  const myGroups = await bayunCore.getMyGroups(sessionId);
+  const myGroups = await bayunCore.getMyGroups({ sessionId: sessionId });
   console.log("myGroups = ", myGroups);
 }
 
@@ -414,7 +422,7 @@ async function getMyGroups(sessionId) {
  * @returns Group details for the given group id.
  */
 async function getGroupById(sessionId, groupId) {
-  var group = await bayunCore.getGroupById(sessionId, groupId);
+  var group = await bayunCore.getGroupById({ sessionId: sessionId, groupId: groupId });
   console.log("getGroupById = ", group);
   return group;
 }
@@ -426,7 +434,7 @@ async function getGroupById(sessionId, groupId) {
  * @returns Array of the available public groups.
  */
 async function getUnjoinedPublicGroups(sessionId) {
-  const myGroups = await bayunCore.getUnjoinedPublicGroups(sessionId);
+  const myGroups = await bayunCore.getUnjoinedPublicGroups({ sessionId: sessionId });
   console.log("myGroups = ", myGroups);
 }
 
@@ -438,7 +446,7 @@ async function getUnjoinedPublicGroups(sessionId) {
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/groups/join-public-group
  */
 async function joinPublicGroup(sessionId, groupId) {
-  await bayunCore.joinPublicGroup(sessionId, groupId);
+  await bayunCore.joinPublicGroup({ sessionId: sessionId, groupId: groupId });
 }
 
 /**
@@ -456,12 +464,12 @@ async function addParticipantToGroup(
   orgMemberId,
   orgName
 ) {
-  await bayunCore.addParticipantToGroup(
-    sessionId,
-    groupId,
-    orgMemberId,
-    orgName
-  );
+  await bayunCore.addParticipantToGroup({
+    sessionId: sessionId,
+    groupId: groupId,
+    orgMemberId: orgMemberId,
+    orgName: orgName,
+  });
 }
 
 /**
@@ -474,11 +482,11 @@ async function addParticipantToGroup(
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/groups/add-group-members
  */
 async function addParticipantsToGroup(sessionId, groupId, groupParticipants) {
-  let finalOutputTestJS = await bayunCore.addParticipantsToGroup(
-    sessionId,
-    groupId,
-    groupParticipants
-  );
+  let finalOutputTestJS = await bayunCore.addParticipantsToGroup({
+    sessionId: sessionId,
+    groupId: groupId,
+    groupParticipants: groupParticipants,
+  });
   await printAddParticipantsErrorResponse(finalOutputTestJS);
 }
 
@@ -526,12 +534,12 @@ async function removeParticipantFromGroup(
   orgMemberId,
   orgName
 ) {
-  await bayunCore.removeParticipantFromGroup(
-    sessionId,
-    groupId,
-    orgMemberId,
-    orgName
-  );
+  await bayunCore.removeParticipantFromGroup({
+    sessionId: sessionId,
+    groupId: groupId,
+    orgMemberId: orgMemberId,
+    orgName: orgName,
+  });
 }
 
 /**
@@ -543,7 +551,11 @@ async function removeParticipantFromGroup(
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/groups/6.9-remove-group-members
  */
 async function removeParticipantsFromGroup(sessionId, groupId, participantsInfo) {
-  await bayunCore.removeParticipantsFromGroup(sessionId, groupId, participantsInfo);
+  await bayunCore.removeParticipantsFromGroup({
+    sessionId: sessionId,
+    groupId: groupId,
+    participantsInfo: participantsInfo,
+  });
 }
 
 /**
@@ -560,12 +572,12 @@ async function removeParticipantsExceptList(
   participantsInfo,
   removeCallingParticipant
 ) {
-  await bayunCore.removeParticipantsExceptList(
-    sessionId,
-    groupId,
-    participantsInfo,
-    removeCallingParticipant
-  );
+  await bayunCore.removeParticipantsExceptList({
+    sessionId: sessionId,
+    groupId: groupId,
+    participantsInfo: participantsInfo,
+    removeCallingParticipant: removeCallingParticipant,
+  });
 }
 
 /**
@@ -576,7 +588,7 @@ async function removeParticipantsExceptList(
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/groups/leave-group
  */
 async function leaveGroup(sessionId, roomId) {
-  await bayunCore.leaveGroup(sessionId, roomId);
+  await bayunCore.leaveGroup({ sessionId: sessionId, groupId: roomId });
 }
 
 /**
@@ -596,13 +608,13 @@ async function lockText(
   keyGenerationPolicy,
   groupId
 ) {
-  var lockedText = await bayunCore.lockText(
-    sessionId,
-    text,
-    encryptionPolicy,
-    keyGenerationPolicy,
-    groupId
-  );
+  var lockedText = await bayunCore.lockText({
+    sessionId: sessionId,
+    text: text,
+    encryptionPolicy: encryptionPolicy,
+    keyGenerationPolicy: keyGenerationPolicy,
+    groupId: groupId,
+  });
   console.log("lockedText = ", lockedText);
   return lockedText;
 }
@@ -615,7 +627,10 @@ async function lockText(
  * @see https://bayun.gitbook.io/bayuncoresdk-javascript-programming-guide/bayuncoresdk-operations/lock-unlock-text#5.1.3-unlock-text
  */
 async function unlockText(sessionId, text) {
-  var unlockedText = await bayunCore.unlockText(sessionId, text);
+  var unlockedText = await bayunCore.unlockText({
+    sessionId: sessionId,
+    lockedText: text,
+  });
   console.log("unlockedText = ", unlockedText);
   return unlockedText;
 }
@@ -674,14 +689,18 @@ async function lockAndUnlockData(
   encryptionPolicy,
   keyGenerationPolicy
 ) {
-  var lockedData = await bayunCore.lockData(
-    sessionId,
-    text,
-    encryptionPolicy,
-    keyGenerationPolicy
-  );
+  var lockedData = await bayunCore.lockData({
+    sessionId: sessionId,
+    text: text,
+    encryptionPolicy: encryptionPolicy,
+    keyGenerationPolicy: keyGenerationPolicy,
+    groupId: "",
+  });
   console.log("lockedData = ", lockedData);
-  var unlockedData = await bayunCore.unlockData(sessionId, lockedData);
+  var unlockedData = await bayunCore.unlockData({
+    sessionId: sessionId,
+    lockedData: lockedData,
+  });
   console.log("unlockedData = ", unlockedData);
 }
 
@@ -705,12 +724,12 @@ async function getLockingKey(
   keyGenerationPolicy,
   groupId
 ) {
-  var lockingKey = await bayunCore.getLockingKey(
-    sessionId,
-    encryptionPolicy,
-    keyGenerationPolicy,
-    groupId
-  );
+  var lockingKey = await bayunCore.getLockingKey({
+    sessionId: sessionId,
+    encryptionPolicy: encryptionPolicy,
+    keyGenerationPolicy: keyGenerationPolicy,
+    groupId: groupId,
+  });
   console.log(lockingKey);
 }
 
