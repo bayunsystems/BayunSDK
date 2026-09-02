@@ -6896,28 +6896,30 @@ class we {
    * Delegates to TransactionService which handles orchestration
    */
   static async initiateLockBoxTransfer(t) {
-    var s, n, a, o, i;
+    var s, n, a, o, i, c;
     try {
       await et.initiateLockBoxTransfer(t);
-    } catch (c) {
-      if (console.error("Error transferring lockbox ownership:", c), ee.isAxiosError(c)) {
-        if (((s = c.response) == null ? void 0 : s.status) === 400)
+    } catch (l) {
+      if (console.error("Error transferring lockbox ownership:", l), ee.isAxiosError(l))
+        if (((s = l.response) == null ? void 0 : s.status) === 400) {
+          const d = (n = l.response.data) == null ? void 0 : n.errorMessage;
           throw new Error(
-            "Invalid request: Please check the provided member IDs"
+            d || "Invalid request: Please check the provided member IDs"
           );
-        if (((n = c.response) == null ? void 0 : n.status) === 403)
-          throw new Error(
-            "Access denied: You don't have permission to transfer lockbox ownership"
-          );
-        if (((a = c.response) == null ? void 0 : a.status) === 404)
-          throw new Error("Member not found: One or both members don't exist");
-        if (((o = c.response) == null ? void 0 : o.status) === 409)
-          throw new Error(
-            "Conflict: Lockbox transfer cannot be completed at this time"
-          );
-        if (((i = c.response) == null ? void 0 : i.status) >= 500)
-          throw new Error("Server error: Please try again later");
-      }
+        } else {
+          if (((a = l.response) == null ? void 0 : a.status) === 403)
+            throw new Error(
+              "Access denied: You don't have permission to transfer lockbox ownership"
+            );
+          if (((o = l.response) == null ? void 0 : o.status) === 404)
+            throw new Error("Member not found: One or both members don't exist");
+          if (((i = l.response) == null ? void 0 : i.status) === 409)
+            throw new Error(
+              "Conflict: Lockbox transfer cannot be completed at this time"
+            );
+          if (((c = l.response) == null ? void 0 : c.status) >= 500)
+            throw new Error("Server error: Please try again later");
+        }
       throw new Error(
         "Failed to transfer lockbox ownership. Please try again."
       );
