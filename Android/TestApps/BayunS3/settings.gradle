@@ -1,3 +1,0 @@
-include ':app'
-rootProject.name='BayunS3'
-include ':app', ':Bayun'
